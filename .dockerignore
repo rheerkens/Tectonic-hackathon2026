@@ -1,0 +1,13 @@
+node_modules
+**/node_modules
+.git
+.local
+**/dist
+tools/video/output
+tools/e2e/output
+apps/desktop/src-tauri/target
+apps/web/android
+apps/web/ios
+.env
+.env.*
+!.env.example

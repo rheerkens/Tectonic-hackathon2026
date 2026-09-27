@@ -1,0 +1,6 @@
+[install]
+exact = true
+
+[test]
+# Playwright specs use the `.e2e.ts` suffix and run through `bun run test:e2e`, not `bun test`.
+root = "."

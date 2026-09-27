@@ -1,0 +1,117 @@
+import type { Database } from '@tectonic/db';
+import { WS_PATH } from '@tectonic/shared';
+import type { Server } from 'bun';
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { HTTPException } from 'hono/http-exception';
+import { createAuthenticator, type Authenticator, type Principal } from './auth.ts';
+import type { AppConfig } from './config.ts';
+import { ApiError } from './errors.ts';
+import { createLogger, type Logger } from './log.ts';
+import { createRealtime, type Realtime, type SocketData } from './realtime.ts';
+import { healthRoutes } from './routes/health.ts';
+import { projectRoutes } from './routes/projects.ts';
+import { taskRoutes } from './routes/tasks.ts';
+import { userRoutes } from './routes/users.ts';
+import { createStaticHandler } from './static.ts';
+
+export interface AppEnv {
+  Bindings: Server<SocketData>;
+  Variables: { principal: Principal };
+}
+
+export interface AppContext {
+  config: AppConfig;
+  db: Database;
+  authenticator: Authenticator;
+  realtime: Realtime;
+  log: Logger;
+  startedAt: number;
+}
+
+export interface CreatedApp {
+  app: Hono<AppEnv>;
+  ctx: AppContext;
+  fetch: (request: Request, server: Server<SocketData>) => Response | Promise<Response>;
+  websocket: Realtime['websocket'];
+}
+
+/** Native shells load the web bundle from these origins. Extra origins come from CORS_ORIGINS. */
+const NATIVE_ORIGINS = ['capacitor://localhost', 'ionic://localhost', 'http://localhost', 'tauri://localhost', 'https://tauri.localhost'];
+
+export function createApp(deps: { config: AppConfig; db: Database; log?: Logger; authenticator?: Authenticator }): CreatedApp {
+  const { config, db } = deps;
+  const log = deps.log ?? createLogger(config.productionLike ? 'info' : 'debug');
+  const authenticator = deps.authenticator ?? createAuthenticator(config, db);
+  const realtime = createRealtime({ db, authenticator, log });
+  const ctx: AppContext = { config, db, authenticator, realtime, log, startedAt: Date.now() };
+
+  const app = new Hono<AppEnv>();
+
+  app.use(
+    '/api/*',
+    cors({
+      origin: (origin) => {
+        if (!origin) return origin;
+        if (NATIVE_ORIGINS.includes(origin) || config.corsOrigins.includes(origin)) return origin;
+        if (!config.productionLike && /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(origin)) return origin;
+        return null;
+      },
+      allowHeaders: ['Authorization', 'Content-Type', 'x-dev-user'],
+      allowMethods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+      maxAge: 600,
+    }),
+  );
+
+  app.use('/api/*', async (c, next) => {
+    const started = performance.now();
+    await next();
+    log.debug(`${c.req.method} ${c.req.path} -> ${c.res.status} ${(performance.now() - started).toFixed(1)}ms`);
+  });
+
+  /** Everything under /api except /api/health requires a principal. */
+  app.use('/api/*', async (c, next) => {
+    if (c.req.path === '/api/health') return next();
+    const principal = await authenticator.authenticate({
+      authorization: c.req.header('authorization'),
+      devUser: c.req.header('x-dev-user'),
+    });
+    c.set('principal', principal);
+    await next();
+  });
+
+  app.route('/', healthRoutes(ctx));
+  app.route('/', userRoutes(ctx));
+  app.route('/', projectRoutes(ctx));
+  app.route('/', taskRoutes(ctx));
+
+  app.get(WS_PATH, (c) => realtime.upgrade(c.req.raw, c.env));
+
+  const serveStatic = config.serveStatic ? createStaticHandler(config.staticDir) : null;
+  app.notFound(async (c) => {
+    if (serveStatic && !c.req.path.startsWith('/api/')) {
+      const response = await serveStatic(c.req.raw);
+      if (response) return response;
+    }
+    return c.json({ error: { code: 'not_found', message: `No route for ${c.req.method} ${c.req.path}` } }, 404);
+  });
+
+  app.onError((error, c) => {
+    if (error instanceof ApiError) return c.json(error.toBody(), error.status as 400);
+    if (error instanceof HTTPException) {
+      return c.json({ error: { code: 'bad_request', message: error.message } }, error.status as 400);
+    }
+    log.error('Unhandled error', { path: c.req.path, message: error instanceof Error ? error.message : String(error) });
+    return c.json({ error: { code: 'internal', message: 'Internal server error' } }, 500);
+  });
+
+  return {
+    app,
+    ctx,
+    fetch: (request, server) => {
+      realtime.attach(server);
+      return app.fetch(request, server);
+    },
+    websocket: realtime.websocket,
+  };
+}

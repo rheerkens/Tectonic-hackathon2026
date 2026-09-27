@@ -1,0 +1,25 @@
+{
+  "name": "@tectonic/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "generate": "drizzle-kit generate",
+    "migrate": "bun src/cli.ts migrate",
+    "seed": "bun src/cli.ts seed"
+  },
+  "dependencies": {
+    "@tectonic/shared": "workspace:*",
+    "drizzle-orm": "0.45.3",
+    "postgres": "3.4.9"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.2",
+    "drizzle-kit": "0.31.11",
+    "typescript": "5.9.3"
+  }
+}

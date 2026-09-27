@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="@@LANGUAGE@@">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>@@TITLE@@</title>
+<style>
+*{box-sizing:border-box}html,body{height:100%;overflow:hidden}body{margin:0;background:#101b24;color:#edf5fa;font:16px/1.5 system-ui,sans-serif}main{height:100vh;height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;padding:24px;gap:16px}header{display:flex;align-items:center;justify-content:space-between;gap:20px;min-width:0}h1{margin:0;font-size:26px;overflow-wrap:anywhere}a{color:#87e8d2;flex:none}.player{display:flex;gap:24px;min-height:0;min-width:0;overflow:hidden;align-items:flex-start}video{width:var(--video-width,0px);height:var(--video-height,0px);flex:none;background:#090f14;border:1px solid #31424f;border-radius:10px}nav{order:-1;flex:0 0 clamp(210px,17vw,290px);height:var(--video-height,0px);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;padding-right:8px}button{display:block;width:100%;border:0;border-left:3px solid #31424f;text-align:left;padding:11px 14px;background:transparent;color:#c7d7e1;font:inherit;cursor:pointer;overflow-wrap:anywhere}button+button{margin-top:4px}button:hover,button:focus-visible,button[aria-current=true]{background:#1d353e;color:white}button:focus-visible{outline:2px solid #81e7cc;outline-offset:-2px}button[aria-current=true]{border-left-color:#81e7cc}button span{display:block;color:#81e7cc;font-size:13px;font-variant-numeric:tabular-nums}footer{font-size:12px;color:#afc3d0}#status:empty{display:none}@media(max-width:800px){main{padding:12px;gap:12px}.player{gap:12px}nav{flex-basis:155px}h1{font-size:20px}button{font-size:13px;padding:8px}a{font-size:12px}}@media(max-width:450px){nav{flex-basis:130px}h1{font-size:17px}}
+</style>
+<main>
+<header><h1>@@TITLE@@</h1><a id="download" href="#" download="@@FILENAME@@">Download video</a></header>
+<section class="player" aria-label="Video and chapters">
+<video controls playsinline preload="metadata" src="@@VIDEO@@"@@POSTER@@></video>
+<nav aria-label="Chapters">@@CHAPTERS@@</nav>
+</section>
+<footer><div>Choose a chapter to jump to a topic. This file works offline.</div><div id="status" role="status"></div></footer>
+</main>
+<script>
+const video=document.querySelector('video'),player=document.querySelector('.player'),nav=document.querySelector('nav'),status=document.querySelector('#status'),buttons=[...document.querySelectorAll('button[data-time]')];
+document.querySelector('#download').href=video.src;
+function fit(){const ratio=video.videoWidth&&video.videoHeight?video.videoWidth/video.videoHeight:16/9;const width=Math.max(0,player.clientWidth-nav.getBoundingClientRect().width-parseFloat(getComputedStyle(player).columnGap));const height=Math.max(0,Math.min(player.clientHeight,width/ratio));player.style.setProperty('--video-width',`${height*ratio}px`);player.style.setProperty('--video-height',`${height}px`)}
+new ResizeObserver(fit).observe(player);video.addEventListener('loadedmetadata',()=>{fit();if(Number.isFinite(video.duration)&&Number(buttons.at(-1).dataset.time)>=video.duration)status.textContent='A chapter is outside the video. Check the chapter timestamps.'});fit();
+function mark(){let active=buttons[0];for(const button of buttons)if(Number(button.dataset.time)<=video.currentTime)active=button;for(const button of buttons)if(button===active)button.setAttribute('aria-current','true');else button.removeAttribute('aria-current')}
+video.addEventListener('timeupdate',mark);mark();
+for(const button of buttons)button.addEventListener('click',async()=>{video.currentTime=Number(button.dataset.time);try{await video.play();status.textContent=''}catch{status.textContent='Press Play to start the video.'}});
+video.addEventListener('error',()=>{status.textContent='The video could not be loaded. Try opening this file in another browser.'});
+</script>
+</html>

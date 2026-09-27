@@ -1,0 +1,48 @@
+{
+  "name": "tectonic-hackathon-2026",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Tectonic Hackathon 2026 starter: Bun + Hono + React/Vite + Postgres/Drizzle with realtime, worktree-isolated dev stacks, Clerk-ready auth, Capacitor/Tauri shells and Railway deployment.",
+  "packageManager": "bun@1.4.2",
+  "engines": {
+    "bun": ">=1.4.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "tools/*"
+  ],
+  "scripts": {
+    "dev": "bun tools/dev/src/cli.ts up",
+    "dev:stop": "bun tools/dev/src/cli.ts stop",
+    "dev:status": "bun tools/dev/src/cli.ts status",
+    "dev:env": "bun tools/dev/src/cli.ts env",
+    "start": "bun apps/api/src/index.ts",
+    "build": "bun run --cwd apps/web build",
+    "typecheck": "bun run --filter '*' typecheck",
+    "test": "bun test apps packages tools/dev",
+    "test:e2e": "bun run --cwd tools/e2e test",
+    "check": "bun run typecheck && bun run test && bun run build",
+    "db:generate": "bun run --cwd packages/db generate",
+    "db:migrate": "bun run --cwd packages/db migrate",
+    "db:seed": "bun run --cwd packages/db seed",
+    "video": "bun run --cwd tools/video record",
+    "desktop:dev": "bun run --cwd apps/desktop dev",
+    "railway:link": "bash scripts/railway-link.sh",
+    "railway:deploy": "bash scripts/railway-deploy.sh"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.2",
+    "typescript": "5.9.3"
+  },
+  "trustedDependencies": [
+    "@embedded-postgres/darwin-arm64",
+    "@embedded-postgres/darwin-x64",
+    "@embedded-postgres/linux-arm",
+    "@embedded-postgres/linux-arm64",
+    "@embedded-postgres/linux-ia32",
+    "@embedded-postgres/linux-ppc64",
+    "@embedded-postgres/linux-x64",
+    "@embedded-postgres/windows-x64"
+  ]
+}

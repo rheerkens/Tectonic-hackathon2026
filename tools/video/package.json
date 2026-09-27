@@ -1,0 +1,23 @@
+{
+  "name": "@tectonic/video",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "record": "bun src/record.ts",
+    "rehearse": "bun src/record.ts --rehearsal",
+    "package": "bun src/package-player.ts",
+    "review": "bun src/review.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "install-browsers": "playwright install chromium"
+  },
+  "dependencies": {
+    "@tectonic/dev": "workspace:*",
+    "@tectonic/shared": "workspace:*",
+    "playwright": "1.63.0"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.2",
+    "typescript": "5.9.3"
+  }
+}
