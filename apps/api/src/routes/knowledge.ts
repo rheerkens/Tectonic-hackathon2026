@@ -9,6 +9,7 @@ import { getProjectRole } from '../permissions.ts';
 import { serializeSource } from '../serializers.ts';
 import { visibleSources as loadVisibleSources } from '../sources.ts';
 import { extractClaims } from '../claims.ts';
+import { takeLlmBudget } from '../llm-budget.ts';
 import { jsonBody } from '../validate.ts';
 
 const EXAMPLES = ['Tot wanneer mag Atlas loonmutaties aanleveren?', 'Binnen welke termijn moet een ziekmelding doorgegeven worden?'];
@@ -26,7 +27,8 @@ export function knowledgeRoutes(ctx: AppContext) {
   });
 
   router.get('/api/sources', async (c) => {
-    const { teams, rows } = await visibleSources(c.get('principal').userId);
+    const { userId } = c.get('principal');
+    const { teams, rows } = await visibleSources(userId);
     const names = new Map(teams.map((t) => [t.id, t.name]));
     const period = new Date().toISOString().slice(0, 7);
     return c.json(
@@ -47,12 +49,13 @@ export function knowledgeRoutes(ctx: AppContext) {
   // Claims come from the LLM when a key is set, else sentence split (see claims.ts); matching stays keyword overlap via assess.
   router.post('/api/check', jsonBody(CheckInputSchema), async (c) => {
     const { text, country } = c.req.valid('json');
-    const { teams, rows } = await visibleSources(c.get('principal').userId);
+    const { userId } = c.get('principal');
+    const { teams, rows } = await visibleSources(userId);
     const names = new Map(teams.map((t) => [t.id, t.name]));
     const period = new Date().toISOString().slice(0, 7);
     const claims: CheckResult['claims'] = [];
     const contradictions: CheckResult['contradictions'] = [];
-    for (const { claim, country: found } of await extractClaims(text)) {
+    for (const { claim, country: found } of await extractClaims(text, rows.length > 0 && takeLlmBudget(userId))) {
       const r = assess(claim, rows.map(serializeSource), names, { country: found ?? country, client: null, period });
       claims.push({ text: claim, topic: r.topic, status: r.status, statusLabel: r.statusLabel });
       for (const source of r.sources) {

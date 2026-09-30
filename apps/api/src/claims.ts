@@ -11,9 +11,9 @@ function splitSentences(text: string): ExtractedClaim[] {
 }
 
 /** Free text to `{topic, country, claim}[]`. Uses Claude when ANTHROPIC_API_KEY is set; any failure falls back to sentence split. */
-export async function extractClaims(text: string): Promise<ExtractedClaim[]> {
+export async function extractClaims(text: string, allowLlm = true): Promise<ExtractedClaim[]> {
   const key = process.env.ANTHROPIC_API_KEY?.trim();
-  if (!key) return splitSentences(text);
+  if (!key || !allowLlm) return splitSentences(text);
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
