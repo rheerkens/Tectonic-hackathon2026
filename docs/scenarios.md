@@ -4,7 +4,7 @@ Uitvoering voor issues [13](https://github.com/rheerkens/Tectonic-hackathon2026/
 
 ## Afbakening
 
-De [seed](../packages/db/src/seed.ts) bevat 32 verschillende records over 16 onderwerpen. De oorspronkelijke S1 tot en met S8 blijven inhoudelijk en qua toegang behouden. S9 tot en met S13 verwerken bestaand dossiermateriaal; S14 tot en met S32 zijn nieuwe fictieve procesdocumenten en gesprekken. Bestandsformaten worden niet apart geteld. De foto bij dossier S5 is context bij diezelfde bron, geen extra stem voor een besluit.
+De [seed](../packages/db/src/seed.ts) bevat 32 verschillende records over 16 onderwerpen, plus het oude onbevestigde ziekmeldingrecord S34 uit de demo (code uniek sinds de hernummering op main; S9 is hier de Atlas-mailketen). De oorspronkelijke S1 tot en met S8 blijven inhoudelijk en qua toegang behouden. S9 tot en met S13 verwerken bestaand dossiermateriaal; S14 tot en met S32 zijn nieuwe fictieve procesdocumenten en gesprekken. Bestandsformaten worden niet apart geteld. De foto bij dossier S5 is context bij diezelfde bron, geen extra stem voor een besluit.
 
 Alle nieuwe procedures zijn ontworpen werkafspraken. Ze introduceren geen wettelijke bedragen, percentages of aanspraken. S17 en S26 bevatten juist onbevestigde percentages. S29 verwijst naar de praktijkbasis P1 en P3 zonder die overheidsteksten als eigen procedure of extra seeded bron te tellen.
 
