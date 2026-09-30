@@ -186,6 +186,8 @@ The team plan is in [`docs/TASKS.md`](docs/TASKS.md); open work is tracked in th
 - Two `tools/dev` worktree-launcher tests fail on macOS (`/private` path); they fail without our changes too.
 
 ## 12. Design prototype
+**Selected loading design:** [Finn zoekt mee, concept 4](docs/design/generation-progress/index.html#concept-4). The [implementation handoff and agent prompt](docs/design/generation-progress/HANDOFF.md) specify how to add it to the knowledge page. The mockup simulates progress; the application must use actual request state.
+
 The target look and flow of the product. It is a prototype (Dutch UI, branded "Kennis met onderbouwing"). The current build has since moved much closer to it; the table below shows what is still different.
 
 ![Design prototype: Kennis zoeken](docs/design/prototype.png)
