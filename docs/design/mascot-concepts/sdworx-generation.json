@@ -1,0 +1,47 @@
+{
+  "generationMode": "built-in image_gen",
+  "palette": {
+    "blue": "#006DD8",
+    "red": "#F1002F",
+    "yellow": "#FFBE00",
+    "charcoal": "#212223",
+    "nearWhite": "#FBFCFC",
+    "paleBlue": "#D9F1FF"
+  },
+  "sources": [
+    "https://cdn.sdworx.com/ignite/styling/v2/2.2.0/website/system.css",
+    "https://www.sdworx.com/en-en/about-sd-worx/press/2026-06-25-new-look-sd-worx-introducing-brand-makes-work-work"
+  ],
+  "concepts": [
+    {
+      "name": "Pip",
+      "file": "01-pip-payroll-nerd-sdworx.png",
+      "reference": "01-pip-payroll-nerd.png",
+      "prompt": "Use case: identity-preserve. Edit the supplied mascot image into a new SD Worx brand-color edition. Preserve this exact character identity, facial features, expression, silhouette, pose, props, proportions, crisp 2D cartoon drawing style, and full-body framing. Change its designed palette to the CURRENT SD Worx official logo colors: saturated blue #006DD8, vivid red #F1002F, golden yellow #FFBE00; support with near-white #FBFCFC, pale blue #D9F1FF and dark charcoal #212223 for legible outlines. The colored surfaces should unmistakably be those bright blue/red/yellow brand colors, not the original indigo/purple/lavender. Natural skin tones and natural human hair stay unchanged. Controlled cel shading may use darker and lighter variants of the specified hues. Single static mascot centered on a square canvas with actual alpha transparency, all limbs and props visible and clear margins. No background, no ground shadow, no lettering, no watermark, no UI frame, no new accessories. Exactly one character. Do not add a wordmark or invent an SD Worx logo. Transparent pixels must remain truly transparent.\nSpecific color placement: Recolor Pip's sweater vest to SD Worx blue #006DD8, bow tie to red #F1002F, folder to yellow #FFBE00 with cream pages, glasses to charcoal #212223, trousers and shoes charcoal with subtle blue accents. Keep cream shirt, brown hair and peach skin."
+    },
+    {
+      "name": "Ada",
+      "file": "02-ada-calm-expert-sdworx.png",
+      "reference": "02-ada-calm-expert.png",
+      "prompt": "Use case: identity-preserve. Edit the supplied mascot image into a new SD Worx brand-color edition. Preserve this exact character identity, facial features, expression, silhouette, pose, props, proportions, crisp 2D cartoon drawing style, and full-body framing. Change its designed palette to the CURRENT SD Worx official logo colors: saturated blue #006DD8, vivid red #F1002F, golden yellow #FFBE00; support with near-white #FBFCFC, pale blue #D9F1FF and dark charcoal #212223 for legible outlines. The colored surfaces should unmistakably be those bright blue/red/yellow brand colors, not the original indigo/purple/lavender. Natural skin tones and natural human hair stay unchanged. Controlled cel shading may use darker and lighter variants of the specified hues. Single static mascot centered on a square canvas with actual alpha transparency, all limbs and props visible and clear margins. No background, no ground shadow, no lettering, no watermark, no UI frame, no new accessories. Exactly one character. Do not add a wordmark or invent an SD Worx logo. Transparent pixels must remain truly transparent.\nSpecific color placement: Recolor Ada's cardigan to saturated SD Worx blue #006DD8, oversized glasses to vivid red #F1002F, clipboard rim and clip golden yellow #FFBE00 with cream paper, trousers and shoes charcoal #212223. Keep warm brown skin, silver curls, cream blouse; silver hair must be neutral silver, no purple tint."
+    },
+    {
+      "name": "Otto",
+      "file": "03-otto-ledger-owl-sdworx.png",
+      "reference": "03-otto-ledger-owl.png",
+      "prompt": "Use case: identity-preserve. Edit the supplied mascot image into a new SD Worx brand-color edition. Preserve this exact character identity, facial features, expression, silhouette, pose, props, proportions, crisp 2D cartoon drawing style, and full-body framing. Change its designed palette to the CURRENT SD Worx official logo colors: saturated blue #006DD8, vivid red #F1002F, golden yellow #FFBE00; support with near-white #FBFCFC, pale blue #D9F1FF and dark charcoal #212223 for legible outlines. The colored surfaces should unmistakably be those bright blue/red/yellow brand colors, not the original indigo/purple/lavender. Natural skin tones and natural human hair stay unchanged. Controlled cel shading may use darker and lighter variants of the specified hues. Single static mascot centered on a square canvas with actual alpha transparency, all limbs and props visible and clear margins. No background, no ground shadow, no lettering, no watermark, no UI frame, no new accessories. Exactly one character. Do not add a wordmark or invent an SD Worx logo. Transparent pixels must remain truly transparent.\nSpecific color placement: Recolor Otto's feather body to saturated SD Worx blue #006DD8 with pale sky blue highlights, face and belly near-white cream, beak and feet golden yellow #FFBE00, bow tie vivid red #F1002F, ledger book red with yellow spine and cream pages, glasses dark charcoal #212223. Eyes dark charcoal with blue irises. Remove ALL purple and lavender coloration."
+    },
+    {
+      "name": "Cal",
+      "file": "04-cal-pocket-accountant-sdworx.png",
+      "reference": "04-cal-pocket-accountant.png",
+      "prompt": "Use case: identity-preserve. Edit the supplied mascot image into a new SD Worx brand-color edition. Preserve this exact character identity, facial features, expression, silhouette, pose, props, proportions, crisp 2D cartoon drawing style, and full-body framing. Change its designed palette to the CURRENT SD Worx official logo colors: saturated blue #006DD8, vivid red #F1002F, golden yellow #FFBE00; support with near-white #FBFCFC, pale blue #D9F1FF and dark charcoal #212223 for legible outlines. The colored surfaces should unmistakably be those bright blue/red/yellow brand colors, not the original indigo/purple/lavender. Natural skin tones and natural human hair stay unchanged. Controlled cel shading may use darker and lighter variants of the specified hues. Single static mascot centered on a square canvas with actual alpha transparency, all limbs and props visible and clear margins. No background, no ground shadow, no lettering, no watermark, no UI frame, no new accessories. Exactly one character. Do not add a wordmark or invent an SD Worx logo. Transparent pixels must remain truly transparent.\nSpecific color placement: Recolor Cal's calculator shell to saturated SD Worx blue #006DD8 with pale blue rim highlights, face display near-white, glasses and shoes charcoal #212223, bow tie red #F1002F. Four large keypad buttons: two near-white, one red #F1002F, one yellow #FFBE00. Gloves near-white. Remove ALL purple and lavender coloration."
+    },
+    {
+      "name": "Quip",
+      "file": "05-quip-talking-consultant-sdworx.png",
+      "reference": "05-quip-talking-consultant.png",
+      "prompt": "Use case: identity-preserve. Edit the supplied mascot image into a new SD Worx brand-color edition. Preserve this exact character identity, facial features, expression, silhouette, pose, props, proportions, crisp 2D cartoon drawing style, and full-body framing. Change its designed palette to the CURRENT SD Worx official logo colors: saturated blue #006DD8, vivid red #F1002F, golden yellow #FFBE00; support with near-white #FBFCFC, pale blue #D9F1FF and dark charcoal #212223 for legible outlines. The colored surfaces should unmistakably be those bright blue/red/yellow brand colors, not the original indigo/purple/lavender. Natural skin tones and natural human hair stay unchanged. Controlled cel shading may use darker and lighter variants of the specified hues. Single static mascot centered on a square canvas with actual alpha transparency, all limbs and props visible and clear margins. No background, no ground shadow, no lettering, no watermark, no UI frame, no new accessories. Exactly one character. Do not add a wordmark or invent an SD Worx logo. Transparent pixels must remain truly transparent.\nSpecific color placement: Recolor Quip's speech-bubble body near-white #FBFCFC with very pale sky-blue #D9F1FF shading, hair swoop saturated SD Worx blue #006DD8, bow tie vivid red #F1002F, glasses charcoal #212223, payslip golden yellow #FFBE00 with two blue abstract rows. Small subtle warm-red cheeks. Remove ALL purple and lavender coloration."
+    }
+  ]
+}
