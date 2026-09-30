@@ -198,6 +198,7 @@ export function KennisPage() {
   const [period, setPeriod] = useState('2026-10');
   const [asked, setAsked] = useState<AskInput | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [runs, setRuns] = useState(0); // bumps on every search so the answer replays its arrival animation
 
   useTeamSubscriptions(useMemo(() => access.data?.teams.map((t) => t.id) ?? [], [access.data]));
 
@@ -225,7 +226,9 @@ export function KennisPage() {
 
   const run = (next?: Partial<AskInput>) => {
     const input: AskInput = { question, country, client, period, ...next };
-    if (input.question.trim().length >= 3) setAsked(input);
+    if (input.question.trim().length < 3) return;
+    setAsked(input);
+    setRuns((n) => n + 1);
   };
 
   // One context for the page and the chat: changing it in either re-asks the page's question, so the two never disagree.
@@ -321,7 +324,7 @@ export function KennisPage() {
 
         {result && (
           <>
-            <section key={`${result.status}-${result.best?.id ?? ''}`} className={`kn-answer kn-answer--${STATUS_TONE[result.status]}`} data-testid="kn-answer" data-status={result.status} role="status" aria-live="polite" aria-busy={ask.isFetching}>
+            <section key={`${result.status}-${result.best?.id ?? ''}-${runs}`} className={`kn-answer kn-answer--${STATUS_TONE[result.status]}`} data-testid="kn-answer" data-status={result.status} role="status" aria-live="polite" aria-busy={ask.isFetching}>
               <span className="kn-badge">
                 <Tick tone={STATUS_TONE[result.status]} /> {result.statusLabel}
               </span>
