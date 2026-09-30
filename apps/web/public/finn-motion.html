@@ -44,6 +44,10 @@
     .bubble::after { position:absolute; content:""; bottom:-6px; left:calc(50% - 6px); width:10px; height:10px; transform:rotate(45deg); background:#ffffff; border-bottom:1px solid var(--line); border-right:1px solid var(--line); }
     .old-bubble { visibility:hidden; }
     .sprite { display:block; flex:none; width:330px; height:330px; object-fit:contain; }
+    .sprite-slot { position:relative; flex:none; width:330px; height:330px; }
+    .sprite-slot .sprite { position:absolute; inset:0; }
+    .sprite-slot img { z-index:1; }
+    .sprite[hidden] { display:none; }
     .old-sprite { width:332px; height:332px; }
     .caption { margin-top:-7px; margin-bottom:4px; display:flex; align-items:center; gap:6px; font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); }
     .caption i { width:6px; height:6px; border-radius:50%; background:#d99014; }
@@ -73,7 +77,7 @@
     </div>
     <section class="comparison" aria-label="Vergelijking van de animaties">
       <article class="stage"><div class="stage-header"><h2>Vorige versie</h2><span class="tag">BESTAANDE GIF</span></div><div class="scene"><div class="bubble old-bubble" aria-hidden="true">Hoi! Waar kan ik je mee helpen?</div><img id="old" class="sprite old-sprite" width="332" height="332" src="/mascots/finn-fluid/previous/finn-welcome.png" alt="Finn met de vorige animatie"><div class="caption">Vorige beweging</div></div><p class="stage-footer">Dezelfde weergavegrootte, ter vergelijking.</p></article>
-      <article class="stage"><div class="stage-header"><h2>Nieuwe versie</h2><span class="tag tag-new">30 FPS</span></div><div class="scene"><div class="bubble" id="bubble">Hoi! Waar kan ik je mee helpen?</div><img id="new" class="sprite" width="330" height="330" src="/mascots/finn-fluid/welcome.png" alt="Finn met een vloeiende zwaaibeweging"><div class="caption"><i></i><span id="state-label">Zwaait naar je</span></div></div><p class="stage-footer" id="details">Nieuwe poses met vloeiende tussenframes.</p></article>
+      <article class="stage"><div class="stage-header"><h2>Nieuwe versie</h2><span class="tag tag-new">30 FPS</span></div><div class="scene"><div class="bubble" id="bubble">Hoi! Waar kan ik je mee helpen?</div><div class="sprite-slot"><video id="new-video" class="sprite" width="330" height="330" preload="none" muted loop playsinline aria-hidden="true" hidden></video><img id="new" class="sprite" width="330" height="330" src="/assets/finn/welcome-poster-35630b5d7926132a.webp" alt="Finn met een vloeiende zwaaibeweging"></div><div class="caption"><i></i><span id="state-label">Zwaait naar je</span></div></div><p class="stage-footer" id="details">Nieuwe poses met vloeiende tussenframes.</p></article>
     </section>
     <div class="bottom"><p class="description" id="description" aria-live="polite">Een brede zwaai, een kleine beweging in de schouders en een ontspannen terugkeer.</p><div class="downloads"><a id="download-gif" href="/mascots/finn-fluid/welcome.gif" download>Download GIF ↓</a><a id="download-webp" href="/mascots/finn-fluid/welcome.webp" download>Download WebP ↓</a><a href="/mascots/finn-fluid/finn-fluid.zip" download>Alle vier ↓</a></div></div>
     <p id="load-error" role="alert" hidden></p>
@@ -88,40 +92,88 @@
     };
     const preference=matchMedia('(prefers-reduced-motion: reduce)');
     const $=id=>document.getElementById(id);
-    let selected='welcome', paused=preference.matches, all=false, metadata=[], oldTimer, sequenceTimer, serial=0;
+    let selected='welcome', paused=preference.matches || navigator.connection?.saveData === true, all=false, metadata=[], oldTimer, sequenceTimer, serial=0, controller;
+    const video=$('new-video');
+    let videoAlphaSupported;
     const urls=new Map();
     async function fresh(url) {
-      if(!urls.has(url)) urls.set(url,fetch(url).then(r=>{if(!r.ok)throw Error('De animatie kon niet laden. Vernieuw de pagina.');return r.blob();}));
+      if(!urls.has(url)) urls.set(url,fetch(url).then(r=>{if(!r.ok)throw Error('De animatie kon niet laden. Vernieuw de pagina.');return r.blob();}).catch(error=>{urls.delete(url);throw error;}));
       return URL.createObjectURL(await urls.get(url));
+    }
+    async function playNew(meta, mine, signal) {
+      if(meta?.videoSrc && videoAlphaSupported!==false && video.canPlayType('video/webm; codecs="vp9"')) {
+        try {
+          const ready=new Promise((resolve,reject)=>{
+            video.addEventListener('loadeddata',resolve,{once:true,signal});
+            video.addEventListener('error',()=>reject(Error('Video unavailable')),{once:true,signal});
+            signal.addEventListener('abort',()=>reject(new DOMException('Cancelled','AbortError')),{once:true});
+          });
+          video.src=meta.videoSrc; video.load();
+          await ready;
+          if(mine!==serial)return;
+          // Some browsers decode VP9 but discard its alpha. Check a transparent corner.
+          if(videoAlphaSupported===undefined) {
+            const canvas=document.createElement('canvas');canvas.width=canvas.height=1;
+            const context=canvas.getContext('2d',{willReadFrequently:true});
+            context.drawImage(video,0,0);
+            videoAlphaSupported=context.getImageData(0,0,1,1).data[3]===0;
+          }
+          if(videoAlphaSupported) {
+            video.hidden=false;
+            await video.play();
+            if(mine!==serial)return;
+            // Keep the poster over the video until its first frame reaches the compositor.
+            if(video.requestVideoFrameCallback)await new Promise(resolve=>{
+              const callback=video.requestVideoFrameCallback(resolve);
+              signal.addEventListener('abort',()=>{video.cancelVideoFrameCallback(callback);resolve();},{once:true});
+            });
+            if(mine!==serial)return;
+            $('new').hidden=true;
+            return;
+          }
+        } catch(error) { if(signal.aborted)return; }
+        video.pause();video.removeAttribute('src');video.load();
+      }
+      const url=await fresh(meta?.reviewSrc ?? `/mascots/finn-fluid/${selected}.webp`);
+      if(mine!==serial){URL.revokeObjectURL(url);return;}
+      $('new').src=url;$('new').dataset.objectUrl=url;
     }
     async function display() {
       const mine=++serial, data=content[selected];
+      controller?.abort();controller=new AbortController();
+      const signal=controller.signal;
       clearInterval(oldTimer); clearTimeout(sequenceTimer);
+      video.pause();video.hidden=true;video.removeAttribute('src');video.load();
+      $('new').hidden=false;$('load-error').hidden=true;
       for(const button of document.querySelectorAll('[data-state]'))button.setAttribute('aria-pressed',String(button.dataset.state===selected));
       $('pause').textContent=paused?'Afspelen':'Pauzeer'; $('sequence').setAttribute('aria-pressed',String(all));
       $('bubble').textContent=data.bubble; $('state-label').textContent=data.label; $('description').textContent=data.description;
       $('new').alt='Finn: '+data.label.toLowerCase();
       const meta=metadata.find(m=>m.id===selected);
-      $('details').textContent=paused?'Gepauzeerd.':meta?`${meta.frames} frames · ${(meta.durationMs/1000).toLocaleString('nl',{maximumFractionDigits:1})} seconden · transparant`:'Nieuwe poses met vloeiende tussenframes.';
-      $('download-gif').href=`/mascots/finn-fluid/${selected}.gif`; $('download-webp').href=`/mascots/finn-fluid/${selected}.webp`;
+      $('details').textContent=paused?'Gepauzeerd.':meta?`30 fps · ${(meta.durationMs/1000).toLocaleString('nl',{maximumFractionDigits:1})} seconden · transparant`:'Nieuwe poses met vloeiende tussenframes.';
+      $('download-gif').href=`/mascots/finn-fluid/${selected}.gif`; $('download-webp').href=meta?.reviewSrc ?? `/mascots/finn-fluid/${selected}.webp`;
       for(const id of ['old','new'])if($(id).dataset.objectUrl){URL.revokeObjectURL($(id).dataset.objectUrl);delete $(id).dataset.objectUrl;}
-      if(paused){$('new').src=`/mascots/finn-fluid/${selected}.png`;$('old').src=`/mascots/finn-fluid/previous/finn-${selected}.png`;return;}
+      $('new').src=meta?.poster ?? `/mascots/finn-fluid/${selected}.png`;
+      $('old').src=`/mascots/finn-fluid/previous/finn-${selected}.png`;
+      if(paused || document.hidden)return;
       try {
-        const [newUrl,oldUrl]=await Promise.all([fresh(`/mascots/finn-fluid/${selected}.webp`),fresh(`/mascots/finn-fluid/previous/finn-${selected}.gif`)]);
-        if(mine!==serial){URL.revokeObjectURL(newUrl);URL.revokeObjectURL(oldUrl);return;}
-        $('new').src=newUrl;$('new').dataset.objectUrl=newUrl;$('old').src=oldUrl;$('old').dataset.objectUrl=oldUrl;
-        // One-shot legacy GIFs restart only after their original motion has finished.
+        await Promise.all([playNew(meta,mine,signal),(async()=>{
+          const url=await fresh(`/mascots/finn-fluid/previous/finn-${selected}.gif`);
+          if(mine!==serial){URL.revokeObjectURL(url);return;}
+          $('old').src=url;$('old').dataset.objectUrl=url;
+        })()]);
+        if(mine!==serial)return;
         if(selected!=='thinking')oldTimer=setInterval(async()=>{const next=await fresh(`/mascots/finn-fluid/previous/finn-${selected}.gif`);if(mine!==serial){URL.revokeObjectURL(next);return;}URL.revokeObjectURL($('old').dataset.objectUrl);$('old').src=next;$('old').dataset.objectUrl=next;},meta?.durationMs??3600);
         if(all)sequenceTimer=setTimeout(()=>{const ids=Object.keys(content);selected=ids[(ids.indexOf(selected)+1)%ids.length];display();},(meta?.durationMs??4000)*2);
-      }catch(error){$('load-error').hidden=false;$('load-error').textContent=error.message;}
+      }catch(error){if(mine===serial){$('load-error').hidden=false;$('load-error').textContent=error.message;}}
     }
     for(const button of document.querySelectorAll('[data-state]'))button.onclick=()=>{selected=button.dataset.state;all=false;display();};
     $('pause').onclick=()=>{paused=!paused;display();};
     $('replay').onclick=()=>{paused=false;display();};
     $('sequence').onclick=()=>{all=!all;if(all)paused=false;display();};
     preference.addEventListener('change',e=>{paused=e.matches;display();});
-    document.addEventListener('visibilitychange',()=>{if(document.hidden){clearInterval(oldTimer);clearTimeout(sequenceTimer);}else display();});
-    fetch('/mascots/finn-fluid/animations.json').then(r=>r.json()).then(data=>{metadata=data;display();}).catch(()=>display());
+    document.addEventListener('visibilitychange',display);
+    fetch('/mascots/finn/web-animations.json').then(r=>{if(!r.ok)throw Error('Metadata unavailable');return r.json();}).then(data=>{metadata=data.animations;display();}).catch(()=>display());
   </script>
 </body>
 </html>

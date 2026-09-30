@@ -112,6 +112,9 @@ def export(manifest):
 Eight transparent GIFs. Welcome, listening, thinking and answer use the approved
 384×384 fluid animations; idle, verified, uncertain and retry remain 256×256.
 Read each animation’s width and height from `animations.json`.
+For efficient browser playback, prefer `web-animations.json`: transparent video,
+WebP fallback and small posters at content-hashed URLs. Regenerate it with
+`python3 docs/design/mascot-concepts/finn/fluid/build_web.py` after this exporter.
 Use `/mascots/finn/finn-idle.gif` in the web app (Vite serves this folder).
 
 ```html
