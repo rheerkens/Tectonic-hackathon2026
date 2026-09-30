@@ -151,7 +151,7 @@ const SOURCES: SeedSource[] = [
     value: '18 oktober',
     claim: 'In Nederland worden loonmutaties uiterlijk op 18 oktober aangeleverd.',
     quote: 'Nederlandse klanten leveren loonmutaties aan tot de 18e.',
-    validFrom: '2026-01-01',
+    validFrom: '2026-10-01',
     validTo: '2026-10-31',
     status: 'approved',
     ownerId: 'demo_sebastien',
