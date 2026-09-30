@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><title>SDtrust mockup 5, kennis-weerkaart, experts en aanvullen</title>
+<link rel="stylesheet" href="mockups.css">
+<style>
+  .content { grid-template-columns: 1fr 420px; }
+  .grid { display: grid; grid-template-columns: 170px 1fr 1fr; gap: 8px; }
+  .gh { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700; padding: 4px 8px; }
+  .topic { font-weight: 700; font-size: 13px; padding: 12px 8px; }
+  .c { border-radius: 12px; padding: 9px 12px; font-size: 12px; display: flex; flex-direction: column; gap: 3px; min-height: 58px; justify-content: center; }
+  .c b { font-size: 13px; }
+  .c.hi { background: #dcefe4; color: #185c3f; }
+  .c.mid { background: #fbeac6; color: #7a4a08; }
+  .c.lo { background: #fbd9d3; color: #8e2b21; }
+  .c.gap { background: repeating-linear-gradient(135deg, #fff, #fff 6px, #f1ece2 6px, #f1ece2 12px); border: 1.5px dashed #cdbfa6; color: var(--muted); }
+  .c.sel { outline: 3px solid var(--navy); outline-offset: 1px; }
+  .sole { font-weight: 700; color: var(--coral); }
+  .legend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin: 10px 0 0; }
+  .legend span::before { content: ''; display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; background: var(--c); }
+  .signal { display: grid; grid-template-columns: 26px 1fr auto; gap: 10px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; margin-bottom: 8px; font-size: 13px; }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+  .field .in { border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; font-size: 13px; background: #fffdf9; }
+  .expert { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 13px; }
+  .expert small { display: block; color: var(--muted); font-size: 11.5px; }
+</style></head>
+<body data-height="1100"><div class="app">
+<nav class="nav">
+  <img class="logo" src="../../branding/assets/reverse.svg" alt="SDtrust">
+  <h6>WERKRUIMTE</h6>
+  <a><span class="ic">⌕</span>Kennis zoeken</a>
+  <a><span class="ic">▤</span>Bronnen</a>
+  <a><span class="ic">✉</span>Controleer bericht</a>
+  <a class="on"><span class="ic">◧</span>Kennis-weerkaart</a>
+  <a><span class="ic">☺</span>Experts</a>
+  <h6>MIJN TOEGANG</h6>
+  <div class="team">▣ Payroll België <span class="small" style="margin-left:auto;color:#8fa0b8">eigenaar</span></div>
+  <div class="team">▣ Klantteam Atlas <span class="small" style="margin-left:auto;color:#8fa0b8">eigenaar</span></div>
+  <div class="checked">🔒 Toegang gecontroleerd</div>
+  <div class="foot">Demo met fictieve gegevens</div>
+</nav>
+<div class="main">
+  <div class="top">
+    <div class="crumbs">Kennis-weerkaart / <b>Oktober 2026</b></div>
+    <div class="spacer"></div>
+    <div class="live">Live</div>
+    <div class="presence"><div class="av w">WV</div><div class="av s">SD</div></div>
+    <div class="user"><div class="av r">RH</div><div>Roy Heerkens<small>Teameigenaar</small></div></div>
+  </div>
+  <div class="content">
+    <div class="center">
+      <div class="eyebrow">Kennis-weerkaart</div>
+      <h1 style="font-size:26px;margin-bottom:4px">Waar staat onze kennis sterk, en waar niet?</h1>
+      <p class="muted" style="margin-bottom:16px">Elke cel toont de beste onderbouwing per onderwerp en land. Een gat of één enkele kenner is een risico, ook als niemand er vandaag naar vraagt.</p>
+      <div class="grid">
+        <div></div><div class="gh">🇧🇪 België</div><div class="gh">🇳🇱 Nederland</div>
+        <div class="topic">Loonmutaties</div>
+        <div class="c hi"><b>100 · Onderbouwd</b>S4, S1 · Roy, Sebastien</div>
+        <div class="c hi"><b>100 · Onderbouwd</b><span class="sole">Enige kenner: Sebastien</span></div>
+        <div class="topic">Ziekmelding</div>
+        <div class="c hi"><b>100 · Onderbouwd</b>S6 · afwijking S7 wacht 29 dagen</div>
+        <div class="c mid"><b>60 · Deels</b>S32 ontvangstregistratie, geen goedkeuring</div>
+        <div class="topic">Eindejaarspremie</div>
+        <div class="c hi"><b>100 · Onderbouwd</b><span class="sole">Enige kenner: Roy</span></div>
+        <div class="c gap sel"><b>Gat</b>Niemand heeft dit vastgelegd</div>
+        <div class="topic">Verlof</div>
+        <div class="c hi"><b>100 · Onderbouwd</b>S14 · S15 kalenderaanname niet bevestigd</div>
+        <div class="c gap"><b>Gat</b>Niemand heeft dit vastgelegd</div>
+        <div class="topic">Loonindexering</div>
+        <div class="c lo"><b>20 · Onvoldoende</b>S17 notitie zonder eigenaar of herkomst</div>
+        <div class="c hi"><b>80 · Onderbouwd</b>S16 controle</div>
+        <div class="topic">Overuren</div>
+        <div class="c hi"><b>100 · Onderbouwd</b>S18 · S19 Atlas</div>
+        <div class="c hi"><b>100 · Onderbouwd</b>S20 contractcontrole</div>
+        <div class="topic">Vakantiegeld</div>
+        <div class="c hi"><b>100 · Onderbouwd</b>S21 · S22 vervangen</div>
+        <div class="c gap"><b>Gat</b>Niemand heeft dit vastgelegd</div>
+      </div>
+      <div class="legend"><span style="--c:#dcefe4">Onderbouwd ≥ 80</span><span style="--c:#fbeac6">Deels 50–79</span><span style="--c:#fbd9d3">Onvoldoende &lt; 50</span><span style="--c:#f1ece2">Gat</span><span style="color:var(--coral);font-weight:700">Enige kenner = kennisrisico</span></div>
+
+      <h2>Vraagt jouw aandacht</h2>
+      <div class="signal"><span class="badge warn" style="padding:4px"><i>!</i></span><div><b>S7 wacht al 29 dagen op bevestiging.</b> <span class="muted">“Atlas: ziekmelding binnen 48 uur” wordt in chats herhaald.</span></div><span class="btn">Bevestig of wijs af</span></div>
+      <div class="signal"><span class="badge bad" style="padding:4px"><i>⚑</i></span><div><b>Wanne betwist S17</b> <span class="muted">“Percentage klopt niet met de index van september.”</span></div><span class="btn">Los op</span></div>
+      <div class="signal"><span class="badge info" style="padding:4px"><i>⏱</i></span><div><b>S4 Klantafspraak Atlas verloopt over 31 dagen.</b> <span class="muted">Lotte vroeg al naar november (S9).</span></div><span class="btn">Plan nieuwe afspraak</span></div>
+    </div>
+
+    <aside class="side">
+      <div class="eyebrow">Geselecteerd gat</div>
+      <h1 style="font-size:22px;margin:6px 0 2px">Eindejaarspremie · Nederland</h1>
+      <div class="muted small">Gevraagd door 3 collega's in de laatste 30 dagen, zonder onderbouwd antwoord.</div>
+      <div class="sep"></div>
+      <h3>Wie weet dit misschien?</h3>
+      <div class="expert"><div class="av s">SD</div><div>Sebastien De Couvreur<small>Eigenaar van 3 Nederlandse bronnen</small></div><span class="btn" style="margin-left:auto;padding:6px 10px">Vraag</span></div>
+      <div class="expert"><div class="av r">RH</div><div>Roy Heerkens<small>Enige kenner eindejaarspremie België</small></div><span class="btn" style="margin-left:auto;padding:6px 10px">Vraag</span></div>
+      <div class="sep"></div>
+      <h3>Voeg toe wat je weet</h3>
+      <p class="small muted" style="margin-bottom:12px">Nieuwe kennis start als <b>Niet bevestigd</b> en telt pas mee in antwoorden als de eigenaar bevestigt.</p>
+      <div class="field"><label>Wat is de afspraak?</label><div class="in">Nederlandse klanten betalen de eindejaarsuitkering uit met de salarisrun van december.</div></div>
+      <div class="row" style="gap:10px">
+        <div class="field" style="flex:1"><label>Kernwaarde</label><div class="in">Salarisrun december</div></div>
+        <div class="field" style="flex:1"><label>Geldig vanaf</label><div class="in">1 jan 2026</div></div>
+      </div>
+      <div class="field"><label>Herkomst</label><div class="in">✉ Mail van Sebastien, 12 sep 2026 · citaat geselecteerd</div></div>
+      <div class="row" style="gap:10px">
+        <div class="field" style="flex:1"><label>Voorgestelde eigenaar</label><div class="in">Sebastien De Couvreur</div></div>
+        <div class="field" style="flex:1"><label>Zichtbaar voor</label><div class="in">🔒 Payroll Nederland</div></div>
+      </div>
+      <div class="card" style="padding:12px 14px;margin:6px 0 14px;background:#fbf9f4">
+        <div class="small" style="font-weight:700;margin-bottom:6px">Onderbouwing na toevoegen</div>
+        <div class="check" style="padding:3px 0"><span class="dot q">!</span>Bevoegd goedgekeurd<span class="pts">0 / 40</span></div>
+        <div class="check" style="padding:3px 0"><span class="dot y">✓</span>Eigenaar bekend<span class="pts">20</span></div>
+        <div class="check" style="padding:3px 0"><span class="dot y">✓</span>Geldig voor deze periode<span class="pts">20</span></div>
+        <div class="check" style="padding:3px 0"><span class="dot y">✓</span>Bron herleidbaar<span class="pts">20</span></div>
+        <div class="small" style="margin-top:4px"><b>60 · Deels onderbouwd</b> <span class="muted">tot Sebastien bevestigt, dan 100.</span></div>
+      </div>
+      <div class="row"><span class="btn coral" style="flex:1;justify-content:center">Voeg toe en vraag bevestiging</span></div>
+    </aside>
+  </div>
+</div>
+</div></body></html>

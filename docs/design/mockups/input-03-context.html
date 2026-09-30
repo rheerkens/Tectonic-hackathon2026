@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><title>SDtrust input 3, context eerst</title>
+<link rel="stylesheet" href="mockups.css"><link rel="stylesheet" href="input.css">
+<style>
+  .ent { border-radius: 6px; padding: 0 4px; border-bottom: 2px solid; }
+  .ent.k { background: #e7eef8; border-color: var(--info); }
+  .ent.t { background: #fdf1dc; border-color: #d68a12; }
+  .ent.p { background: #e6f4ec; border-color: var(--ok); }
+  .understood { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 14px; font-size: 12.5px; }
+  .asks { width: 100%; background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 14px 16px; box-shadow: 0 6px 18px rgba(25,45,70,.08); position: relative; }
+  .asks::after { content: ''; position: absolute; left: 50%; bottom: -8px; width: 14px; height: 14px; background: #fff; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); transform: translateX(-50%) rotate(45deg); }
+  .asks .qq { font-size: 12.5px; font-weight: 700; margin: 8px 0 5px; }
+  .opt { display: inline-block; padding: 5px 11px; border-radius: 99px; border: 1px solid var(--line); font-size: 12.5px; margin: 0 4px 4px 0; background: #fff; }
+  .opt.on { background: var(--navy); color: #fff; border-color: var(--navy); font-weight: 700; }
+  .opt.warn { border-style: dashed; color: var(--muted); }
+</style></head>
+<body data-height="860"><div class="app">
+<nav class="nav">
+  <img class="logo" src="../../branding/assets/reverse.svg" alt="SDtrust">
+  <h6>WERKRUIMTE</h6>
+  <a class="on"><span class="ic">⌕</span>Kennis zoeken</a>
+  <a><span class="ic">▤</span>Bronnen</a>
+  <a><span class="ic">✉</span>Controleer bericht</a>
+  <a><span class="ic">◧</span>Kennis-weerkaart</a>
+  <a><span class="ic">☺</span>Experts</a>
+  <h6>MIJN TOEGANG</h6>
+  <div class="team">▣ Payroll België</div>
+  <div class="team">▣ Klantteam Atlas</div>
+  <div class="checked">🔒 Toegang gecontroleerd</div>
+  <div class="foot">Demo met fictieve gegevens</div>
+</nav>
+<div class="main">
+  <div class="top">
+    <div class="crumbs"><b>Kennis zoeken</b></div>
+    <div class="spacer"></div>
+    <div class="live">Live</div>
+    <div class="presence"><div class="av r">RH</div><div class="av s">SD</div></div>
+    <div class="user"><div class="av w">WV</div><div>Wanne Van Camp<small>Payrollconsultant</small></div></div>
+  </div>
+  <div class="content one">
+    <div class="center" style="padding:40px 56px">
+      <div class="eyebrow">Kennis zoeken</div>
+      <h1 style="font-size:36px;margin-bottom:6px">Eerst de context, dan het antwoord</h1>
+      <p class="muted" style="margin-bottom:22px">Een geldig document is niet automatisch van toepassing. Finn vraagt door tot land, klant en periode vaststaan.</p>
+
+      <div class="stage plain" style="grid-template-columns:1fr 330px;align-items:center">
+        <div>
+          <div class="composer">
+            <div class="who"><span class="av w" style="width:22px;height:22px;font-size:9px;border:0">WV</span>Jouw vraag</div>
+            <div class="text">Tot wanneer mag <span class="ent k">Atlas</span> <span class="ent t">loonmutaties</span> aanleveren voor <span class="ent p">oktober</span>?<span class="caret"></span></div>
+            <div class="understood">
+              <span class="muted" style="font-weight:700">Finn begreep:</span>
+              <span class="badge info" style="padding:3px 10px">Klant · Atlas</span>
+              <span class="badge warn" style="padding:3px 10px">Onderwerp · loonmutaties</span>
+              <span class="badge ok" style="padding:3px 10px">Periode · oktober 2026</span>
+              <span class="badge neutral" style="padding:3px 10px">Land · nog niet gekozen</span>
+            </div>
+            <div class="foot">
+              <span class="small muted">9 bronnen over dit onderwerp in jouw teams</span>
+              <span class="send" style="opacity:.45">Vraag Finn →</span>
+            </div>
+          </div>
+          <div class="why" style="margin-top:18px;font-size:13px">
+            <b>Waarom vraagt Finn dit?</b> Voor loonmutaties bestaan een Belgische regel (20 oktober), een Nederlandse regel (18 oktober) en een klantafspraak voor Atlas. Zonder land zou elk antwoord een gok zijn.
+          </div>
+        </div>
+        <div class="agent">
+          <div class="asks">
+            <div style="font-size:13.5px">Nog één ding: <b>voor welk land?</b></div>
+            <div class="qq">Land</div>
+            <span class="opt">🇧🇪 België</span><span class="opt">🇳🇱 Nederland</span>
+            <div class="qq">Klant</div>
+            <span class="opt on">Atlas ✓</span><span class="opt">Alle klanten</span>
+            <div class="qq">Periode</div>
+            <span class="opt">Sep</span><span class="opt on">Okt 2026 ✓</span><span class="opt">Nov</span>
+          </div>
+          <div class="finn" style="background-image:url(../mascot-concepts/finn/finn-thinking-v2.png);background-position:66.67% 50%;margin-top:4px"></div>
+          <div class="state" style="--st:#d68a12">Vraagt door</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div></body></html>

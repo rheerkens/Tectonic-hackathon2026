@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><title>SDtrust input 2, gesprek</title>
+<link rel="stylesheet" href="mockups.css"><link rel="stylesheet" href="input.css">
+<style>
+  .chat { background: #fff; border: 1px solid var(--line); border-radius: 22px; display: flex; flex-direction: column; height: 770px; overflow: hidden; }
+  .chat .hd { padding: 14px 20px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 10px; }
+  .thread { flex: 1; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; background: #fcfbf8; }
+  .m { max-width: 78%; padding: 11px 15px; border-radius: 18px; font-size: 14px; }
+  .m.finn-m { background: #fff; border: 1px solid var(--line); border-bottom-left-radius: 6px; }
+  .m.me { align-self: flex-end; background: var(--navy); color: #fff; border-bottom-right-radius: 6px; }
+  .m .meta { font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 700; }
+  .res { display: flex; gap: 10px; align-items: center; background: #f3faf6; border: 1px solid #cfe7da; border-radius: 12px; padding: 8px 12px; margin-top: 8px; }
+  .res b { font-size: 16px; }
+  .chat .composer { margin: 0 16px 16px; border-radius: 18px 18px 6px 18px; box-shadow: none; }
+  .chat .composer .text { font-size: 17px; min-height: 48px; }
+  .day { align-self: center; font-size: 11px; color: var(--muted); font-weight: 700; letter-spacing: .06em; }
+</style></head>
+<body data-height="900"><div class="app">
+<nav class="nav">
+  <img class="logo" src="../../branding/assets/reverse.svg" alt="SDtrust">
+  <h6>WERKRUIMTE</h6>
+  <a class="on"><span class="ic">⌕</span>Kennis zoeken</a>
+  <a><span class="ic">▤</span>Bronnen</a>
+  <a><span class="ic">✉</span>Controleer bericht</a>
+  <a><span class="ic">◧</span>Kennis-weerkaart</a>
+  <a><span class="ic">☺</span>Experts</a>
+  <h6>MIJN TOEGANG</h6>
+  <div class="team">▣ Payroll België</div>
+  <div class="team">▣ Klantteam Atlas</div>
+  <div class="checked">🔒 Toegang gecontroleerd</div>
+  <div class="foot">Demo met fictieve gegevens</div>
+</nav>
+<div class="main">
+  <div class="top">
+    <div class="crumbs">Kennis zoeken / <b>Gesprek met Finn</b></div>
+    <div class="spacer"></div>
+    <div class="live">Live</div>
+    <div class="presence"><div class="av r">RH</div><div class="av s">SD</div></div>
+    <div class="user"><div class="av w">WV</div><div>Wanne Van Camp<small>Payrollconsultant</small></div></div>
+  </div>
+  <div class="content one">
+    <div class="center" style="padding:28px 40px;display:grid;grid-template-columns:1fr 320px;gap:30px;align-items:end">
+      <div class="chat">
+        <div class="hd"><h3 style="margin:0">Gesprek</h3><span class="tag">België · Atlas · Oktober 2026</span><span style="flex:1"></span><span class="small muted">＋ Nieuw gesprek</span></div>
+        <div class="thread">
+          <div class="day">VANDAAG 09:10</div>
+          <div class="m finn-m"><div class="meta">FINN</div>Hoi Wanne. Ik zoek in de bronnen van <b>Payroll België</b> en <b>Klantteam Atlas</b>. Bij elk antwoord zie je op welke bron het rust.</div>
+          <div class="m me">Tot wanneer mag Atlas loonmutaties aanleveren?</div>
+          <div class="m finn-m"><div class="meta">FINN</div>Voor Atlas geldt een goedgekeurde uitzondering op de algemene datum.
+            <div class="res"><span class="badge ok"><i>✓</i>Onderbouwd · 100</span><b>22 oktober 2026</b><span class="small muted">S4 Klantafspraak Atlas</span><span style="flex:1"></span><u class="small">Bekijk</u></div>
+          </div>
+          <div class="m me">En in november?</div>
+          <div class="m finn-m"><div class="meta">FINN</div>Daar heb ik <b>geen onderbouwd antwoord</b> voor: S4 en de algemene regel gelden alleen in oktober.
+            <div class="res" style="background:var(--bad-bg);border-color:#f3c9c2"><span class="badge bad"><i>✕</i>Geen onderbouwd antwoord</span><span style="flex:1"></span><u class="small">Vraag Roy om verduidelijking</u></div>
+          </div>
+        </div>
+        <div class="composer">
+          <div class="text">Geldt dat ook voor de ziekmeldingen van Atlas<span class="caret"></span></div>
+          <div class="foot">
+            <span class="cchip"><span>Land</span>België ▾</span>
+            <span class="cchip"><span>Klant</span>Atlas ▾</span>
+            <span class="cchip"><span>Periode</span>Oktober 2026 ▾</span>
+            <span class="tool">📋</span>
+            <span class="send">Verstuur ↵</span>
+          </div>
+        </div>
+      </div>
+      <div class="agent" style="padding-bottom:20px">
+        <div class="say">Ik luister. Je context blijft <b>België, Atlas, oktober</b> tot je hem wijzigt.</div>
+        <div class="finn" style="background-image:url(../mascot-concepts/finn/finn-listening-v2.png)"></div>
+        <div class="state">Luistert</div>
+        <div class="card" style="margin-top:18px;padding:14px 16px;width:100%;font-size:12.5px">
+          <div class="eyebrow" style="margin-bottom:6px">Finn zoekt in</div>
+          <div>▣ Payroll België · 19 bronnen</div>
+          <div>▣ Klantteam Atlas · 8 bronnen</div>
+          <div class="muted" style="margin-top:6px">Bronnen buiten jouw teams worden niet gebruikt en niet genoemd.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div></body></html>

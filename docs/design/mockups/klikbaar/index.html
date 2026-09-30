@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=1536">
+<title>SDtrust klikbaar prototype: vraag stellen met Finn</title>
+<link rel="icon" href="../../../branding/assets/app.svg">
+<link rel="stylesheet" href="../mockups.css"><link rel="stylesheet" href="../input.css">
+<style>
+  body { min-height: 100vh; width: auto; min-width: 1280px; }
+  .app { min-height: 100vh; }
+  .stage { grid-template-columns: 1fr 320px; align-items: center; }
+  .stage.compact { min-height: 0; align-items: start; }
+  .agent canvas { width: 280px; height: 280px; margin-bottom: -18px; }
+  .view[hidden] { display: none !important; }
+
+  /* live editor: a transparent textarea over a mirror that paints the highlights */
+  .editor { position: relative; }
+  .mirror, .editor textarea { font: inherit; font-size: 21px; font-weight: 500; line-height: 1.5; letter-spacing: 0; white-space: pre-wrap; overflow-wrap: break-word; margin: 0; padding: 0; border: 0; min-height: 64px; width: 100%; }
+  .mirror { color: var(--ink); }
+  .editor textarea { position: absolute; inset: 0; background: transparent; color: transparent; caret-color: var(--coral); resize: none; outline: none; overflow: hidden; }
+  .editor textarea::placeholder { color: #a39b8c; }
+  .hl { border-radius: 5px; transition: background .25s; }
+  .hl.topic { background: #fdf1dc; box-shadow: inset 0 -2px 0 #d68a12; }
+  .hl.client { background: #e7eef8; box-shadow: inset 0 -2px 0 var(--info); }
+  .hl.period { background: #e6f4ec; box-shadow: inset 0 -2px 0 var(--ok); }
+  .hl.country { background: #fde8e5; box-shadow: inset 0 -2px 0 var(--coral); }
+  .hl.fresh { animation: pop .45s ease-out; }
+  @keyframes pop { from { background: #ffe39a; } }
+
+  .reading { color: var(--coral); font-weight: 700; margin-left: 6px; opacity: 0; transition: opacity .2s; }
+  .reading.on { opacity: 1; }
+  .send { cursor: pointer; border: 0; font: inherit; font-weight: 700; transition: opacity .2s, transform .1s; }
+  .send[aria-disabled="true"] { opacity: .4; cursor: not-allowed; }
+  .send:not([aria-disabled="true"]):active { transform: scale(.97); }
+
+  .asks { width: 100%; background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 14px 18px; box-shadow: 0 6px 18px rgba(25,45,70,.08); position: relative; font-size: 15px; font-weight: 600; line-height: 1.45; }
+  .asks::after { content: ''; position: absolute; left: 50%; bottom: -8px; width: 14px; height: 14px; background: #fff; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); transform: translateX(-50%) rotate(45deg); }
+  .asks.shake { animation: shake .4s; }
+  @keyframes shake { 25% { transform: translateX(-6px); } 50% { transform: translateX(6px); } 75% { transform: translateX(-3px); } }
+
+
+  /* chat bubble: no hard border, one soft shadow that also wraps the tail */
+  .composer { border: 0; border-radius: 22px 22px 8px 22px; box-shadow: none; padding: 20px 22px 16px; filter: drop-shadow(0 1px 1px rgba(25,45,70,.07)) drop-shadow(0 10px 24px rgba(25,45,70,.10)); }
+  .composer::after { right: -13px; bottom: 22px; width: 14px; height: 22px; border: 0; transform: none; background: #fff; clip-path: polygon(0 0, 100% 50%, 0 100%); }
+  .composer .foot { border-top: 0; margin-top: 10px; padding-top: 0; flex-wrap: nowrap; }
+  .understood { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; flex: 1; min-height: 30px; }
+  .tok { display: inline-flex; align-items: center; gap: 7px; padding: 5px 10px; border-radius: 8px; background: #f6f3ec; font-size: 13px; font-weight: 700; }
+  .tok::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
+  .tok em { font-style: normal; font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .tok.topic { --c: #d68a12; } .tok.client { --c: var(--info); } .tok.period { --c: var(--ok); } .tok.country { --c: var(--coral); }
+
+  /* checking */
+  .composer.sent { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .composer.sent::after { background: var(--navy); }
+  .composer.sent .who { color: #aab8cc; }
+  .composer.sent .foot { margin-top: 14px; }
+  .composer.sent .cchip { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); color: #fff; }
+  .composer.sent .cchip span { color: #aab8cc; }
+  .linkish { background: none; border: 0; font: inherit; cursor: pointer; }
+  .steps { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 8px 18px; margin-top: 16px; }
+  .step { display: grid; grid-template-columns: 26px 1fr auto; gap: 12px; align-items: start; padding: 11px 0; border-top: 1px solid #f0ece3; font-size: 13.5px; transition: color .3s; }
+  .step:first-child { border-top: 0; }
+  .step .d { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 800; color: #fff; }
+  .step .d.y { background: var(--ok); }
+  .step .d.w { background: #d68a12; }
+  .step .d.run { border: 3px solid #e6dfd0; border-top-color: var(--coral); animation: spin .8s linear infinite; }
+  .step .d.todo { border: 2px dashed #cfc6b4; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .step.todo { color: var(--muted); }
+  .step small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .mini { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+  .mini .badge { padding: 2px 8px; font-size: 11.5px; }
+
+  /* answer */
+  .answer-card { background: linear-gradient(180deg, #f3faf6, #fff 60%); border-color: #cfe7da; }
+  .answer-card.geen { background: linear-gradient(180deg, #fdf1ef, #fff 60%); border-color: #f3c9c2; }
+  .answer-card.deels { background: linear-gradient(180deg, #fdf6e8, #fff 60%); border-color: #efdcb4; }
+  .rise { animation: rise .48s ease-out; }
+  @keyframes rise { from { transform: translateY(10px); } }
+
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style></head>
+<body><div class="app">
+<nav class="nav">
+  <img class="logo" src="../../../branding/assets/reverse.svg" alt="SDtrust">
+  <h6>WERKRUIMTE</h6>
+  <a class="on"><span class="ic">⌕</span>Kennis zoeken</a>
+  <a><span class="ic">▤</span>Bronnen</a>
+  <a><span class="ic">✉</span>Controleer bericht</a>
+  <a><span class="ic">◧</span>Kennis-weerkaart</a>
+  <a><span class="ic">☺</span>Experts</a>
+  <h6>MIJN TOEGANG</h6>
+  <div class="team">▣ Payroll België</div>
+  <div class="team">▣ Klantteam Atlas</div>
+  <div class="checked">🔒 Toegang gecontroleerd</div>
+  <div class="foot">Klikbaar prototype · fictieve gegevens</div>
+</nav>
+<div class="main">
+  <div class="top">
+    <div class="crumbs" id="crumbs"><b>Kennis zoeken</b></div>
+    <div class="spacer"></div>
+    <div class="live">Live</div>
+    <div class="presence"><div class="av r">RH</div><div class="av s">SD</div></div>
+    <div class="user"><div class="av w">WV</div><div>Wanne Van Camp<small>Payrollconsultant</small></div></div>
+  </div>
+  <div class="content one">
+    <div class="center" style="padding:36px 56px 90px">
+      <div class="eyebrow">Kennis zoeken</div>
+      <h1 id="title" style="font-size:34px;margin-bottom:6px">Wat wil je zeker weten?</h1>
+      <p id="subtitle" class="muted" style="margin-bottom:22px">Typ je vraag. Finn leest mee, markeert wat hij herkent en vraagt wat nog ontbreekt.</p>
+
+      <div class="stage plain">
+        <div id="left">
+          <!-- 1. input -->
+          <section class="view" id="v-input">
+            <div class="composer">
+              <div class="who"><span class="av w" style="width:22px;height:22px;font-size:9px;border:0">WV</span>Jouw vraag<span class="reading" id="reading">· Finn leest mee…</span></div>
+              <div class="editor"><div class="mirror" id="mirror" aria-hidden="true"></div><textarea id="q" rows="2" placeholder="Stel een vraag over een klant, procedure of afspraak…" aria-label="Jouw vraag"></textarea></div>
+              <div class="foot">
+                <div class="understood" id="understood" aria-live="polite"></div>
+                <button class="send" id="send" aria-disabled="true">Vraag Finn →</button>
+              </div>
+            </div>
+          </section>
+          <!-- 2. checking -->
+          <section class="view" id="v-check" hidden>
+            <div class="composer sent">
+              <div class="who"><span class="av w" style="width:22px;height:22px;font-size:9px;border:0">WV</span><span id="sentAt"></span></div>
+              <div class="text" id="sentQ" style="min-height:40px"></div>
+              <div class="foot" id="sentCtx"></div>
+            </div>
+            <div class="steps" id="steps"></div>
+          </section>
+          <!-- 3. answer -->
+          <section class="view" id="v-answer" hidden></section>
+        </div>
+        <div class="agent">
+          <div class="asks" id="asks" aria-live="polite"></div>
+          <canvas id="finn" width="560" height="560" role="img" aria-label="Finn"></canvas>
+          <div class="state" id="state"></div>
+        </div>
+      </div>
+      <div id="below"></div>
+    </div>
+  </div>
+</div>
+</div>
+<script src="finn-data.js"></script>
+<script src="app.js"></script>
+</body></html>

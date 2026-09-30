@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><title>SDtrust mockup 4, controleer een bericht</title>
+<link rel="stylesheet" href="mockups.css">
+<style>
+  .content { grid-template-columns: 470px 1fr; }
+  .teams { background: #fff; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .teams .hd { background: #464775; color: #fff; padding: 10px 14px; font-size: 12.5px; font-weight: 700; }
+  .msg { padding: 14px 16px; display: grid; grid-template-columns: 34px 1fr; gap: 10px; font-size: 13.5px; }
+  .s { border-radius: 4px; padding: 1px 2px; }
+  .s.bad-u { background: #fde1dc; border-bottom: 2px solid var(--bad); }
+  .s.warn-u { background: #fdefd2; border-bottom: 2px solid #d68a12; }
+  .s.ok-u { background: #dff1e7; border-bottom: 2px solid var(--ok); }
+  .claim { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; margin-bottom: 12px; display: grid; grid-template-columns: 30px 1fr 250px; gap: 14px; }
+  .claim .n { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 12px; color: #fff; }
+  .claim .said { font-style: italic; font-size: 14px; margin-bottom: 8px; }
+  .src { font-size: 12.5px; padding: 3px 0; }
+  .src .badge { margin-right: 6px; vertical-align: middle; }
+  .verdict { border-radius: 12px; padding: 12px 14px; font-size: 13px; }
+  .verdict .v { font-size: 20px; font-weight: 800; margin: 4px 0; color: var(--ink); }
+  textarea { width: 100%; height: 118px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font: inherit; font-size: 13px; color: var(--ink); resize: none; }
+</style></head>
+<body data-height="1024"><div class="app">
+<nav class="nav">
+  <img class="logo" src="../../branding/assets/reverse.svg" alt="SDtrust">
+  <h6>WERKRUIMTE</h6>
+  <a><span class="ic">⌕</span>Kennis zoeken</a>
+  <a><span class="ic">▤</span>Bronnen</a>
+  <a class="on"><span class="ic">✉</span>Controleer bericht</a>
+  <a><span class="ic">◧</span>Kennis-weerkaart</a>
+  <a><span class="ic">☺</span>Experts</a>
+  <h6>MIJN TOEGANG</h6>
+  <div class="team">▣ Payroll België</div>
+  <div class="team">▣ Klantteam Atlas</div>
+  <div class="checked">🔒 Toegang gecontroleerd</div>
+  <div class="foot">Demo met fictieve gegevens</div>
+</nav>
+<div class="main">
+  <div class="top">
+    <div class="crumbs">Controleer een bericht / <b>Teams, kanaal Klantteam Atlas</b></div>
+    <div class="spacer"></div>
+    <div class="live">Live</div>
+    <div class="user"><div class="av w">WV</div><div>Wanne Van Camp<small>Payrollconsultant</small></div></div>
+  </div>
+  <div class="content">
+    <div class="center" style="border-right:1px solid var(--line)">
+      <div class="eyebrow">Controleer een bericht</div>
+      <h1 style="font-size:26px">Klopt wat hier staat?</h1>
+      <p class="muted small" style="margin-bottom:14px">Plak een Teamsbericht of mail. SDtrust legt elke bewering naast de bronnen voor jouw context, voordat je hem doorgeeft aan de klant.</p>
+      <div class="teams">
+        <div class="hd">Microsoft Teams · Klantteam Atlas · vandaag 10:04</div>
+        <div class="msg">
+          <div class="av l">LP</div>
+          <div><b>Lotte Peeters</b> <span class="muted small">Atlas NV</span><br>
+            Hoi Wanne! Even ter bevestiging voor de klant:
+            <span class="s bad-u">Atlas mag deze maand loonmutaties tot 25 oktober aanleveren.</span>
+            <span class="s warn-u">Ziekmeldingen mogen voortaan binnen 48 uur.</span>
+            <span class="s ok-u">De eindejaarspremie wordt uiterlijk op 15 december betaald.</span>
+            Kun je dat zo doorsturen? 🙏</div>
+        </div>
+      </div>
+      <div class="chips" style="margin-top:14px"><div class="chip"><span>Land</span>België</div><div class="chip"><span>Klant</span>Atlas</div><div class="chip"><span>Periode</span>Oktober 2026</div><span style="flex:1"></span><span class="btn primary">Controleer</span></div>
+
+      <div class="card" style="margin-top:6px;padding:18px">
+        <div class="row" style="margin-bottom:10px"><h3 style="margin:0">Voorgesteld antwoord aan Lotte</h3><span class="tag" style="margin-left:auto">met bronnen</span></div>
+        <textarea>Hoi Lotte, kleine correctie: voor oktober geldt 22 oktober (klantafspraak S4, goedgekeurd door Roy). Ziekmeldingen blijven binnen 24 uur (procedure S6). De eindejaarspremie op 15 december klopt (S8).</textarea>
+        <div class="row" style="margin-top:10px"><span class="btn">Kopieer</span><span class="btn">Vraag Roy mee te kijken</span></div>
+      </div>
+    </div>
+
+    <div class="center">
+      <div class="row" style="margin-bottom:14px">
+        <h2 style="margin:0">3 beweringen gevonden</h2>
+        <span class="badge bad" style="margin-left:14px"><i>✕</i>1 tegengesproken</span>
+        <span class="badge warn"><i>!</i>1 niet onderbouwd</span>
+        <span class="badge ok"><i>✓</i>1 klopt</span>
+      </div>
+
+      <div class="claim">
+        <span class="n" style="background:var(--bad)">1</span>
+        <div>
+          <div class="said">“Atlas mag deze maand loonmutaties tot 25 oktober aanleveren.”</div>
+          <div class="src"><span class="badge ok"><i>✓</i>S4</span> Klantafspraak Atlas zegt <b>22 oktober</b> · goedgekeurd · 100</div>
+          <div class="src"><span class="badge warn"><i>!</i>S3</span> Teamsgesprek zegt 25 oktober · <b>niet bevestigd</b>, geen eigenaar</div>
+          <div class="src"><span class="badge info"><i>i</i>S1</span> Algemene regel zegt 20 oktober · uitzondering S4 gaat voor</div>
+          <div class="small muted" style="margin-top:6px">De 25 oktober lijkt afkomstig uit S3, een vraag in de chat die nooit is bevestigd.</div>
+        </div>
+        <div class="verdict bad"><b>Tegengesproken</b><div class="v">22 oktober</div>is wat de goedgekeurde bron zegt</div>
+      </div>
+
+      <div class="claim">
+        <span class="n" style="background:#d68a12">2</span>
+        <div>
+          <div class="said">“Ziekmeldingen mogen voortaan binnen 48 uur.”</div>
+          <div class="src"><span class="badge ok"><i>✓</i>S6</span> Procedure ziekmelding België zegt <b>binnen 24 uur</b> · goedgekeurd</div>
+          <div class="src"><span class="badge warn"><i>!</i>S7</span> Teamsgesprek zegt 48 uur voor Atlas · <b>niet bevestigd</b></div>
+          <div class="src"><span class="badge neutral"><i>–</i>S34</span> Oude procedure zegt 72 uur · <b>niet geldig</b> sinds 2026</div>
+        </div>
+        <div class="verdict warn"><b>Niet onderbouwd</b><div class="v">binnen 24 uur</div>tot iemand een Atlas-afwijking bevestigt</div>
+      </div>
+
+      <div class="claim">
+        <span class="n" style="background:var(--ok)">3</span>
+        <div>
+          <div class="said">“De eindejaarspremie wordt uiterlijk op 15 december betaald.”</div>
+          <div class="src"><span class="badge ok"><i>✓</i>S8</span> Afspraak Atlas: eindejaarspremie zegt <b>15 december</b> · goedgekeurd · 100</div>
+          <div class="small muted" style="margin-top:6px">🔒 Deze bron is alleen zichtbaar voor Klantteam Atlas. Collega's zonder toegang krijgen “geen onderbouwd antwoord”, geen titel of datum.</div>
+        </div>
+        <div class="verdict ok"><b>Klopt</b><div class="v">15 december</div>bevestigd door eigenaar</div>
+      </div>
+
+      <div class="row" style="margin-top:6px;gap:10px">
+        <div class="finn" style="width:92px;height:92px;background-image:url(../mascot-concepts/finn/finn-uncertain-v2.png)"></div>
+        <div class="bubble">Twee van de drie zinnen wijken af van wat is goedgekeurd. Stuur het bericht nog niet door.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div></body></html>

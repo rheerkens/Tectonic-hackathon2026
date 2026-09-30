@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><title>SDtrust input 5, Finn controleert</title>
+<link rel="stylesheet" href="mockups.css"><link rel="stylesheet" href="input.css">
+<style>
+  .composer.sent { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .composer.sent::after { background: var(--navy); border-color: var(--navy); }
+  .composer.sent .who { color: #aab8cc; }
+  .composer.sent .foot { border-color: rgba(255,255,255,.12); }
+  .composer.sent .cchip { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); color: #fff; }
+  .composer.sent .cchip span { color: #aab8cc; }
+  .steps { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 8px 18px; margin-top: 16px; }
+  .step { display: grid; grid-template-columns: 26px 1fr auto; gap: 12px; align-items: start; padding: 11px 0; border-top: 1px solid #f0ece3; font-size: 13.5px; }
+  .step:first-child { border-top: 0; }
+  .step .d { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 800; color: #fff; }
+  .step .d.y { background: var(--ok); }
+  .step .d.run { border: 3px solid #e6dfd0; border-top-color: var(--coral); background: transparent; }
+  .step .d.todo { border: 2px dashed #cfc6b4; background: transparent; }
+  .step.todo { color: var(--muted); }
+  .step small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .mini { display: inline-flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+  .mini .badge { padding: 2px 8px; font-size: 11.5px; }
+</style></head>
+<body data-height="900"><div class="app">
+<nav class="nav">
+  <img class="logo" src="../../branding/assets/reverse.svg" alt="SDtrust">
+  <h6>WERKRUIMTE</h6>
+  <a class="on"><span class="ic">⌕</span>Kennis zoeken</a>
+  <a><span class="ic">▤</span>Bronnen</a>
+  <a><span class="ic">✉</span>Controleer bericht</a>
+  <a><span class="ic">◧</span>Kennis-weerkaart</a>
+  <a><span class="ic">☺</span>Experts</a>
+  <h6>MIJN TOEGANG</h6>
+  <div class="team">▣ Payroll België</div>
+  <div class="team">▣ Klantteam Atlas</div>
+  <div class="checked">🔒 Toegang gecontroleerd</div>
+  <div class="foot">Demo met fictieve gegevens</div>
+</nav>
+<div class="main">
+  <div class="top">
+    <div class="crumbs"><b>Kennis zoeken</b></div>
+    <div class="spacer"></div>
+    <div class="live">Live</div>
+    <div class="presence"><div class="av r">RH</div><div class="av s">SD</div></div>
+    <div class="user"><div class="av w">WV</div><div>Wanne Van Camp<small>Payrollconsultant</small></div></div>
+  </div>
+  <div class="content one">
+    <div class="center" style="padding:36px 56px">
+      <div class="eyebrow">Kennis zoeken</div>
+      <h1 style="font-size:32px;margin-bottom:20px">Finn controleert je vraag</h1>
+      <div class="stage plain">
+        <div>
+          <div class="composer sent">
+            <div class="who"><span class="av w" style="width:22px;height:22px;font-size:9px;border:0">WV</span>Verstuurd om 09:14</div>
+            <div class="text" style="min-height:40px">Tot wanneer mag Atlas loonmutaties aanleveren?</div>
+            <div class="foot">
+              <span class="cchip"><span>Land</span>België</span>
+              <span class="cchip"><span>Klant</span>Atlas</span>
+              <span class="cchip"><span>Periode</span>Oktober 2026</span>
+              <span class="small" style="margin-left:auto;color:#aab8cc">Annuleer</span>
+            </div>
+          </div>
+          <div class="steps">
+            <div class="step"><span class="d y">✓</span><div>Onderwerp herkend: <b>loonmutaties</b><small>9 bronnen in jouw teams gaan over dit onderwerp</small></div><span class="small muted">0,2 s</span></div>
+            <div class="step"><span class="d y">✓</span><div>Context toegepast: <b>België · Atlas · oktober 2026</b><small>4 bronnen vallen af, met reden</small>
+              <div class="mini"><span class="badge neutral"><i>–</i>S2 Vervangen</span><span class="badge neutral"><i>–</i>S5 Ander land</span><span class="badge warn"><i>!</i>S3 Niet bevestigd</span><span class="badge warn"><i>!</i>S9 Niet bevestigd</span></div></div><span class="small muted">0,3 s</span></div>
+            <div class="step"><span class="d run"></span><div><b>4 checks per bron</b>: goedgekeurd, eigenaar, geldig, herleidbaar<small>S4 Klantafspraak Atlas en S1 Algemene procedure België</small></div><span class="small muted">bezig</span></div>
+            <div class="step todo"><span class="d todo"></span><div>Uitzondering tegen algemene regel afwegen<small>Een goedgekeurde klantafspraak gaat voor de algemene regel</small></div><span></span></div>
+          </div>
+        </div>
+        <div class="agent">
+          <div class="say">Ik controleer de bronnen… Je ziet zo <b>waarom</b> het antwoord klopt, of waarom niet.</div>
+          <div class="finn" style="background-image:url(../mascot-concepts/finn/finn-thinking-v2.png);background-position:66.67% 50%"></div>
+          <div class="state" style="--st:var(--coral)">Denkt na</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div></body></html>

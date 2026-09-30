@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><title>SDtrust mockup 3, vergelijk met gewone AI</title>
+<link rel="stylesheet" href="mockups.css">
+<style>
+  .content { grid-template-columns: 1fr; }
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .plain { background: #f4f4f5; border: 1px dashed #c4c7cc; }
+  .plain .big { color: #3f4650; }
+  .ctx { display: grid; grid-template-columns: 110px 1fr; gap: 8px 12px; font-size: 13px; margin-top: 12px; }
+  .ctx dt { color: var(--muted); }
+  .x { color: var(--bad); font-weight: 700; } .v { color: var(--ok); font-weight: 700; }
+  .strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .cell { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+  .cell .val { font-size: 20px; font-weight: 800; margin: 8px 0 4px; }
+</style></head>
+<body data-height="1024"><div class="app">
+<nav class="nav">
+  <img class="logo" src="../../branding/assets/reverse.svg" alt="SDtrust">
+  <h6>WERKRUIMTE</h6>
+  <a class="on"><span class="ic">⌕</span>Kennis zoeken</a>
+  <a><span class="ic">▤</span>Bronnen</a>
+  <a><span class="ic">✉</span>Controleer bericht</a>
+  <a><span class="ic">◧</span>Kennis-weerkaart</a>
+  <a><span class="ic">☺</span>Experts</a>
+  <h6>MIJN TOEGANG</h6>
+  <div class="team">▣ Payroll België</div>
+  <div class="team">▣ Klantteam Atlas</div>
+  <div class="checked">🔒 Toegang gecontroleerd</div>
+  <div class="foot">Demo met fictieve gegevens</div>
+</nav>
+<div class="main">
+  <div class="top">
+    <div class="crumbs">Atlas / Payroll / <b>Vergelijk</b></div>
+    <div class="spacer"></div>
+    <div class="live">Live</div>
+    <div class="user"><div class="av w">WV</div><div>Wanne Van Camp<small>Payrollconsultant</small></div></div>
+  </div>
+  <div class="content">
+    <div class="center">
+      <div class="eyebrow">Vergelijk</div>
+      <h1>Zelfde vraag, andere context</h1>
+      <div class="ask"><input value="Tot wanneer mag Atlas loonmutaties aanleveren?"><button>→</button></div>
+      <div class="chips">
+        <div class="chip dark"><span style="color:#aab8cc">Land</span>Nederland ▾</div>
+        <div class="chip"><span>Klant</span>Atlas</div>
+        <div class="chip"><span>Periode</span>Oktober 2026</div>
+        <div class="chip" style="margin-left:auto;background:var(--navy);color:#fff">⇄ Vergelijk aan</div>
+      </div>
+
+      <div class="duo">
+        <div class="card plain">
+          <div class="row"><span class="badge neutral"><i>?</i>Gewone AI</span><span class="small muted">zoekt op trefwoorden in alle bronnen</span></div>
+          <div class="big">22 oktober 2026</div>
+          <div style="font-size:15px">Atlas mag loonmutaties aanleveren tot en met 22 oktober 2026.</div>
+          <div class="sep"></div>
+          <dl class="ctx">
+            <dt>Land</dt><dd><span class="x">✕ genegeerd</span> · antwoord komt uit een Belgische afspraak</dd>
+            <dt>Klant</dt><dd><span class="x">✕ genegeerd</span></dd>
+            <dt>Periode</dt><dd><span class="x">✕ genegeerd</span></dd>
+            <dt>Status bron</dt><dd><span class="x">✕ onbekend</span> · goedgekeurd, chat of vervangen?</dd>
+            <dt>Bron</dt><dd class="muted">geen citaat, geen eigenaar, geen score</dd>
+          </dl>
+          <div class="bad" style="margin-top:16px;padding:10px 14px;border-radius:10px;font-size:13px"><b>Klinkt zeker, maar is fout voor deze vraag.</b> Wie dit doorgeeft, laat een Nederlandse klant twee dagen te laat aanleveren.</div>
+        </div>
+
+        <div class="card" style="border-color:#cfe7da;background:linear-gradient(180deg,#f3faf6,#fff 55%)">
+          <div class="row"><span class="badge ok"><i>✓</i>Onderbouwd · 100</span><span class="small muted">SDtrust</span></div>
+          <div class="big">18 oktober 2026</div>
+          <div style="font-size:15px">In Nederland worden loonmutaties uiterlijk op 18 oktober aangeleverd. Er is geen Nederlandse klantafspraak voor Atlas.</div>
+          <div class="quote">“Nederlandse klanten leveren loonmutaties aan tot de 18e.” <span class="muted" style="font-style:normal">S5 · Procedure Nederland</span></div>
+          <dl class="ctx" style="margin-top:4px">
+            <dt>Land</dt><dd><span class="v">✓ Nederland</span> · S5 geldt voor NL</dd>
+            <dt>Klant</dt><dd><span class="v">✓ Atlas</span> · S4 is alleen voor België, dus <i>Ander land</i></dd>
+            <dt>Periode</dt><dd><span class="v">✓ Oktober 2026</span> · S5 geldt sinds 1 januari 2026</dd>
+            <dt>Status bron</dt><dd><span class="v">✓ Goedgekeurd</span> door Sebastien De Couvreur</dd>
+          </dl>
+          <div class="row" style="margin-top:14px"><span class="small muted">4 bronnen uitgesloten, met reden</span><span style="flex:1"></span><span class="btn primary">Bekijk bron</span></div>
+        </div>
+      </div>
+
+      <h2>Draai aan de context, zie het antwoord meebewegen</h2>
+      <div class="strip">
+        <div class="cell"><div class="small muted">België · Atlas · okt 2026</div><div class="val">22 oktober</div><span class="badge ok"><i>✓</i>Onderbouwd</span><div class="small muted" style="margin-top:6px">S4 klantuitzondering gaat voor S1</div></div>
+        <div class="cell"><div class="small muted">België · andere klant · okt 2026</div><div class="val">20 oktober</div><span class="badge ok"><i>✓</i>Onderbouwd</span><div class="small muted" style="margin-top:6px">S1 algemene regel; S4 is <i>Andere klant</i></div></div>
+        <div class="cell" style="outline:2px solid var(--ok)"><div class="small muted">Nederland · Atlas · okt 2026</div><div class="val">18 oktober</div><span class="badge ok"><i>✓</i>Onderbouwd</span><div class="small muted" style="margin-top:6px">S5; Belgische bronnen <i>Ander land</i></div></div>
+        <div class="cell"><div class="small muted">België · Atlas · nov 2026</div><div class="val" style="color:var(--bad)">Geen antwoord</div><span class="badge bad"><i>✕</i>Geen onderbouwd antwoord</span><div class="small muted" style="margin-top:6px">S4 en S1 gelden alleen in oktober</div></div>
+      </div>
+      <div class="row" style="margin-top:12px;gap:10px">
+        <div class="finn" style="width:92px;height:92px;background-image:url(../mascot-concepts/finn/finn-answer-v2.png)"></div>
+        <div class="bubble">Gewone AI geeft vier keer hetzelfde antwoord. SDtrust zegt ook wanneer het <b>niet</b> weet, en vraagt dan de eigenaar om verduidelijking.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div></body></html>
