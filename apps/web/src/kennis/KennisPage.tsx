@@ -1,4 +1,4 @@
-import { scoreSource, type AskInput, type AssessedSource, type Country } from '@tectonic/shared';
+import { COUNTRIES, COUNTRY_LABELS, scoreSource, type AskInput, type AssessedSource, type Country } from '@tectonic/shared';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSession } from '../auth/context.ts';
 import { Avatar } from '../components/Avatar.tsx';
@@ -7,14 +7,16 @@ import { UserMenu } from '../components/UserMenu.tsx';
 import { ConnectionStatus } from '../components/ConnectionStatus.tsx';
 import { ErrorState } from '../components/States.tsx';
 import { useToasts } from '../components/Toasts.tsx';
-import { useAccess, useApproveSource, useAsk, useNaiveAnswer, useUsers } from '../lib/queries.ts';
+import { useAccess, useApproveSource, useAsk, useNaiveAnswer, useSources, useUsers } from '../lib/queries.ts';
 import { useRealtime, useTeamSubscriptions } from '../realtime/RealtimeProvider.tsx';
 import { KennisKaart } from './KennisKaart.tsx';
 import { CheckPanel } from './CheckPanel.tsx';
 import { VersionChain } from './VersionChain.tsx';
 import { SourceAudience } from './SourceAudience.tsx';
 import { DisputeControls } from './DisputeControls.tsx';
-import { ContextSelects, Icon, STATUS_TONE, Tick, VERDICT_TONE, dateLabel, monthLabel, type AskContext } from './ui.tsx';
+import { Icon, PERIODS, STATUS_TONE, Tick, VERDICT_TONE, dateLabel, monthLabel, type AskContext } from './ui.tsx';
+import { FinnStage, SearchingCard, type FinnMood, type Touched } from './FinnStage.tsx';
+import { buildTopicIndex, understand, type Understood } from './understand.ts';
 import './kennis.css';
 import { ProjectChat } from '../components/ProjectChat.tsx';
 
@@ -72,7 +74,7 @@ function Sidebar({ teams }: { teams: Array<{ id: string; name: string }> }) {
   return (
     <aside className="kn-sidebar" aria-label="Werkruimte">
       <div className="kn-section">Werkruimte</div>
-      <a href="#/" className="kn-nav is-active" aria-current="page" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); document.querySelector<HTMLInputElement>('.kn-ask input')?.select(); }}>
+      <a href="#/" className="kn-nav is-active" aria-current="page" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); document.querySelector<HTMLTextAreaElement>('#fs-q')?.select(); }}>
         <Icon name="search" /> Kennis zoeken
       </a>
       <hr />
@@ -199,6 +201,16 @@ export function KennisPage() {
   const [asked, setAsked] = useState<AskInput | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [runs, setRuns] = useState(0); // bumps on every search so the answer replays its arrival animation
+  const [touched, setTouched] = useState<Touched>({}); // which context fields the user has answered, as opposed to the defaults
+  const [typing, setTyping] = useState(false);
+  const typingTimer = useRef<number>(undefined);
+  const [welcomed, setWelcomed] = useState(() => sessionStorage.getItem('finn-welcomed') === '1');
+  const sources = useSources();
+  const clients = useMemo(() => access.data?.clients ?? [], [access.data]);
+  const topicIndex = useMemo(() => buildTopicIndex(sources.data ?? []), [sources.data]);
+  const understood = useMemo(() => understand(question, { clients, periods: PERIODS, topics: topicIndex }), [question, clients, topicIndex]);
+  const seen = useRef<Understood | null>(null); // what the question said before the latest keystroke
+  useEffect(() => () => window.clearTimeout(typingTimer.current), []);
 
   useTeamSubscriptions(useMemo(() => access.data?.teams.map((t) => t.id) ?? [], [access.data]));
 
@@ -209,6 +221,8 @@ export function KennisPage() {
     const c = access.data.clients[0] ?? null;
     setQuestion(q);
     setClient(c);
+    if (c) setTouched((t) => ({ ...t, client: true }));
+    seen.current = understand(q, { clients: access.data.clients, periods: PERIODS, topics: topicIndex });
     if (q) setAsked({ question: q, country, client: c, period });
   }, [access.data]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -216,7 +230,9 @@ export function KennisPage() {
   const ask = useAsk(asked);
   const naive = useNaiveAnswer(asked, compare);
   const userMap = useMemo(() => new Map((users.data ?? []).map((u) => [u.id, u])), [users.data]);
-  const result = ask.data;
+  // `useAsk` keeps the previous result while a new question loads; that result must not pass as the answer to the new one.
+  const result = ask.isPlaceholderData ? undefined : ask.data;
+  const searching = asked !== null && !result && ask.isFetching;
   const selected = result?.sources.find((s) => s.id === selectedId) ?? result?.best ?? result?.sources[0] ?? null;
   const roleOf = (projectId: string) => access.data?.teams.find((t) => t.id === projectId)?.role;
   const canApprove = !!selected && selected.status === 'unconfirmed' && roleOf(selected.projectId) !== 'viewer' && (selected.ownerId === session.user.id || (selected.ownerId === null && roleOf(selected.projectId) === 'owner'));
@@ -229,6 +245,27 @@ export function KennisPage() {
     if (input.question.trim().length < 3) return;
     setAsked(input);
     setRuns((n) => n + 1);
+    setTouched({ country: true, client: true, period: true }); // sending accepts the context as shown
+  };
+
+  // Typing: Finn reads the question as it arrives. A country, client or period that is newly named moves the context chips;
+  // nothing is asked until the user sends.
+  const editQuestion = (text: string) => {
+    setQuestion(text);
+    const now = understand(text, { clients, periods: PERIODS, topics: topicIndex });
+    const before = seen.current;
+    seen.current = now;
+    const patch: Partial<AskContext> = {};
+    if (now.country && now.country !== before?.country) patch.country = now.country;
+    if (now.client !== undefined && now.client !== before?.client) patch.client = now.client;
+    if (now.period && now.period !== before?.period) patch.period = now.period;
+    if (patch.country) setCountry(patch.country);
+    if (patch.client !== undefined) setClient(patch.client);
+    if (patch.period) setPeriod(patch.period);
+    if (Object.keys(patch).length) setTouched((t) => ({ ...t, ...Object.fromEntries(Object.keys(patch).map((k) => [k, true])) }));
+    setTyping(true);
+    window.clearTimeout(typingTimer.current);
+    typingTimer.current = window.setTimeout(() => setTyping(false), 700);
   };
 
   // One context for the page and the chat: changing it in either re-asks the page's question, so the two never disagree.
@@ -238,6 +275,45 @@ export function KennisPage() {
     if (patch.period) setPeriod(patch.period);
     run(patch);
   };
+
+  const firstName = session.user.name.split(' ')[0] ?? session.user.name;
+  const dirty = question.trim() !== (asked?.question.trim() ?? '');
+  /** One question at a time, for the first thing the question still leaves open. */
+  const openQuestion = (): string | null => {
+    if (!understood.topic && !sources.isPending && sources.data?.length) return 'Waar gaat je vraag over?';
+    if (!touched.country) return `Gaat het om ${COUNTRIES.map((c) => COUNTRY_LABELS[c]).join(' of ')}?`;
+    if (clients.length > 0 && !touched.client) return clients.length === 1 ? `Is dit voor ${clients[0]}, of voor alle klanten?` : 'Voor welke klant is dit, of voor alle klanten?';
+    if (!touched.period) return 'Over welke maand gaat het?';
+    return null;
+  };
+  // Finn follows the real request state. A fast answer shows at once; nothing here waits for an animation.
+  function finnSays(): { mood: FinnMood; line: string } {
+    if (access.isPending) return { mood: 'thinking', line: 'Ik controleer je toegang.' };
+    if (access.isError) return { mood: 'retry', line: 'Je toegang laden lukte niet.' };
+    if (searching) return { mood: 'thinking', line: 'Ik controleer de bronnen.' };
+    if (ask.isError) return { mood: 'retry', line: 'Dat lukte niet. Probeer het opnieuw.' };
+    if (!question.trim()) return { mood: welcomed ? 'idle' : 'welcome', line: `Hoi ${firstName}! Wat wil je weten?` };
+    if (typing || dirty) return { mood: 'listening', line: openQuestion() ?? 'Helder! Druk op Enter, dan zoek ik het uit.' };
+    if (!result) return { mood: 'idle', line: '' };
+    const best = result.best;
+    if (!best) return { mood: 'uncertain', line: 'Ik vond geen bron die hier geldt.' };
+    if (best.disputed) return { mood: 'uncertain', line: `${best.code} is betwist. Gebruik dit antwoord nog niet.` };
+    if (result.status === 'onderbouwd') {
+      const by = best.approvedById ? userMap.get(best.approvedById)?.name.split(' ')[0] : undefined;
+      return { mood: 'verified', line: `Gebaseerd op ${best.code}${by ? `, bevestigd door ${by}` : ''}.` };
+    }
+    if (result.status === 'deels') return { mood: 'answer', line: 'Dit antwoord rust maar deels op goedgekeurde bronnen.' };
+    return { mood: 'uncertain', line: 'Dit antwoord is onvoldoende onderbouwd. Vraag de eigenaar om verduidelijking.' };
+  }
+
+  // The welcome wave plays once per browser tab session.
+  useEffect(() => {
+    if (welcomed || question.trim() || access.isPending) return;
+    const t = window.setTimeout(() => { sessionStorage.setItem('finn-welcomed', '1'); setWelcomed(true); }, 3600);
+    return () => window.clearTimeout(t);
+  }, [welcomed, question, access.isPending]);
+
+  const finn = finnSays();
 
   return (
     <div className="kn" data-testid="kennis-page">
@@ -263,24 +339,23 @@ export function KennisPage() {
           ))}
         </nav>
         <h1>Welke afspraak geldt?</h1>
-        <form
-          className="kn-ask"
-          role="search"
-          data-loading={ask.isFetching}
-          aria-busy={ask.isFetching}
-          onSubmit={(e) => {
-            e.preventDefault();
-            run();
-          }}
-        >
-          <input value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="Stel je vraag" aria-label="Stel je vraag" />
-          <button type="submit" aria-label="Zoek">
-            <Icon name="arrow" />
-          </button>
-        </form>
-        <span className="sr-only" role="status">{ask.isFetching ? 'Bronnen worden gecontroleerd.' : ''}</span>
+        <FinnStage
+          userName={session.user.name}
+          userColor={session.user.color}
+          question={question}
+          onQuestion={editQuestion}
+          onSubmit={() => run()}
+          understood={understood}
+          context={{ country, client, period }}
+          clients={clients}
+          touched={touched}
+          onContext={changeContext}
+          busy={ask.isFetching}
+          mood={finn.mood}
+          line={finn.line}
+          stamp={runs}
+        />
         <div className="kn-chips">
-          <ContextSelects value={{ country, client, period }} clients={access.data?.clients ?? []} onChange={changeContext} />
           <button type="button" className={`kn-chip kn-chip--toggle${compare ? ' is-on' : ''}`} aria-pressed={compare} onClick={() => setCompare(!compare)}>
             Vergelijk
           </button>
@@ -289,13 +364,7 @@ export function KennisPage() {
         {access.isError && <ErrorState title="Kon je toegang niet laden" message={access.error.message} onRetry={() => void access.refetch()} />}
         {ask.isError && <ErrorState title="Kon geen antwoord geven" message={ask.error.message} onRetry={() => void ask.refetch()} />}
 
-        {(access.isPending || ask.isFetching) && !result && (
-          <section className="kn-answer kn-answer--muted" aria-busy="true" aria-label="Antwoord laden" data-testid="kn-loading">
-            <span className="skeleton skeleton-text" style={{ width: 140 }} />
-            <span className="skeleton skeleton-text" style={{ width: '50%', height: 40, marginTop: 14 }} />
-            <span className="skeleton skeleton-text" style={{ width: '90%', marginTop: 14 }} />
-          </section>
-        )}
+        {(access.isPending || searching) && <SearchingCard phase={access.isPending ? 'access' : 'sources'} />}
 
         {compare && result && (
           <section className="kn-compare" data-testid="kn-compare">
@@ -328,6 +397,7 @@ export function KennisPage() {
               <span className="kn-badge">
                 <Tick tone={STATUS_TONE[result.status]} /> {result.statusLabel}
               </span>
+              {ask.isFetching && <p className="kn-meta">Bronnen worden opnieuw gecontroleerd.</p>}
               {result.best ? (
                 <>
                   <h2>{result.best.value}</h2>

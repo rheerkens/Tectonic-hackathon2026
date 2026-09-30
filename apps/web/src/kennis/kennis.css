@@ -61,11 +61,6 @@
 .kn-crumbs { color: var(--kn-muted); font-size: 14px; }
 .kn-sep { margin: 0 10px; }
 .kn-main h1 { margin: 18px 0 24px; font-size: clamp(28px, 2.7vw, 40px); line-height: 1.15; letter-spacing: -0.02em; }
-.kn-ask { position: relative; display: flex; align-items: center; gap: 8px; padding: 7px; border: 1px solid var(--border); border-radius: 32px; background: var(--surface); overflow: hidden; transition: border-color 180ms, box-shadow 180ms; }
-.kn-ask:focus-within { border-color: var(--accent-ink); box-shadow: 0 4px 18px color-mix(in srgb, var(--accent) 10%, transparent); }
-.kn-ask input { flex: 1; min-width: 0; border: 0; padding: 10px 14px; border-radius: 24px; font: inherit; font-size: 16px; color: var(--kn-ink); background: var(--surface); }
-.kn-ask input:focus { outline: 2px solid var(--kn-primary); outline-offset: -2px; }
-.kn-ask button { width: 44px; height: 44px; flex: none; border: 0; border-radius: 50%; background: var(--brand-coral); color: var(--brand-navy); cursor: pointer; display: grid; place-items: center; }
 .kn-chips { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0 28px; }
 .kn-chip { padding: 8px 14px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-ink); font-size: 14px; }
 
@@ -172,7 +167,6 @@ a.kn-btn--outline { display: block; text-align: center; text-decoration: none; }
 .kn a:focus-visible, .kn button:focus-visible, .kn select:focus-visible, .kn textarea:focus-visible, .kn tr:focus-visible, .kn-main:focus-visible {
   outline: 2px solid var(--kn-primary); outline-offset: 2px;
 }
-.kn-ask button:focus-visible { outline-color: var(--brand-navy); outline-offset: -4px; }
 .kn-skip { position: absolute; left: 8px; top: -60px; z-index: 100; padding: 10px 16px; border-radius: 6px; background: var(--kn-primary); color: var(--on-accent); }
 .kn-skip:focus { top: 8px; }
 .kn ::placeholder { color: var(--kn-muted); opacity: 1; }
@@ -186,27 +180,22 @@ a.kn-btn--outline { display: block; text-align: center; text-decoration: none; }
 
 /* Motion explains arrival, selection and the active source check. */
 .kn-chips select { width: auto; flex: 1 1 120px; max-width: 220px; }
-.kn-ask input::placeholder, .kc textarea::placeholder { color: var(--kn-muted); opacity: 1; }
-.kn-btn, .kn-ask button, .kn-chip, a.kn-nav { transition: transform 180ms cubic-bezier(.16,1,.3,1), background-color 180ms, border-color 180ms; }
-.kn-ask button .kn-icon { transition: transform 180ms cubic-bezier(.16,1,.3,1); }
+.kc textarea::placeholder { color: var(--kn-muted); opacity: 1; }
+.kn-btn, .kn-chip, a.kn-nav { transition: transform 180ms cubic-bezier(.16,1,.3,1), background-color 180ms, border-color 180ms; }
 .kn-table tbody tr { transition: background-color 180ms; }
-.kn-btn:active:not(:disabled), .kn-chip:active, .kn-ask button:active { transform: scale(.97); }
+.kn-btn:active:not(:disabled), .kn-chip:active { transform: scale(.97); }
 .kn-main > h1 { animation: kn-heading-in 600ms cubic-bezier(.16,1,.3,1) both; }
-.kn-main > .kn-ask { animation: kn-arrive 600ms cubic-bezier(.16,1,.3,1) both; }
 .kn-main > .kn-answer, .kn-compare { animation: kn-arrive 480ms cubic-bezier(.16,1,.3,1) both; }
 .kn-panel:not(:empty) { animation: kn-panel-in 400ms cubic-bezier(.16,1,.3,1) both; }
 .kn-bar span { animation: kn-score-in 650ms cubic-bezier(.16,1,.3,1) both; }
-.kn-ask[data-loading="true"]::after { content: ''; position: absolute; bottom: 0; left: 0; width: 30%; height: 3px; border-radius: 3px; background: var(--brand-coral); animation: kn-searching 1100ms ease-in-out infinite; }
 @media (hover: hover) {
   .kn-btn:hover:not(:disabled), .kn-chip:hover { transform: translateY(-2px); }
   a.kn-nav:hover { transform: translateX(3px); }
-  .kn-ask button:hover .kn-icon { transform: translateX(3px); }
 }
 @keyframes kn-heading-in { from { clip-path: inset(0 0 100% 0); transform: translateY(8px); } to { clip-path: inset(0); transform: none; } }
 @keyframes kn-arrive { from { opacity: .35; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 @keyframes kn-panel-in { from { opacity: .5; transform: translateX(12px); } to { opacity: 1; transform: none; } }
 @keyframes kn-score-in { from { transform: scaleX(0); } }
-@keyframes kn-searching { from { transform: translateX(-100%); } to { transform: translateX(440%); } }
 @media (max-width: 760px) {
   .kn-panel { margin: 0 16px 24px; padding: 22px; }
   .kn-answer { padding: 22px 18px; }
@@ -214,9 +203,6 @@ a.kn-btn--outline { display: block; text-align: center; text-decoration: none; }
   .kn-chips select { flex-basis: 135px; max-width: none; }
   .kn-table td, .kn-table th { padding: 12px 6px; font-size: 13px; }
   .kn-src { gap: 6px; flex-wrap: wrap; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .kn-ask[data-loading="true"]::after { width: 100%; transform: none; }
 }
 
 /* The native popover handles Escape, outside clicks and keyboard focus order. */

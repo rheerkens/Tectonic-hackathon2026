@@ -82,18 +82,22 @@ export interface AskContext {
   period: string;
 }
 
-/** The country / client / period selects. The Kennis page and the chat share one context, so both views render these. */
-export function ContextSelects({ value, clients, onChange }: { value: AskContext; clients: string[]; onChange: (patch: Partial<AskContext>) => void }) {
+/**
+ * The country / client / period selects. The Kennis page and the chat share one context, so both views render these.
+ * `touched` marks the ones the user has answered (typed or picked), as opposed to the defaults.
+ */
+export function ContextSelects({ value, clients, touched, onChange }: { value: AskContext; clients: string[]; touched?: Partial<Record<keyof AskContext, boolean>>; onChange: (patch: Partial<AskContext>) => void }) {
+  const cls = (field: keyof AskContext) => `kn-chip${touched?.[field] ? ' is-set' : ''}`;
   return (
     <>
-      <select className="kn-chip" value={value.country} aria-label="Land" onChange={(e) => onChange({ country: e.target.value as Country })}>
+      <select className={cls('country')} data-field="country" value={value.country} aria-label="Land" onChange={(e) => onChange({ country: e.target.value as Country })}>
         {COUNTRIES.map((c) => (
           <option key={c} value={c}>
             {COUNTRY_LABELS[c]}
           </option>
         ))}
       </select>
-      <select className="kn-chip" value={value.client ?? ''} aria-label="Klant" onChange={(e) => onChange({ client: e.target.value || null })}>
+      <select className={cls('client')} data-field="client" value={value.client ?? ''} aria-label="Klant" onChange={(e) => onChange({ client: e.target.value || null })}>
         <option value="">Alle klanten</option>
         {clients.map((c) => (
           <option key={c} value={c}>
@@ -101,7 +105,7 @@ export function ContextSelects({ value, clients, onChange }: { value: AskContext
           </option>
         ))}
       </select>
-      <select className="kn-chip" value={value.period} aria-label="Periode" onChange={(e) => onChange({ period: e.target.value })}>
+      <select className={cls('period')} data-field="period" value={value.period} aria-label="Periode" onChange={(e) => onChange({ period: e.target.value })}>
         {PERIODS.map((p) => (
           <option key={p} value={p}>
             {monthLabel(p)}
