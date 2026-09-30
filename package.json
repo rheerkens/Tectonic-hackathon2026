@@ -29,7 +29,8 @@
     "db:migrate": "bun run --cwd packages/db migrate",
     "db:seed": "bun run --cwd packages/db seed",
     "railway:link": "bash scripts/railway-link.sh",
-    "railway:deploy": "bash scripts/railway-deploy.sh"
+    "railway:deploy": "bash scripts/railway-deploy.sh",
+    "test:e2e": "bun run --cwd tools/e2e test"
   },
   "devDependencies": {
     "@types/bun": "1.4.2",

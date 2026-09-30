@@ -105,7 +105,7 @@ export function ChatPanel({ context, onContextChange }: { context: ChatContext; 
 
   // A divider wherever the context changed between two questions.
   const previous = { context: null as ChatContext | null };
-  const render = (entry: ChatEntry) => {
+  const render = (entry: ChatEntry, index: number) => {
     if (entry.kind === 'user') {
       const changed = previous.context !== null && contextLabel(previous.context) !== contextLabel(entry.context);
       previous.context = entry.context;
@@ -121,7 +121,8 @@ export function ChatPanel({ context, onContextChange }: { context: ChatContext; 
       );
     }
     if (entry.kind === 'assistant') return <AssistantMessage key={entry.id} entry={entry} userName={userName} />;
-    return <ErrorMessage key={entry.id} error={entry.error} onRetry={retryAndFocus} busy={pending} />;
+    // Only the newest error can be retried: an older one was followed by another question.
+    return <ErrorMessage key={entry.id} error={entry.error} onRetry={index === entries.length - 1 ? retryAndFocus : undefined} busy={pending} />;
   };
 
   const examples = access.data?.examples ?? [];

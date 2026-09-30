@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ChatStatusSchema, ProjectChatTurnSchema } from './project-chat.ts';
 import { ChatInputSchema, ChatResultSchema } from './chat.ts';
 import { AccessSchema, AssessedSourceSchema, AskInputSchema, AskResultSchema, CheckInputSchema, CheckResultSchema, DisputeInputSchema, HealthSchema, MeSchema, NaiveAnswerSchema, OkSchema, SupersedeInputSchema, UserSchema } from './schemas.ts';
 
@@ -36,6 +37,8 @@ function route<Path extends string, Body extends z.ZodTypeAny | undefined, Respo
  * from them and parses responses with `response`.
  */
 export const api = {
+  chatStatus: route('GET', '/api/chat/status', { response: ChatStatusSchema }),
+  chatHistory: route('GET', '/api/projects/:projectId/chat', { response: ProjectChatTurnSchema.array() }),
   health: route('GET', '/api/health', { response: HealthSchema }),
   me: route('GET', '/api/me', { response: MeSchema }),
   listUsers: route('GET', '/api/users', { response: UserSchema.array() }),

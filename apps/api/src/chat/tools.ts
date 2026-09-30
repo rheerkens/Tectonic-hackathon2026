@@ -30,7 +30,9 @@ export interface ChatEnv {
 }
 
 export function createChatEnv(teams: Array<{ id: string; name: string }>, rows: SourceRow[], context: ChatContext): ChatEnv {
-  const sources = rows.map(serializeSource).sort((a, b) => a.code.localeCompare(b.code, 'en', { numeric: true }));
+  // A superseding source the caller cannot see must not leak through its code, same as in the knowledge routes.
+  const visible = new Set(rows.map((r) => r.code));
+  const sources = rows.map((r) => serializeSource(visible.has(r.supersededBy ?? '') ? r : { ...r, supersededBy: null })).sort((a, b) => a.code.localeCompare(b.code, 'en', { numeric: true }));
   return {
     sources,
     names: new Map(teams.map((t) => [t.id, t.name])),

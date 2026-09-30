@@ -5,7 +5,7 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AppContext, AppEnv } from '../app.ts';
 import { conflict, forbidden, notFound } from '../errors.ts';
-import { getProjectRole, userCanSeeSource } from '../permissions.ts';
+import { getProjectRole, isSourceOwner, userCanSeeSource } from '../permissions.ts';
 import { serializeSource } from '../serializers.ts';
 import { visibleSources as loadVisibleSources } from '../sources.ts';
 import { extractClaims } from '../claims.ts';
@@ -28,6 +28,11 @@ export function knowledgeRoutes(ctx: AppContext) {
   const router = new Hono<AppEnv>();
 
   const visibleSources = (userId: string) => loadVisibleSources(db, userId);
+  // A target the caller cannot see must not leak through its code ("Vervangen door S9").
+  const serializeVisible = (rows: Parameters<typeof serializeSource>[0][]) => {
+    const codes = new Set(rows.map((r) => r.code));
+    return rows.map((r) => serializeSource(codes.has(r.supersededBy ?? '') ? r : { ...r, supersededBy: null }));
+  };
 
   router.get('/api/access', async (c) => {
     const { teams, rows } = await visibleSources(c.get('principal').userId);
@@ -41,7 +46,7 @@ export function knowledgeRoutes(ctx: AppContext) {
     const names = new Map(teams.map((t) => [t.id, t.name]));
     const period = new Date().toISOString().slice(0, 7);
     return c.json(
-      rows.map(serializeSource).map((s) => {
+      serializeVisible(rows).map((s) => {
         const ctx = { country: s.country, client: s.client, period };
         return { ...s, projectName: names.get(s.projectId) ?? '', onderbouwing: scoreSource(s, ctx), verdict: verdictFor(s, ctx) };
       }),
@@ -52,7 +57,7 @@ export function knowledgeRoutes(ctx: AppContext) {
     const { question, country, client, period } = c.req.valid('json');
     const { teams, rows } = await visibleSources(c.get('principal').userId);
     const names = new Map(teams.map((t) => [t.id, t.name]));
-    return c.json(assess(question, rows.map(serializeSource), names, { country, client, period }));
+    return c.json(assess(question, serializeVisible(rows), names, { country, client, period }));
   });
 
   // Claims come from the LLM when a key is set, else sentence split (see claims.ts); matching stays keyword overlap via assess.
@@ -66,7 +71,7 @@ export function knowledgeRoutes(ctx: AppContext) {
     const contradictions: CheckResult['contradictions'] = [];
     const llm = config.llm && rows.length > 0 && takeLlmBudget(userId) ? config.llm : null;
     for (const { claim, country: found } of await extractClaims(text, llm)) {
-      const r = assess(claim, rows.map(serializeSource), names, { country: found ?? country, client: null, period });
+      const r = assess(claim, serializeVisible(rows), names, { country: found ?? country, client: null, period });
       claims.push({ text: claim, topic: r.topic, status: r.status, statusLabel: r.statusLabel });
       for (const source of r.sources) {
         if (source.verdict.kind !== 'exception' && source.verdict.kind !== 'general') contradictions.push({ claim, source });
@@ -77,7 +82,7 @@ export function knowledgeRoutes(ctx: AppContext) {
   // --- naive answer (issue #3) ---
   router.post('/api/naive-answer', jsonBody(AskInputSchema), async (c) => {
     const { rows } = await visibleSources(c.get('principal').userId);
-    return c.json(naiveAnswer(c.req.valid('json').question, rows.map(serializeSource)));
+    return c.json(naiveAnswer(c.req.valid('json').question, serializeVisible(rows)));
   });
   // --- end naive answer ---
 
@@ -95,7 +100,7 @@ export function knowledgeRoutes(ctx: AppContext) {
     if (!source || !role || !(await userCanSeeSource(db, source, principal.userId))) throw notFound('Source');
     if (!roleAtLeast(role, 'editor')) throw forbidden('Your role cannot approve sources');
     // Only the accountable owner can vouch for a source; the team owner can adopt an ownerless one.
-    if (source.ownerId !== principal.userId && !(role === 'owner' && source.ownerId === null)) {
+    if (!isSourceOwner(source, principal.userId, role)) {
       throw forbidden('Only the owner of this source can approve it');
     }
     if (source.status === 'superseded') throw conflict('A superseded source cannot be approved');
@@ -117,7 +122,7 @@ export function knowledgeRoutes(ctx: AppContext) {
     if (!source || !role || !(await userCanSeeSource(db, source, principal.userId))) throw notFound('Source');
     if (!roleAtLeast(role, 'editor')) throw forbidden('Your role cannot dispute sources');
     // Anyone may raise doubt; only the accountable owner may declare it resolved.
-    if (!disputed && source.ownerId !== principal.userId && !(role === 'owner' && source.ownerId === null)) {
+    if (!disputed && !isSourceOwner(source, principal.userId, role)) {
       throw forbidden('Only the owner of this source can resolve a dispute');
     }
     await db
@@ -135,6 +140,8 @@ export function knowledgeRoutes(ctx: AppContext) {
     const role = source ? await getProjectRole(db, source.projectId, principal.userId) : null;
     if (!source || !role || !(await userCanSeeSource(db, source, principal.userId))) throw notFound('Source');
     if (!roleAtLeast(role, 'editor')) throw forbidden('Your role cannot supersede sources');
+    // Retiring a source is the owner's call, like approving it.
+    if (!isSourceOwner(source, principal.userId, role)) throw forbidden('Only the owner of this source can mark it superseded');
     // The newer version must be one the caller may see, on the same topic, and not itself replaced (no cycles).
     const { rows } = await visibleSources(principal.userId);
     const next = rows.find((r) => r.code === supersededBy);
@@ -142,6 +149,11 @@ export function knowledgeRoutes(ctx: AppContext) {
     if (next.id === source.id) throw conflict('A source cannot replace itself');
     if (next.topic !== source.topic) throw conflict('The newer version must be on the same topic');
     if (next.status === 'superseded' || next.supersededBy !== null) throw conflict('The newer version is itself superseded');
+    // Conservative: the replacement must be confirmed, still valid today, and not start earlier than the source it replaces.
+    const today = new Date().toISOString().slice(0, 10);
+    if (next.status !== 'approved') throw conflict('The newer version must be approved');
+    if (next.validTo !== null && next.validTo.slice(0, 10) < today) throw conflict('The newer version is expired');
+    if (next.validFrom.slice(0, 10) < source.validFrom.slice(0, 10)) throw conflict('The newer version must not be older than the source it replaces');
     await db
       .update(sources)
       .set({ status: 'superseded', supersededBy: next.code, updatedAt: new Date() })

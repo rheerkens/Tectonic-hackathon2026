@@ -180,7 +180,7 @@ export function PendingMessage() {
   );
 }
 
-export function ErrorMessage({ error, onRetry, busy }: { error: ChatErrorInfo; onRetry: () => void; busy: boolean }) {
+export function ErrorMessage({ error, onRetry, busy }: { error: ChatErrorInfo; onRetry?: () => void; busy: boolean }) {
   return (
     <article className="ch-msg ch-msg--error" role="alert" aria-label="Fout" data-testid="ch-error">
       <strong>{error.title}</strong>
@@ -193,9 +193,11 @@ export function ErrorMessage({ error, onRetry, busy }: { error: ChatErrorInfo; o
         </ul>
       )}
       {error.technical && <p className="kn-muted">{error.technical}</p>}
-      <button type="button" className="kn-btn kn-btn--outline ch-retry" onClick={onRetry} disabled={busy}>
-        <Icon name="refresh" size={16} /> Opnieuw proberen
-      </button>
+      {onRetry && (
+        <button type="button" className="kn-btn kn-btn--outline ch-retry" onClick={onRetry} disabled={busy}>
+          <Icon name="refresh" size={16} /> Opnieuw proberen
+        </button>
+      )}
     </article>
   );
 }

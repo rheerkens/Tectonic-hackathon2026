@@ -84,7 +84,7 @@ export function SourceCard({ source, userName, id }: { source: AssessedSource; u
               <Tick tone={c.points >= c.max ? 'good' : c.points <= 0 ? 'bad' : 'warn'} />
               <span>{c.label}</span>
               <span className="kn-points">
-                <span className="sr-only">{c.points >= c.max ? 'Voldaan, ' : 'Niet voldaan, '}</span>
+                <span className="sr-only">{c.points >= c.max ? 'Voldaan, ' : c.points <= 0 ? 'Niet voldaan, ' : 'Deels voldaan, '}</span>
                 {c.points} / {c.max}
               </span>
             </li>

@@ -30,7 +30,7 @@ interface Runtime {
 }
 
 function startStack(root: string) {
-  const proc = Bun.spawn(['bun', CLI, 'up', '--profile', PROFILE, '--api-only', '--reset-db'], {
+  const proc = Bun.spawn(['bun', path.join(REPO_ROOT, CLI), 'up', '--profile', PROFILE, '--api-only', '--reset-db'], {
     cwd: root,
     stdout: 'pipe',
     stderr: 'pipe',
@@ -60,7 +60,7 @@ function startStack(root: string) {
         if (existsSync(runtimeFile)) {
           const runtime = JSON.parse(readFileSync(runtimeFile, 'utf8')) as Runtime;
           if (runtime.status === 'ready' && runtime.launcherPid === proc.pid) return runtime;
-          if (runtime.status === 'failed') throw new Error(`launcher failed: ${output}`);
+          if (runtime.status === 'failed' && runtime.launcherPid === proc.pid) throw new Error(`launcher failed: ${output}`);
         }
         await Bun.sleep(200);
       }
@@ -89,12 +89,14 @@ describe('worktree isolation (integration)', () => {
         rmSync(tmp, { recursive: true, force: true });
         return;
       }
+      let main: ReturnType<typeof startStack> | undefined;
+      let other: ReturnType<typeof startStack> | undefined;
       try {
         const install = await sh(['bun', 'install', '--frozen-lockfile'], worktree);
         expect(install.code).toBe(0);
 
-        const main = startStack(REPO_ROOT);
-        const other = startStack(worktree);
+        main = startStack(REPO_ROOT);
+        other = startStack(worktree);
         const [a, b] = await Promise.all([main.ready(), other.ready()]);
 
         // Distinct identities, ports, data and locks.
@@ -120,6 +122,7 @@ describe('worktree isolation (integration)', () => {
         await main.stop();
         expect(await healthy(a.urls.apiHealth)).toBe(false);
       } finally {
+        await Promise.all([main?.stop(), other?.stop()]);
         await sh(['git', 'worktree', 'remove', '--force', worktree], REPO_ROOT).catch(() => {});
         rmSync(tmp, { recursive: true, force: true });
         rmSync(path.join(REPO_ROOT, '.local', PROFILE), { recursive: true, force: true });
