@@ -53,10 +53,12 @@ function renderInline(text: string, cite: CitationLookup, keyBase: string): Reac
     if (i % 2 === 0) return part ? [part] : [];
     if (part.startsWith('**')) return [<strong key={key}>{renderInline(part.slice(2, -2), cite, key)}</strong>];
     const codes = part.slice(1, -1).split(/\s*[,;]\s*/);
+    // "[Q3]" or "[A1]" in ordinary text is not a citation: keep it as written when none of its codes is a known source.
+    if (!codes.some((code) => cite.has(code.toUpperCase()))) return [part];
     return [
       <span className="ch-cites" key={key}>
-        {codes.map((code) => (
-          <CitationChip key={code} code={code} cite={cite} />
+        {codes.map((code, j) => (
+          <CitationChip key={j} code={code} cite={cite} />
         ))}
       </span>,
     ];
