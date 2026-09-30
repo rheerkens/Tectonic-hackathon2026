@@ -1,4 +1,4 @@
-import { MEMBER_ROLES, SOURCE_KINDS, SOURCE_STATUSES, type ProjectChatToolCall } from '@tectonic/shared';
+import { MEMBER_ROLES, SOURCE_KINDS, SOURCE_STATUSES, type PayslipLine, type ProjectChatToolCall } from '@tectonic/shared';
 import { sql } from 'drizzle-orm';
 import { boolean, date, index, integer, jsonb, pgEnum, pgTable, primaryKey, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 
@@ -83,6 +83,28 @@ export const sources = pgTable(
   (t) => [uniqueIndex('sources_code_idx').on(t.code), index('sources_project_topic_idx').on(t.projectId, t.topic)],
 );
 
+/** One monthly payslip of an employee. Readable by every member of the owning team, nobody else. Amounts are in euro cents. */
+export const payslips = pgTable(
+  'payslips',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    projectId: uuid('project_id')
+      .notNull()
+      .references(() => projects.id, { onDelete: 'cascade' }),
+    employeeName: text('employee_name').notNull(),
+    employeeNumber: text('employee_number').notNull(),
+    /** 'YYYY-MM' */
+    period: text('period').notNull(),
+    country: text('country').notNull(),
+    client: text('client'),
+    grossCents: integer('gross_cents').notNull(),
+    netCents: integer('net_cents').notNull(),
+    lines: jsonb('lines').$type<PayslipLine[]>().notNull(),
+    ...timestamps,
+  },
+  (t) => [uniqueIndex('payslips_employee_period_idx').on(t.projectId, t.employeeNumber, t.period)],
+);
+
 /** Each member has a private assistant conversation within a project. */
 export const chatTurns = pgTable('chat_turns', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -101,3 +123,4 @@ export type UserRow = typeof users.$inferSelect;
 export type ProjectRow = typeof projects.$inferSelect;
 export type ProjectMemberRow = typeof projectMembers.$inferSelect;
 export type SourceRow = typeof sources.$inferSelect;
+export type PayslipRow = typeof payslips.$inferSelect;

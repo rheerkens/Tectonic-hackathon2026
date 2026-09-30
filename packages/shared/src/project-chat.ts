@@ -5,7 +5,7 @@ export const CHAT_MAX_REPLY = 64_000;
 export const CHAT_MAX_TOOLS = 16;
 export const CHAT_MAX_TOOL_RESULT = 16_000;
 
-export const PROJECT_CHAT_TOOL_NAMES = ['list_teams', 'list_sources'] as const;
+export const PROJECT_CHAT_TOOL_NAMES = ['list_teams', 'list_sources', 'list_payslips'] as const;
 // The server registry controls execution. New connectors need no client schema change.
 export const ProjectChatToolNameSchema = z.string().regex(/^[a-z][a-z0-9_]{0,63}$/);
 export type ProjectChatToolName = z.infer<typeof ProjectChatToolNameSchema>;
@@ -44,3 +44,6 @@ export type ChatEvent = z.infer<typeof ChatEventSchema>;
 
 // POST returns newline-delimited ChatEvent JSON instead of one JSON response.
 export const CHAT_STREAM_PATH = '/api/projects/:projectId/chat';
+
+export const PayslipLineSchema = z.object({ label: z.string(), kind: z.enum(['earning', 'deduction']), amountCents: z.number().int() });
+export type PayslipLine = z.infer<typeof PayslipLineSchema>;

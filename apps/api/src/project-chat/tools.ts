@@ -1,4 +1,4 @@
-import { projectMembers, projects, sources } from '@tectonic/db';
+import { payslips, projectMembers, projects, sources } from '@tectonic/db';
 import type { AgentTool } from '@earendil-works/pi-agent-core';
 import { Type, type Static, type TSchema } from '@earendil-works/pi-ai';
 import { CHAT_MAX_TOOL_RESULT, type ProjectChatToolName } from '@tectonic/shared';
@@ -58,6 +58,14 @@ const SourceSearchParameters = Type.Object({
   query: Type.Optional(Type.String({ minLength: 1, maxLength: 160, description: 'A short topic or phrase to search in source titles, topics, keywords, claims and quotes.' })),
   teamId: Type.Optional(Type.String({ minLength: 36, maxLength: 36, description: 'Limit results to a team ID returned by list_teams.' })),
 }, { additionalProperties: false });
+
+const PayslipSearchParameters = Type.Object({
+  employee: Type.Optional(Type.String({ minLength: 1, maxLength: 120, description: 'Part of the employee name or the employee number.' })),
+  period: Type.Optional(Type.String({ pattern: '^\\d{4}-\\d{2}$', description: 'Payslip month as YYYY-MM, for example 2026-09.' })),
+  teamId: Type.Optional(Type.String({ minLength: 36, maxLength: 36, description: 'Limit results to a team ID returned by list_teams.' })),
+}, { additionalProperties: false });
+
+const euro = (cents: number) => `€ ${(cents / 100).toLocaleString('nl-BE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 export function createTeamTools(context: TeamToolContext): AgentTool[] {
   return [
@@ -145,6 +153,44 @@ export function createTeamTools(context: TeamToolContext): AgentTool[] {
           ...source,
           supersededBy: visibleCodes.has(source.supersededBy ?? '') ? source.supersededBy : null,
           citation: `[${source.teamName} / ${source.code}]`,
+        }));
+      },
+    }),
+    defineTeamTool(context, {
+      name: 'list_payslips',
+      label: 'Look up payslips',
+      description: 'Look up monthly payslips (loonfiches) of employees in the teams the authenticated user can access. Filter by employee name or number and/or period (YYYY-MM). Returns gross, net and every line with exact amounts. Returns an empty list when the user has no access or nothing matches.',
+      parameters: PayslipSearchParameters,
+      run: async ({ ctx, userId, allowedProjectIds }, args) => {
+        if (args.teamId && !allowedProjectIds.includes(args.teamId)) throw new Error('Team is outside this turn context');
+        const filters = [eq(projectMembers.userId, userId), inArray(payslips.projectId, [...allowedProjectIds])];
+        if (args.teamId) filters.push(eq(payslips.projectId, args.teamId));
+        if (args.period) filters.push(eq(payslips.period, args.period));
+        // ponytail: one phrase matched against name and number; "Emma Claes" works, "Claes Emma" does not.
+        if (args.employee) {
+          const like = `%${args.employee.trim().replace(/[\\%_]/g, '\\$&')}%`;
+          filters.push(or(ilike(payslips.employeeName, like), ilike(payslips.employeeNumber, like))!);
+        }
+        const rows = await ctx.db
+          .select({ teamName: projects.name, payslip: payslips })
+          .from(payslips)
+          .innerJoin(projects, eq(projects.id, payslips.projectId))
+          .innerJoin(projectMembers, eq(projectMembers.projectId, payslips.projectId))
+          .where(and(...filters))
+          .orderBy(asc(payslips.employeeName), asc(payslips.period))
+          .limit(50);
+        return rows.map(({ teamName, payslip: p }) => ({
+          teamId: p.projectId,
+          teamName,
+          employee: p.employeeName,
+          employeeNumber: p.employeeNumber,
+          period: p.period,
+          country: p.country,
+          client: p.client,
+          gross: euro(p.grossCents),
+          net: euro(p.netCents),
+          lines: p.lines.map((line) => ({ label: line.label, kind: line.kind, amount: euro(line.amountCents) })),
+          citation: `[${teamName} / loonfiche ${p.employeeNumber} ${p.period}]`,
         }));
       },
     }),
