@@ -41,6 +41,12 @@ export const RAILWAY_ENV_KEYS = [
   'RAILWAY_STATIC_URL',
 ] as const;
 
+/** Only an explicit loopback HOST counts as local: an unset HOST binds every interface. */
+export function isLoopbackHost(host: string | undefined): boolean {
+  const h = (host ?? '').trim().toLowerCase().replace(/^\[|\]$/g, '');
+  return h === 'localhost' || h === '::1' || /^127(\.\d{1,3}){3}$/.test(h);
+}
+
 export function isProductionLike(env: EnvLike): boolean {
   if (env.NODE_ENV === 'production') return true;
   return RAILWAY_ENV_KEYS.some((key) => Boolean(env[key]?.trim()));
@@ -75,6 +81,11 @@ export function resolveAuthMode(env: EnvLike): AuthMode {
       .join(', ');
     throw new ConfigError(
       `AUTH_MODE=dev-bypass is rejected in production/Railway environments (detected: ${markers}). Set AUTH_MODE=clerk and CLERK_SECRET_KEY.`,
+    );
+  }
+  if (mode === 'dev-bypass' && !isLoopbackHost(env.HOST)) {
+    throw new ConfigError(
+      `AUTH_MODE=dev-bypass requires HOST to be a loopback address (127.0.0.1, ::1 or localhost); got "${env.HOST ?? ''}". The bypass needs no credentials, so it must not be reachable over the network. Set AUTH_MODE=clerk and CLERK_SECRET_KEY, or HOST=127.0.0.1 for local use.`,
     );
   }
   if (mode === 'clerk' && !hasClerkSecret) {

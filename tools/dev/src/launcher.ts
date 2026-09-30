@@ -180,7 +180,7 @@ export async function launch(options: LaunchOptions = {}): Promise<void> {
       // process.execPath, not `bun` from PATH: children run on the runtime checked above.
       cmd: [process.execPath, '--watch', '--no-clear-screen', 'src/index.ts'],
       cwd: path.join(worktree.root, 'apps/api'),
-      env: { ...childEnv, PORT: String(ports.api), HOST: '0.0.0.0', SERVE_STATIC: '0' },
+      env: { ...childEnv, PORT: String(ports.api), HOST: '127.0.0.1', SERVE_STATIC: '0' },
       onLine: (line) => log('api', line.replace(/^\[api\]\s*/, '')),
     });
     children.push(api);

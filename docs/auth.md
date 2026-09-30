@@ -24,6 +24,7 @@ Pick one in the UI, or add `?as=roy` to the URL. Identity is kept in `sessionSto
 `apps/api/src/config.ts` → `resolveAuthMode()`:
 
 - `AUTH_MODE` empty: `clerk` if `CLERK_SECRET_KEY` is set, else `dev-bypass` locally, else a configuration error in production.
+- `dev-bypass` additionally requires `HOST` to be an explicit loopback address (`127.0.0.1`, `::1`, `localhost`); an unset or non-loopback `HOST` is a configuration error, so the credential-free mode is never network-reachable even when no deployment markers are present. `bun run dev` sets `HOST=127.0.0.1`.
 - `AUTH_MODE=dev-bypass` with `NODE_ENV=production` **or any `RAILWAY_*` variable** (`RAILWAY_ENVIRONMENT`, `RAILWAY_PROJECT_ID`, `RAILWAY_SERVICE_ID`, …) → the process exits with code 78 and a clear message. Tested in `apps/api/test/config.test.ts` and, on the built Docker image, in CI.
 - `AUTH_MODE=clerk` without `CLERK_SECRET_KEY` → configuration error.
 - In `clerk` mode the `x-dev-user` header is rejected with 401.
