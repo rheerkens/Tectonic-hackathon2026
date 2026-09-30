@@ -33,7 +33,6 @@
   background: var(--surface-2);
   clip-path: polygon(0 0, 100% 50%, 0 100%);
 }
-.fs-composer:focus-within { outline: 2px solid var(--kn-primary); outline-offset: 3px; }
 .fs-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
 .fs-who { display: flex; align-items: center; gap: 8px; color: var(--kn-muted); font-size: 12px; font-weight: 700; }
 
@@ -55,7 +54,7 @@
 }
 .fs-mirror { min-height: 100px; color: var(--kn-ink); pointer-events: none; }
 .fs-editor textarea { position: absolute; inset: 0; height: 100%; background: transparent; color: transparent; caret-color: var(--brand-coral); resize: none; overflow: hidden; }
-.fs-editor textarea:focus-visible { outline: none; }
+.fs-stage .fs-editor textarea, .fs-stage .fs-editor textarea:focus, .fs-stage .fs-editor textarea:focus-visible { border: 0; outline: none; box-shadow: none; }
 .fs-editor textarea::placeholder { color: var(--kn-muted); }
 .fs-hl { border-radius: 5px; transition: background-color 250ms; }
 .fs-hl[data-field="topic"] { --c: var(--fs-topic); }
