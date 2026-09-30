@@ -41,7 +41,7 @@ function readCitations(env: ChatEnv, answer: string): { answer: string; codes: s
 }
 
 function buildResult(env: ChatEnv, trace: Trace, rawAnswer: string): ChatResult {
-    const assessment = trace.assessment ?? assess('', [], env.names, env.context);
+  const assessment = trace.assessment ?? assess('', [], env.names, env.context);
   const { answer, codes } = readCitations(env, rawAnswer);
   const assessed = new Map(assessment.sources.map((s) => [s.code.toUpperCase(), s]));
   let citations = codes.flatMap((code): AssessedSource[] => {
