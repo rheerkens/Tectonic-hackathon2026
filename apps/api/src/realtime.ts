@@ -110,6 +110,8 @@ export function createRealtime(deps: { db: Database; authenticator: Authenticato
       });
       if (ws.data.authTimer) clearTimeout(ws.data.authTimer);
       ws.data.authTimer = null;
+      // Re-auth resets the socket: drop the previous principal's rooms/presence, subscribe again afresh.
+      for (const projectId of [...ws.data.subscriptions]) leaveRoom(ws, projectId, true);
       ws.data.principal = principal;
       send(ws, {
         type: 'hello',
