@@ -7,7 +7,8 @@ import { stream } from 'hono/streaming';
 import type { AppContext, AppEnv } from '../app.ts';
 import { getCodexStatus } from '../project-chat/codex.ts';
 import { runProjectChat } from '../project-chat/runner.ts';
-import { badRequest, conflict } from '../errors.ts';
+import { badRequest, conflict, rateLimited } from '../errors.ts';
+import { createRateLimiter } from '../rate-limit.ts';
 import { requireProjectAccess } from '../permissions.ts';
 import { jsonBody } from '../validate.ts';
 
@@ -18,6 +19,7 @@ export type ChatStatusReader = () => Promise<ChatStatus>;
 export function projectChatRoutes(ctx: AppContext, run: ChatRunner = runProjectChat, readStatus: ChatStatusReader = () => getCodexStatus({ productionLike: ctx.config.productionLike })) {
   const router = new Hono<AppEnv>();
   const active = new Set<string>();
+  const retryAfter = createRateLimiter(10);
 
   async function accessibleProjectIds(userId: string): Promise<string[]> {
     const memberships = await ctx.db.select({ projectId: projectMembers.projectId })
@@ -74,6 +76,10 @@ export function projectChatRoutes(ctx: AppContext, run: ChatRunner = runProjectC
     const projectId = c.req.param('projectId');
     const userId = c.get('principal').userId;
     await requireProjectAccess(ctx.db, projectId, userId, 'viewer');
+    const wait = retryAfter(userId);
+    if (wait > 0) {
+      return c.json(rateLimited(`Too many messages. Try again in ${wait} seconds.`).toBody(), 429, { 'Retry-After': String(wait) });
+    }
     const status = await readStatus();
     if (!status.available) throw badRequest(status.message);
     const key = `${projectId}:${userId}`;
