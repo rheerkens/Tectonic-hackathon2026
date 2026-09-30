@@ -1029,7 +1029,7 @@ textarea:focus {
 }
 .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); }
 .tabs button { background: none; border: 0; padding: 8px 14px; font: inherit; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
-.tabs button.is-active { color: var(--text); border-bottom-color: var(--lens); font-weight: 600; }
+.tabs button.is-active { color: var(--text); border-bottom-color: #e80137; font-weight: 600; }
 .lens { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; overflow: auto; min-height: 0; }
 @media (max-width: 1000px) { .lens { grid-template-columns: 1fr; } }
 .lens-main, .lens-rail, .answer { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
