@@ -5,6 +5,16 @@ import pkg from '../package.json' with { type: 'json' };
 export type AuthMode = AuthSource;
 export type EnvLike = Record<string, string | undefined>;
 
+export interface LlmConfig {
+  apiKey: string;
+  model: string;
+  /** Overall deadline for one chat request's model loop. */
+  timeoutMs: number;
+}
+
+export const DEFAULT_LLM_MODEL = 'claude-haiku-4-5';
+export const DEFAULT_LLM_TIMEOUT_MS = 25_000;
+
 export class ConfigError extends Error {
   constructor(message: string) {
     super(message);
@@ -24,6 +34,8 @@ export interface AppConfig {
   serveStatic: boolean;
   staticDir: string;
   autoMigrate: boolean;
+  /** Chat model. null without ANTHROPIC_API_KEY: chat then runs its deterministic fallback only. */
+  llm: LlmConfig | null;
   version: string;
 }
 
@@ -90,6 +102,16 @@ function parsePort(value: string | undefined, fallback: number): number {
   return port;
 }
 
+/** No ANTHROPIC_API_KEY means no LLM: the demo must never depend on an API. */
+function resolveLlm(env: EnvLike): LlmConfig | null {
+  const apiKey = env.ANTHROPIC_API_KEY?.trim();
+  if (!apiKey) return null;
+  const rawTimeout = env.LLM_TIMEOUT_MS?.trim();
+  const timeoutMs = rawTimeout ? Number(rawTimeout) : DEFAULT_LLM_TIMEOUT_MS;
+  if (!Number.isInteger(timeoutMs) || timeoutMs < 1000) throw new ConfigError(`Invalid LLM_TIMEOUT_MS "${rawTimeout}" (milliseconds, at least 1000)`);
+  return { apiKey, model: env.LLM_MODEL?.trim() || DEFAULT_LLM_MODEL, timeoutMs };
+}
+
 export function resolveConfig(env: EnvLike = process.env): AppConfig {
   const authMode = resolveAuthMode(env);
   const productionLike = isProductionLike(env);
@@ -115,6 +137,7 @@ export function resolveConfig(env: EnvLike = process.env): AppConfig {
     serveStatic: env.SERVE_STATIC !== undefined ? env.SERVE_STATIC === '1' || env.SERVE_STATIC === 'true' : productionLike,
     staticDir: env.STATIC_DIR?.trim() || defaultStaticDir,
     autoMigrate: env.AUTO_MIGRATE === '1' || env.AUTO_MIGRATE === 'true',
+    llm: resolveLlm(env),
     version: pkg.version,
   };
 }
