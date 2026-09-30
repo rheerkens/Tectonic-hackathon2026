@@ -71,6 +71,9 @@ export const sources = pgTable(
     ownerId: text('owner_id').references(() => users.id, { onDelete: 'set null' }),
     approvedById: text('approved_by_id').references(() => users.id, { onDelete: 'set null' }),
     traceable: boolean('traceable').notNull().default(true),
+    /** Someone doubts this source; visible to everyone, resolved by the owner. */
+    disputed: boolean('disputed').notNull().default(false),
+    disputedById: text('disputed_by_id').references(() => users.id, { onDelete: 'set null' }),
     supersededBy: text('superseded_by'),
     ...timestamps,
   },

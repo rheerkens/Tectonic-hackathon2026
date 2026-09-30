@@ -60,6 +60,7 @@ export const HealthSchema = z.object({
 });
 export type Health = z.infer<typeof HealthSchema>;
 
+export const DisputeInputSchema = z.object({ disputed: z.boolean() });
 export const OkSchema = z.object({ ok: z.literal(true) });
 
 // ---- knowledge sources -----------------------------------------------------
@@ -87,6 +88,9 @@ export const SourceSchema = z.object({
   approvedById: z.string().nullable(),
   /** Can the claim be traced back to a document or message? */
   traceable: z.boolean(),
+  /** Betwist: iemand twijfelt aan deze bron. */
+  disputed: z.boolean(),
+  disputedById: z.string().nullable(),
   supersededBy: z.string().nullable(),
   createdAt: isoDate,
 });

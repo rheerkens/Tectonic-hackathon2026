@@ -28,6 +28,8 @@ export function serializeSource(row: SourceRow): Source {
     ownerId: row.ownerId,
     approvedById: row.approvedById,
     traceable: row.traceable,
+    disputed: row.disputed,
+    disputedById: row.disputedById,
     supersededBy: row.supersededBy,
     createdAt: iso(row.createdAt),
   };

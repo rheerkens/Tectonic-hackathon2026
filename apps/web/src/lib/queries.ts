@@ -46,9 +46,24 @@ export function useAsk(input: AskInput | null) {
   });
 }
 
+/** Refreshed on `sources.changed` via the `asks` key prefix. */
+export function useSources() {
+  const api = useApiClient();
+  return useQuery({ queryKey: [...keys.asks, 'sources'], queryFn: api.listSources });
+}
+
 export function useNaiveAnswer(input: AskInput | null, enabled: boolean) {
   const api = useApiClient();
   return useQuery({ queryKey: [...keys.asks, 'naive', input], queryFn: () => api.naiveAnswer(input!), enabled: enabled && input !== null });
+}
+
+export function useDisputeSource() {
+  const api = useApiClient();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (v: { sourceId: string; disputed: boolean }) => api.disputeSource(v.sourceId, { disputed: v.disputed }),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: keys.asks }),
+  });
 }
 
 export function useApproveSource() {

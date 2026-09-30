@@ -1,5 +1,5 @@
 import { projectMembers, projects, sources, type Database } from '@tectonic/db';
-import { AskInputSchema, CheckInputSchema, assess, naiveAnswer, roleAtLeast, type Access, type CheckResult } from '@tectonic/shared';
+import { AskInputSchema, CheckInputSchema, DisputeInputSchema, assess, naiveAnswer, scoreSource, verdictFor, roleAtLeast, type Access, type CheckResult } from '@tectonic/shared';
 import { and, eq, inArray } from 'drizzle-orm';
 import { Hono } from 'hono';
 import type { AppContext, AppEnv } from '../app.ts';
@@ -34,6 +34,18 @@ export function knowledgeRoutes(ctx: AppContext) {
     const { teams, rows } = await visibleSources(c.get('principal').userId);
     const clients = [...new Set(rows.map((r) => r.client).filter((x): x is string => x !== null))].sort();
     return c.json({ teams, clients, examples: EXAMPLES } satisfies Access);
+  });
+
+  router.get('/api/sources', async (c) => {
+    const { teams, rows } = await visibleSources(c.get('principal').userId);
+    const names = new Map(teams.map((t) => [t.id, t.name]));
+    const period = new Date().toISOString().slice(0, 7);
+    return c.json(
+      rows.map(serializeSource).map((s) => {
+        const ctx = { country: s.country, client: s.client, period };
+        return { ...s, projectName: names.get(s.projectId) ?? '', onderbouwing: scoreSource(s, ctx), verdict: verdictFor(s, ctx) };
+      }),
+    );
   });
 
   router.post('/api/ask', jsonBody(AskInputSchema), async (c) => {
@@ -85,6 +97,25 @@ export function knowledgeRoutes(ctx: AppContext) {
       .set({ status: 'approved', approvedById: principal.userId, ownerId: source.ownerId ?? principal.userId, updatedAt: new Date() })
       .where(and(eq(sources.id, source.id), eq(sources.projectId, source.projectId)));
     // Persisted above; only now do subscribers hear about it.
+    realtime.publish(source.projectId, { kind: 'sources.changed' }, principal.userId);
+    return c.json({ ok: true as const });
+  });
+
+  router.post('/api/sources/:sourceId/dispute', jsonBody(DisputeInputSchema), async (c) => {
+    const principal = c.get('principal');
+    const { disputed } = c.req.valid('json');
+    const [source] = await db.select().from(sources).where(eq(sources.id, c.req.param('sourceId'))).limit(1);
+    const role = source ? await getProjectRole(db, source.projectId, principal.userId) : null;
+    if (!source || !role) throw notFound('Source');
+    if (!roleAtLeast(role, 'editor')) throw forbidden('Your role cannot dispute sources');
+    // Anyone may raise doubt; only the accountable owner may declare it resolved.
+    if (!disputed && source.ownerId !== principal.userId && !(role === 'owner' && source.ownerId === null)) {
+      throw forbidden('Only the owner of this source can resolve a dispute');
+    }
+    await db
+      .update(sources)
+      .set({ disputed, disputedById: disputed ? principal.userId : null, updatedAt: new Date() })
+      .where(and(eq(sources.id, source.id), eq(sources.projectId, source.projectId)));
     realtime.publish(source.projectId, { kind: 'sources.changed' }, principal.userId);
     return c.json({ ok: true as const });
   });
