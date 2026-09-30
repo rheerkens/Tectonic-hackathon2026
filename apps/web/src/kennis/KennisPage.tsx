@@ -1,4 +1,4 @@
-import { COUNTRIES, COUNTRY_LABELS, type AskInput, type AssessedSource, type Country, type Verdict } from '@tectonic/shared';
+import { COUNTRIES, COUNTRY_LABELS, scoreSource, type AskInput, type AssessedSource, type Country, type Verdict } from '@tectonic/shared';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useSession } from '../auth/context.ts';
 import { ConnectionStatus } from '../components/ConnectionStatus.tsx';
@@ -98,7 +98,27 @@ function Sidebar({ teams }: { teams: Array<{ id: string; name: string }> }) {
   );
 }
 
-function Panel({ source, users, canApprove }: { source: AssessedSource; users: Map<string, { name: string; email: string | null }>; canApprove: boolean }) {
+// Tijdreis: herbereken de onderbouwing voor een andere periode, puur in de browser.
+const TRAVEL = Array.from({ length: 24 }, (_, i) => `${2026 + Math.floor(i / 12)}-${String((i % 12) + 1).padStart(2, '0')}`);
+
+function TimeTravel({ source, country, client }: { source: AssessedSource; country: Country; client: string | null }) {
+  const [i, setI] = useState(TRAVEL.indexOf('2026-10'));
+  const period = TRAVEL[i]!;
+  const { score, checks } = scoreSource(source, { country, client, period });
+  const valid = checks.find((c) => c.key === 'valid')!;
+  return (
+    <>
+      <h3 className="kn-h3">Tijdreis</h3>
+      <input type="range" min={0} max={TRAVEL.length - 1} value={i} onChange={(e) => setI(Number(e.target.value))} aria-label="Periode" style={{ width: '100%' }} />
+      <p className="kn-line">
+        <Icon name="calendar" /> {monthLabel(period)}: <b>{score}</b> / 100 · {valid.label} {valid.points}/{valid.max}
+      </p>
+      <hr />
+    </>
+  );
+}
+
+function Panel({ source, users, canApprove, country, client }: { source: AssessedSource; users: Map<string, { name: string; email: string | null }>; canApprove: boolean; country: Country; client: string | null }) {
   const approve = useApproveSource();
   const toasts = useToasts();
   const owner = source.ownerId ? users.get(source.ownerId) : undefined;
@@ -147,6 +167,7 @@ function Panel({ source, users, canApprove }: { source: AssessedSource; users: M
         <Icon name="calendar" /> {dateLabel(source.validFrom)} {source.validTo ? `t/m ${dateLabel(source.validTo)}` : 'en doorlopend'}
       </p>
       <hr />
+      <TimeTravel key={source.id} source={source} country={country} client={client} />
       <h3 className="kn-h3">Toegang</h3>
       <p className="kn-line">
         <Icon name="lock" /> {source.projectName}
@@ -382,7 +403,7 @@ export function KennisPage() {
         )}
         <CheckPanel country={country} />
       </main>
-      {selected ? <Panel source={selected} users={userMap} canApprove={canApprove} /> : <aside className="kn-panel" />}
+      {selected ? <Panel source={selected} users={userMap} canApprove={canApprove} country={country} client={client} /> : <aside className="kn-panel" />}
     </div>
   );
 }
