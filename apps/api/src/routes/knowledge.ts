@@ -12,7 +12,16 @@ import { extractClaims } from '../claims.ts';
 import { takeLlmBudget } from '../llm-budget.ts';
 import { jsonBody } from '../validate.ts';
 
-const EXAMPLES = ['Tot wanneer mag Atlas loonmutaties aanleveren?', 'Binnen welke termijn moet een ziekmelding doorgegeven worden?'];
+/**
+ * Questions for the chat chips and the first load of the search page; see docs/demo-scenarios.md. The first one is the main demo
+ * question (the search page opens on it). Order matters: reliable answer, conflicting sources, access-scoped answer, knowledge gap.
+ */
+const EXAMPLES = [
+  'Tot wanneer mag Atlas loonmutaties aanleveren?',
+  'Binnen welke termijn moet een ziekmelding doorgegeven worden?',
+  'Wanneer wordt de eindejaarspremie voor Atlas uitbetaald?',
+  'Wat is de regel voor de dertiende maand?',
+];
 
 export function knowledgeRoutes(ctx: AppContext) {
   const { db, realtime, config } = ctx;

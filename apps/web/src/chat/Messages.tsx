@@ -73,7 +73,8 @@ function GapNote({ topic, context }: { topic: string | null; context: ChatContex
 }
 
 export function AssistantMessage({ entry, userName }: { entry: AssistantEntry; userName: UserLookup }) {
-  const { result, context } = entry;
+  const { result } = entry;
+  const context = result.context; // what the answer was rated for; differs from the chips when the question names another country or month
   const baseId = useId();
   const [openCode, setOpenCode] = useState<string | null>(null);
 
