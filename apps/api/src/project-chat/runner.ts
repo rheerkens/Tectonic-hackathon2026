@@ -1,6 +1,6 @@
 import { Agent, type AgentEvent, type AgentMessage, type StreamFn } from '@earendil-works/pi-agent-core';
 import type { Api, Model } from '@earendil-works/pi-ai';
-import { CHAT_MAX_REPLY, CHAT_MAX_TOOLS, CHAT_MAX_TOOL_RESULT, ProjectChatToolNameSchema, type ChatEvent, type ProjectChatToolCall, type ProjectChatTurn } from '@tectonic/shared';
+import { CHAT_MAX_HISTORY_CHARS, CHAT_MAX_REPLY, CHAT_MAX_TOOLS, CHAT_MAX_TOOL_RESULT, ProjectChatToolNameSchema, type ChatEvent, type ProjectChatToolCall, type ProjectChatTurn } from '@tectonic/shared';
 import type { AppContext } from '../app.ts';
 import { getCodexModel, readCodexToken } from './codex.ts';
 import { createTeamTools } from './tools.ts';
@@ -41,8 +41,17 @@ function safeFailure(): string {
 }
 
 function historyMessages(history: ProjectChatTurn[], model: Model<Api>): AgentMessage[] {
-  return history
-    .filter((turn) => turn.status === 'completed')
+  // Keep a contiguous suffix of complete user/assistant pairs. Never truncate a reply or
+  // leave an assistant response without its question, and always preserve the new prompt.
+  const recent: ProjectChatTurn[] = [];
+  let chars = 0;
+  for (const turn of history.filter((turn) => turn.status === 'completed').slice(-20).reverse()) {
+    const size = turn.message.length + turn.reply.length;
+    if (chars + size > CHAT_MAX_HISTORY_CHARS) break;
+    chars += size;
+    recent.unshift(turn);
+  }
+  return recent
     .flatMap((turn): AgentMessage[] => [
       { role: 'user', content: [{ type: 'text', text: turn.message }], timestamp: Date.parse(turn.createdAt) || Date.now() },
       { role: 'assistant', content: [{ type: 'text', text: turn.reply }], api: model.api, provider: model.provider, model: model.id, stopReason: 'stop', timestamp: Date.parse(turn.createdAt) || Date.now(), usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, totalTokens: 0, cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 } } },
