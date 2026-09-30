@@ -25,6 +25,8 @@ function loadManifest() {
 }
 
 function loadBlob(src: string) {
+  // Only same-origin absolute paths ("/mascots/..."); anything else (other hosts, "//host") is refused.
+  if (!/^\/(?!\/)/.test(src)) return Promise.reject(new Error('Finn animation unavailable'));
   if (!blobs.has(src)) blobs.set(src, fetch(src).then((response) => {
     if (!response.ok) throw new Error('Finn animation unavailable');
     return response.blob();
