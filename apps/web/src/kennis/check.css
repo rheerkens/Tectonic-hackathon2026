@@ -1,6 +1,7 @@
 .kc { margin-top: 28px; }
 .kc textarea { width: 100%; padding: 10px 12px; border: 1px solid #c4c7d3; border-radius: 4px; font: inherit; resize: vertical; }
-.kc-actions { display: flex; gap: 8px; margin: 8px 0 12px; }
+.kc-actions { display: flex; gap: 8px; align-items: stretch; margin: 8px 0 12px; }
+.kc-actions .kn-btn { width: auto; margin-top: 0; border: 1px solid var(--kn-primary); }
 .kc-claim { margin-top: 10px; }
 .kc-conflict { margin: 6px 0 0; font-size: 14px; }
 .kc-error { color: #e80137; }
