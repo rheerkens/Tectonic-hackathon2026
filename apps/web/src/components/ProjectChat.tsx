@@ -3,6 +3,7 @@ import type { ChatStatus, ProjectChatToolCall, ProjectChatTurn } from '@tectonic
 import { useSession } from '../auth/context.ts';
 import { ApiError } from '../lib/api.ts';
 import { postProjectChat } from '../lib/chat.ts';
+import { Finn, type FinnMood } from './Finn.tsx';
 import { useApiClient } from '../lib/queries.ts';
 
 const ChatMarkdown = lazy(() => import('./ChatMarkdown.tsx').then((module) => ({ default: module.ChatMarkdown })));
@@ -201,6 +202,10 @@ export function ProjectChat({ teams }: ProjectChatProps) {
   }, [close, open]);
 
   const entries: ChatEntry[] = [...history, ...(live ? [live] : [])];
+  const lastTurn = entries.at(-1);
+  const finnMood: FinnMood = sending ? 'thinking' : error ? 'retry' : message.trim() ? 'listening'
+    : lastTurn?.status === 'cancelled' ? 'uncertain' : lastTurn?.status === 'failed' ? 'retry'
+    : lastTurn ? 'answer' : 'idle';
 
   return (
     <div className="project-chat-launcher">
@@ -226,13 +231,13 @@ export function ProjectChat({ teams }: ProjectChatProps) {
         {sending ? <button type="button" className="kn-btn chat-action chat-action--quiet" onClick={stop}>Stop</button> : <button type="submit" className="kn-btn chat-action" disabled={!message.trim() || status?.available !== true}>Verstuur</button>}
       </form>
       </section>}
-      <button ref={launcher} type="button" className="chat-launch-button" aria-label={open ? 'Projectchat sluiten' : 'Projectchat openen'} aria-expanded={open} disabled={teams.length === 0} title={teams.length === 0 ? 'Geen team beschikbaar voor de chat' : undefined} onClick={() => {
+      <button ref={launcher} type="button" className="chat-launch-button chat-launch-button--finn" aria-label={open ? 'Projectchat sluiten' : 'Projectchat openen'} aria-expanded={open} disabled={teams.length === 0} title={teams.length === 0 ? 'Geen team beschikbaar voor de chat' : 'Kennisassistent Finn'} onClick={() => {
         if (open) close(); else {
           setOpen(true);
           if (!controller.current) void reload();
         }
       }}>
-        {open ? <span aria-hidden="true">×</span> : <AssistantIcon />}
+        <Finn mood={finnMood} replayKey={lastTurn?.id ?? 'idle'} className="chat-launch-finn" />
       </button>
     </div>
   );

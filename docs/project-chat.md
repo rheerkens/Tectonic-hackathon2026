@@ -23,3 +23,7 @@ Tool names use lowercase letters, digits, and underscores. The shared event sche
 ## Source references
 
 The local source checkouts are `/tmp/t3code` and `/tmp/pi-agent`. The panel follows T3 Code's chat composer, timeline, and tool activity presentation. Pi provides the agent loop, argument validation, tool execution, and provider transport through the pinned `@earendil-works/pi-agent-core` and `@earendil-works/pi-ai` packages.
+
+## Finn animation feedback
+
+The floating launcher uses the shared Finn player. A draft selects listening; an active streamed request and its tool lookups select thinking; completion selects answer, cancellation selects uncertain and a failure selects retry. Result gestures return to idle after playback. Enter and Verstuur still invoke the existing authenticated `postProjectChat` flow. Reduced motion displays static posters and hidden tabs pause playback.

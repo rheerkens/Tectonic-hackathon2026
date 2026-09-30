@@ -35,11 +35,11 @@ export function useAccess() {
   return useQuery({ queryKey: keys.access, queryFn: api.access });
 }
 
-/** Recomputed whenever sources change: the server publishes `sources.changed` and the realtime layer invalidates this key. */
-export function useAsk(input: AskInput | null) {
+/** Each explicit submission runs again; source changes also invalidate the shared `asks` prefix. */
+export function useAsk(input: AskInput | null, submission = 0) {
   const api = useApiClient();
   return useQuery({
-    queryKey: [...keys.asks, input],
+    queryKey: [...keys.asks, input, submission],
     queryFn: () => api.ask(input!),
     enabled: input !== null,
     placeholderData: (previous) => previous,

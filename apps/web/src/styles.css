@@ -1160,6 +1160,8 @@ textarea:focus {
 .chat-launch-button:disabled { opacity: .55; cursor: default; }
 .chat-launch-button > span:first-child { font-size: 27px; font-weight: 350; line-height: 1; }
 .chat-launch-button svg { width: 24px; height: 24px; }
+.chat-launch-button--finn { width: 72px; height: 72px; }
+.chat-launch-finn { width: 70px; height: 70px; }
 .chat-launch-button:focus-visible, .chat-close:focus-visible, .chat-tool button:focus-visible { outline: 3px solid var(--kn-primary, #4338ca); outline-offset: 2px; }
 .project-chat {
   --chat-ink: var(--kn-ink, #141a33);
@@ -1169,11 +1171,11 @@ textarea:focus {
   --chat-soft: var(--kn-primary-soft, #eceefe);
   position: absolute;
   right: 0;
-  bottom: 68px;
+  bottom: 86px;
   display: flex;
   flex-direction: column;
   width: min(420px, calc(100vw - 32px));
-  height: min(620px, calc(100dvh - 112px));
+  height: min(620px, calc(100dvh - 132px));
   min-height: 320px;
   overflow: hidden;
   border: 1px solid var(--chat-line);
@@ -1271,5 +1273,5 @@ textarea:focus {
 .chat-error .chat-action { flex: none; padding: 7px 12px; font-size: 12px; }
 @media (max-width: 520px) {
   .project-chat-launcher { right: 12px; bottom: 12px; left: 12px; display: flex; justify-content: flex-end; }
-  .project-chat { right: 0; bottom: 66px; left: auto; width: 100%; height: min(620px, calc(100dvh - 96px)); min-height: 280px; border-radius: 15px; }
+  .project-chat { right: 0; bottom: 86px; left: auto; width: 100%; height: min(620px, calc(100dvh - 112px)); min-height: 280px; border-radius: 15px; }
 }
