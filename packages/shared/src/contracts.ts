@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AccessSchema, AskInputSchema, AskResultSchema, HealthSchema, MeSchema, OkSchema, UserSchema } from './schemas.ts';
+import { AccessSchema, AskInputSchema, AskResultSchema, CheckInputSchema, CheckResultSchema, HealthSchema, MeSchema, OkSchema, UserSchema } from './schemas.ts';
 
 export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
@@ -43,6 +43,8 @@ export const api = {
   access: route('GET', '/api/access', { response: AccessSchema }),
   /** Answers a question from the sources the caller may see, for a country, client and period. */
   ask: route('POST', '/api/ask', { body: AskInputSchema, response: AskResultSchema }),
+  /** Checks a pasted message (e.g. from Teams) against the sources: which claims hold, and what contradicts them. */
+  check: route('POST', '/api/check', { body: CheckInputSchema, response: CheckResultSchema }),
   /** The source owner (or the team owner, for an ownerless source) confirms a source is approved. */
   approveSource: route('POST', '/api/sources/:sourceId/approve', { response: OkSchema }),
 } as const;

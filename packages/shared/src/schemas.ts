@@ -145,6 +145,21 @@ export const AskInputSchema = z.object({
 });
 export type AskInput = z.input<typeof AskInputSchema>;
 
+// ---- check (paste a Teams message) ------------------------------------------
+export const CheckInputSchema = z.object({
+  text: z.string().trim().min(3, 'Plak een bericht').max(2000),
+  country: CountrySchema,
+});
+export type CheckInput = z.input<typeof CheckInputSchema>;
+
+export const CheckResultSchema = z.object({
+  /** The claims found in the text (one per sentence) and how well the sources back each. */
+  claims: z.object({ text: z.string(), topic: z.string().nullable(), status: AnswerStatusSchema, statusLabel: z.string() }).array(),
+  /** Per claim, the sources on the same topic that do not apply or disagree, with their trust. */
+  contradictions: z.object({ claim: z.string(), source: AssessedSourceSchema }).array(),
+});
+export type CheckResult = z.infer<typeof CheckResultSchema>;
+
 /** Role hierarchy helper shared by the API and the UI. */
 const ROLE_RANK: Record<MemberRole, number> = { viewer: 0, editor: 1, owner: 2 };
 export function roleAtLeast(role: MemberRole | null | undefined, required: MemberRole): boolean {
