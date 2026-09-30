@@ -72,7 +72,7 @@ function Sidebar({ teams }: { teams: Array<{ id: string; name: string }> }) {
   return (
     <aside className="kn-sidebar" aria-label="Werkruimte">
       <div className="kn-section">Werkruimte</div>
-      <a href="#/" className="kn-nav is-active" aria-current="page">
+      <a href="#/" className="kn-nav is-active" aria-current="page" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); document.querySelector<HTMLInputElement>('.kn-ask input')?.select(); }}>
         <Icon name="search" /> Kennis zoeken
       </a>
       <hr />
