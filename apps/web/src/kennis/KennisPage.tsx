@@ -12,6 +12,7 @@ import { useAccess, useApproveSource, useAsk, useNaiveAnswer, useUsers } from '.
 import { useRealtime, useTeamSubscriptions } from '../realtime/RealtimeProvider.tsx';
 import { KennisKaart } from './KennisKaart.tsx';
 import { CheckPanel } from './CheckPanel.tsx';
+import { SourceAudience } from './SourceAudience.tsx';
 import { DisputeControls } from './DisputeControls.tsx';
 import './kennis.css';
 
@@ -213,8 +214,9 @@ function Panel({ source, users, canApprove, canDispute, canResolve, country, cli
       <TimeTravel key={source.id} source={source} country={country} client={client} />
       <h3 className="kn-h3">Toegang</h3>
       <p className="kn-line">
-        <Icon name="lock" /> {source.projectName}
+        <Icon name="lock" /> Wie mag dit zien
       </p>
+      <SourceAudience source={source} projectName={source.projectName} />
       {canApprove && (
         <button
           type="button"

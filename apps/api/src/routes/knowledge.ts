@@ -5,7 +5,7 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AppContext, AppEnv } from '../app.ts';
 import { conflict, forbidden, notFound } from '../errors.ts';
-import { getProjectRole } from '../permissions.ts';
+import { getProjectRole, userCanSeeSource } from '../permissions.ts';
 import { serializeSource } from '../serializers.ts';
 import { visibleSources as loadVisibleSources } from '../sources.ts';
 import { extractClaims } from '../claims.ts';
@@ -79,7 +79,7 @@ export function knowledgeRoutes(ctx: AppContext) {
     const [source] = await db.select().from(sources).where(eq(sources.id, c.req.param('sourceId'))).limit(1);
     const role = source ? await getProjectRole(db, source.projectId, principal.userId) : null;
     // Not a member means "no such source": the existence of a source in a team you cannot see is not revealed.
-    if (!source || !role) throw notFound('Source');
+    if (!source || !role || !(await userCanSeeSource(db, source, principal.userId))) throw notFound('Source');
     if (!roleAtLeast(role, 'editor')) throw forbidden('Your role cannot approve sources');
     // Only the accountable owner can vouch for a source; the team owner can adopt an ownerless one.
     if (source.ownerId !== principal.userId && !(role === 'owner' && source.ownerId === null)) {
@@ -92,7 +92,7 @@ export function knowledgeRoutes(ctx: AppContext) {
       .set({ status: 'approved', approvedById: principal.userId, ownerId: source.ownerId ?? principal.userId, updatedAt: new Date() })
       .where(and(eq(sources.id, source.id), eq(sources.projectId, source.projectId)));
     // Persisted above; only now do subscribers hear about it.
-    realtime.publish(source.projectId, { kind: 'sources.changed' }, principal.userId);
+    realtime.publish(source.projectId, { kind: 'sources.changed' }, principal.userId, source.audienceProjectIds);
     return c.json({ ok: true as const });
   });
 
@@ -101,7 +101,7 @@ export function knowledgeRoutes(ctx: AppContext) {
     const { disputed } = c.req.valid('json');
     const [source] = await db.select().from(sources).where(eq(sources.id, c.req.param('sourceId'))).limit(1);
     const role = source ? await getProjectRole(db, source.projectId, principal.userId) : null;
-    if (!source || !role) throw notFound('Source');
+    if (!source || !role || !(await userCanSeeSource(db, source, principal.userId))) throw notFound('Source');
     if (!roleAtLeast(role, 'editor')) throw forbidden('Your role cannot dispute sources');
     // Anyone may raise doubt; only the accountable owner may declare it resolved.
     if (!disputed && source.ownerId !== principal.userId && !(role === 'owner' && source.ownerId === null)) {
@@ -111,7 +111,7 @@ export function knowledgeRoutes(ctx: AppContext) {
       .update(sources)
       .set({ disputed, disputedById: disputed ? principal.userId : null, updatedAt: new Date() })
       .where(and(eq(sources.id, source.id), eq(sources.projectId, source.projectId)));
-    realtime.publish(source.projectId, { kind: 'sources.changed' }, principal.userId);
+    realtime.publish(source.projectId, { kind: 'sources.changed' }, principal.userId, source.audienceProjectIds);
     return c.json({ ok: true as const });
   });
 
