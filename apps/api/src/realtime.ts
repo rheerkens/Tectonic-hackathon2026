@@ -19,6 +19,9 @@ export interface SocketData {
   authTimer: ReturnType<typeof setTimeout> | null;
   /** Messages from one socket are handled strictly in order (subscribe awaits the database). */
   queue: Promise<void>;
+  /** Messages received but not yet handled; bounded so a silent client cannot pile up work. */
+  pending: number;
+  badMessages: number;
 }
 
 export interface Realtime {
@@ -35,6 +38,10 @@ export interface Realtime {
 }
 
 const AUTH_TIMEOUT_MS = 5_000;
+const MAX_PENDING = 20;
+const MAX_PENDING_UNAUTHENTICATED = 3;
+const MAX_BAD_MESSAGES = 5;
+const REVALIDATE_INTERVAL_MS = 30_000;
 
 export function createRealtime(deps: { db: Database; authenticator: Authenticator; log: Logger }): Realtime {
   const { db, authenticator, log } = deps;
@@ -85,6 +92,11 @@ export function createRealtime(deps: { db: Database; authenticator: Authenticato
     broadcastPresence(projectId);
   };
 
+  const evict = (ws: ServerWebSocket<SocketData>, projectId: string) => {
+    send(ws, { type: 'error', code: 'forbidden', message: 'Your access to this project was removed', projectId });
+    leaveRoom(ws, projectId, true);
+  };
+
   const subscribe = async (ws: ServerWebSocket<SocketData>, projectId: string) => {
     const principal = ws.data.principal;
     if (!principal) return send(ws, { type: 'error', code: 'unauthorized', message: 'Authenticate first', projectId });
@@ -108,6 +120,7 @@ export function createRealtime(deps: { db: Database; authenticator: Authenticato
         authorization: input.token ? `Bearer ${input.token}` : null,
         devUser: input.devUser ?? null,
       });
+      if (ws.readyState !== 1) return; // closed while authenticating: do not touch state
       if (ws.data.authTimer) clearTimeout(ws.data.authTimer);
       ws.data.authTimer = null;
       // Re-auth resets the socket: drop the previous principal's rooms/presence, subscribe again afresh.
@@ -121,6 +134,7 @@ export function createRealtime(deps: { db: Database; authenticator: Authenticato
         serverTime: new Date().toISOString(),
       });
     } catch (error) {
+      if (ws.readyState !== 1) return;
       const message = error instanceof ApiError ? error.message : 'Authentication failed';
       send(ws, { type: 'error', code: 'unauthorized', message });
       ws.close(4401, 'unauthorized');
@@ -138,8 +152,13 @@ export function createRealtime(deps: { db: Database; authenticator: Authenticato
       }, AUTH_TIMEOUT_MS);
     },
     message(ws, raw) {
-      ws.data.queue = ws.data.queue.then(() => handleMessage(ws, raw)).catch((error) => {
+      const limit = ws.data.principal ? MAX_PENDING : MAX_PENDING_UNAUTHENTICATED;
+      if (ws.data.pending >= limit) return ws.close(1008, 'too many pending messages');
+      ws.data.pending += 1;
+      ws.data.queue = ws.data.queue.then(() => (ws.readyState === 1 ? handleMessage(ws, raw) : undefined)).catch((error) => {
         log.warn('realtime message failed', { message: error instanceof Error ? error.message : String(error) });
+      }).finally(() => {
+        ws.data.pending -= 1;
       });
     },
     close(ws) {
@@ -157,6 +176,7 @@ export function createRealtime(deps: { db: Database; authenticator: Authenticato
       parsed = { success: false as const, error: null };
     }
     if (!parsed.success) {
+      if (++ws.data.badMessages >= MAX_BAD_MESSAGES) return ws.close(1008, 'too many invalid messages');
       return send(ws, { type: 'error', code: 'bad_message', message: 'Malformed message' });
     }
     const message = parsed.data;
@@ -175,25 +195,28 @@ export function createRealtime(deps: { db: Database; authenticator: Authenticato
     }
   }
 
-  return {
+  // No API route changes membership yet, so sweep periodically as a backstop to the per-publish check.
+  setInterval(() => {
+    for (const projectId of [...rooms.keys()]) void api.revalidateSubscribers(projectId).catch(() => {});
+  }, REVALIDATE_INTERVAL_MS).unref();
+
+  const api: Realtime = {
     attach(s) {
       server = s;
     },
     publish(projectId, event, actorId, audienceProjectIds = []) {
       seq += 1;
       const message: ServerMessage = { type: 'event', projectId, seq, actorId, event };
-      if (audienceProjectIds.length > 0) {
-        // Restricted source: only subscribers who are in every audience team hear about it.
-        for (const ws of [...(rooms.get(projectId)?.values() ?? [])]) {
-          const userId = ws.data.principal?.userId;
-          if (!userId) continue;
-          void Promise.all(audienceProjectIds.map((id) => getProjectRole(db, id, userId))).then((roles) => {
-            if (roles.every((r) => r !== null)) send(ws, message);
-          }).catch(() => {});
-        }
-        return;
+      // Every recipient is re-checked against the database: a revoked member never receives the event
+      // (and is evicted), and a restricted source only reaches members of every audience team.
+      for (const ws of [...(rooms.get(projectId)?.values() ?? [])]) {
+        const userId = ws.data.principal?.userId;
+        if (!userId) continue;
+        void Promise.all([projectId, ...audienceProjectIds].map((id) => getProjectRole(db, id, userId))).then(([own, ...rest]) => {
+          if (!own) return evict(ws, projectId);
+          if (rest.every((r) => r !== null)) send(ws, message);
+        }).catch(() => {});
       }
-      broadcast(projectId, message);
       log.debug('realtime.publish', { projectId, kind: event.kind, seq });
     },
     async revalidateSubscribers(projectId) {
@@ -202,15 +225,12 @@ export function createRealtime(deps: { db: Database; authenticator: Authenticato
       for (const ws of [...room.values()]) {
         const principal = ws.data.principal;
         const role = principal ? await getProjectRole(db, projectId, principal.userId) : null;
-        if (!role) {
-          send(ws, { type: 'error', code: 'forbidden', message: 'Your access to this project was removed', projectId });
-          leaveRoom(ws, projectId, true);
-        }
+        if (!role) evict(ws, projectId);
       }
     },
     upgrade(request, s) {
       if (!server) server = s;
-      const data: SocketData = { id: String(nextConnectionId++), principal: null, subscriptions: new Set(), authTimer: null, queue: Promise.resolve() };
+      const data: SocketData = { id: String(nextConnectionId++), principal: null, subscriptions: new Set(), authTimer: null, queue: Promise.resolve(), pending: 0, badMessages: 0 };
       const ok = s.upgrade(request, { data });
       // Bun ignores the response once the upgrade succeeded; a 426 is returned otherwise.
       return ok ? new Response(null) : new Response('Expected a WebSocket upgrade', { status: 426 });
@@ -218,4 +238,5 @@ export function createRealtime(deps: { db: Database; authenticator: Authenticato
     websocket,
     connectionCount: () => sockets.size,
   };
+  return api;
 }
