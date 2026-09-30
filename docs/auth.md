@@ -13,12 +13,11 @@ Defined once in `packages/shared/src/demo-users.ts` and used by the seed, the te
 
 | id | name | seeded roles |
 |---|---|---|
-| `demo_ada` | Ada Lovelace | owner of Launch Website, editor elsewhere |
-| `demo_grace` | Grace Hopper | owner of Mobile App, editor elsewhere |
-| `demo_margaret` | Margaret Hamilton | owner of Hackathon Ops, **viewer** of Launch Website |
-| `demo_alan` | Alan Turing | editor of Mobile App only (not a member of the others) |
+| `demo_wanne` | Wanne Van Camp | editor of Payroll België and Klantteam Atlas |
+| `demo_roy` | Roy Heerkens | owner of Payroll België and Klantteam Atlas |
+| `demo_sebastien` | Sebastien De Couvreur | editor of Payroll België |
 
-Pick one in the UI, or add `?as=grace` to the URL. Identity is kept in `sessionStorage`, so each browser tab can be a different person.
+Pick one in the UI, or add `?as=roy` to the URL. Identity is kept in `sessionStorage`, so each browser tab can be a different person.
 
 ## Server-side enforcement
 
@@ -48,5 +47,7 @@ Permissions are then checked per project (`viewer` < `editor` < `owner`) for eve
 What is not yet exercised with real keys: the Clerk code paths compile and are wired, but there are no automated tests against a live Clerk instance. The bypass path is what the tests, e2e suite and video use.
 
 ## Native shells
+
+In Clerk mode the API only accepts session tokens whose `azp` is in `CORS_ORIGINS` or equals `https://$RAILWAY_PUBLIC_DOMAIN` (if both are empty the check is skipped). Add every origin that signs in (including native-shell origins) to `CORS_ORIGINS`, or sign-in fails. Rejected tokens get a generic 401; the reason is logged server-side.
 
 Bearer tokens (not cookies) are used everywhere, so Capacitor and Tauri web views work with the hosted API as long as the API's CORS allowlist contains their origins (`capacitor://localhost`, `http://localhost`, `tauri://localhost` are allowed by default; add others via `CORS_ORIGINS`). Clerk OAuth providers need the app's custom URL scheme registered as an allowed redirect in the Clerk dashboard. Details in [mobile-desktop.md](mobile-desktop.md).

@@ -1,6 +1,8 @@
 import { DEMO_USERS, DEV_USER_HEADER, findDemoUser } from '@tectonic/shared';
 import { useCallback, useMemo, useState, type ReactNode } from 'react';
+import { flushSync } from 'react-dom';
 import { Avatar } from '../components/Avatar.tsx';
+import { Brand } from '../components/Brand.tsx';
 import { AuthContext } from './context.ts';
 import type { AuthSession } from './types.ts';
 
@@ -38,9 +40,22 @@ function loadIdentity(): string | null {
 export function DevAuthProvider({ children }: { children: ReactNode }) {
   const [userId, setUserId] = useState<string | null>(loadIdentity);
 
-  const choose = useCallback((id: string) => {
-    sessionStorage.setItem(STORAGE_KEY, id);
-    setUserId(id);
+  const choose = useCallback((id: string | null) => {
+    if (id) sessionStorage.setItem(STORAGE_KEY, id);
+    else sessionStorage.removeItem(STORAGE_KEY);
+    const update = () => flushSync(() => setUserId(id));
+    const focus = () => (document.getElementById('user-menu-trigger') ?? document.querySelector<HTMLElement>('.identity-card h1'))?.focus();
+    if (!document.startViewTransition || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      update();
+      focus();
+      return;
+    }
+    document.documentElement.dataset.userSwitch = '';
+    const transition = document.startViewTransition(update);
+    void transition.finished.finally(() => {
+      delete document.documentElement.dataset.userSwitch;
+      focus();
+    }).catch(() => {}); // A skipped animation does not cancel the identity change.
   }, []);
 
   const session = useMemo<AuthSession | null>(() => {
@@ -51,10 +66,7 @@ export function DevAuthProvider({ children }: { children: ReactNode }) {
       user: { id: user.id, name: user.name, email: user.email, color: user.color },
       getAuthHeaders: async () => ({ [DEV_USER_HEADER]: user.id }),
       getWsAuth: async () => ({ devUser: user.id }),
-      signOut: () => {
-        sessionStorage.removeItem(STORAGE_KEY);
-        setUserId(null);
-      },
+      signOut: () => choose(null),
       switchUser: choose,
     };
   }, [userId, choose]);
@@ -67,30 +79,26 @@ function IdentityPicker({ onChoose }: { onChoose: (id: string) => void }) {
   return (
     <main className="identity-screen" data-testid="identity-picker">
       <div className="identity-card">
-        <div className="brand">
-          <span className="brand-mark" aria-hidden="true" />
-          <span>SD Trust</span>
-        </div>
-        <h1>Who are you today?</h1>
+        <Brand />
+        <h1 tabIndex={-1}>Jouw kennis. Jouw perspectief.</h1>
         <p className="muted">
-          Local development uses a sign-in bypass with deterministic demo identities. Open a second tab as someone else to watch
-          changes sync live. Real sign-in (Clerk) is used in production.
+          Kies een profiel en ontdek welke kennis je kunt vertrouwen. Je werkt hier met fictieve gegevens in een gedeelde demowerkruimte.
         </p>
         <ul className="identity-list">
           {DEMO_USERS.map((user) => (
             <li key={user.id}>
               <button type="button" className="identity-option" onClick={() => onChoose(user.id)} data-testid={`identity-${user.handle}`}>
-                <Avatar name={user.name} color={user.color} size={40} />
+                <Avatar name={user.name} color="var(--accent-soft)" size={44} />
                 <span className="identity-meta">
                   <span className="identity-name">{user.name}</span>
-                  <span className="muted small">{user.email}</span>
+                  <span className="muted small">Open werkruimte</span>
                 </span>
               </button>
             </li>
           ))}
         </ul>
         <p className="muted small">
-          Tip: append <code>?as=grace</code> to the URL to pick an identity without clicking.
+          Vanuit je profielmenu kun je op elk moment van perspectief wisselen.
         </p>
       </div>
     </main>

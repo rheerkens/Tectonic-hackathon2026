@@ -2,10 +2,12 @@ import { projectMembers, projects, sources, type Database } from '@tectonic/db';
 import { AskInputSchema, CheckInputSchema, DisputeInputSchema, assess, naiveAnswer, scoreSource, verdictFor, roleAtLeast, type Access, type CheckResult } from '@tectonic/shared';
 import { and, eq, inArray } from 'drizzle-orm';
 import { Hono } from 'hono';
+import { z } from 'zod';
 import type { AppContext, AppEnv } from '../app.ts';
 import { conflict, forbidden, notFound } from '../errors.ts';
 import { getProjectRole } from '../permissions.ts';
 import { serializeSource } from '../serializers.ts';
+import { extractClaims } from '../llm.ts';
 import { jsonBody } from '../validate.ts';
 
 const EXAMPLES = ['Tot wanneer mag Atlas loonmutaties aanleveren?', 'Binnen welke termijn moet een ziekmelding doorgegeven worden?'];
@@ -55,16 +57,16 @@ export function knowledgeRoutes(ctx: AppContext) {
     return c.json(assess(question, rows.map(serializeSource), names, { country, client, period }));
   });
 
-  // ponytail: stub, sentence split + keyword overlap via assess; no client/NLP, period = this month.
+  // Claims come from the LLM when a key is set, else sentence split (see llm.ts); matching stays keyword overlap via assess.
   router.post('/api/check', jsonBody(CheckInputSchema), async (c) => {
     const { text, country } = c.req.valid('json');
     const { teams, rows } = await visibleSources(c.get('principal').userId);
     const names = new Map(teams.map((t) => [t.id, t.name]));
-    const ctx = { country, client: null, period: new Date().toISOString().slice(0, 7) };
+    const period = new Date().toISOString().slice(0, 7);
     const claims: CheckResult['claims'] = [];
     const contradictions: CheckResult['contradictions'] = [];
-    for (const claim of text.split(/(?<=[.!?])\s+|\n+/).map((x) => x.trim()).filter((x) => x.length >= 3)) {
-      const r = assess(claim, rows.map(serializeSource), names, ctx);
+    for (const { claim, country: found } of await extractClaims(text)) {
+      const r = assess(claim, rows.map(serializeSource), names, { country: found ?? country, client: null, period });
       claims.push({ text: claim, topic: r.topic, status: r.status, statusLabel: r.statusLabel });
       for (const source of r.sources) {
         if (source.verdict.kind !== 'exception' && source.verdict.kind !== 'general') contradictions.push({ claim, source });
@@ -78,6 +80,12 @@ export function knowledgeRoutes(ctx: AppContext) {
     return c.json(naiveAnswer(c.req.valid('json').question, rows.map(serializeSource)));
   });
   // --- end naive answer ---
+
+  // A malformed id is simply "no such source" (not a Postgres uuid error -> 500). Covers every :sourceId route.
+  router.use('/api/sources/:sourceId/*', async (c, next) => {
+    if (!z.uuid().safeParse(c.req.param('sourceId')).success) throw notFound('Source');
+    await next();
+  });
 
   router.post('/api/sources/:sourceId/approve', async (c) => {
     const principal = c.get('principal');
