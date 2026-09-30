@@ -1,6 +1,6 @@
 # Applicatieflow met Finn
 
-Hoe een gebruiker door SD Trust ("Kennis zoeken") loopt en waar de mascotte **Finn** op reageert. Finn staat in **Kennis zoeken** als vraagbubbel met Finn ernaast (`apps/web/src/kennis/FinnStage.tsx`, `understand.ts`): welcome (eenmalig bij een lege vraag), listening/thinking tijdens typen en vragen, thinking tijdens het laden, verified/answer/uncertain bij een resultaat en retry bij een fout. Nog niet gebouwd: de stappen van de tabel hieronder die buiten de zoekpagina vallen. Dit document blijft de specificatie. De animaties staan in [`design/mascot-concepts/finn`](design/mascot-concepts/finn/README.md) (8 states, `manifest.json`). Het chatbackend (`POST /api/chat`, #20) bestaat, de chat-UI (#21, #22) is het aanknopingspunt voor Finn.
+Hoe een gebruiker door SD Trust ("Kennis zoeken") loopt en waar de mascotte **Finn** op reageert. Finn staat (als statische pose, zonder GIF) in **Kennis zoeken** als vraagbubbel met Finn ernaast (`apps/web/src/kennis/FinnStage.tsx`, `understand.ts`): welcome (eenmalig bij een lege vraag), listening/thinking tijdens typen en vragen, thinking tijdens het laden, verified/answer/uncertain bij een resultaat en retry bij een fout. Nog niet gebouwd: de stappen van de tabel hieronder die buiten de zoekpagina vallen. Dit document blijft de specificatie. De animaties staan in [`design/mascot-concepts/finn`](design/mascot-concepts/finn/README.md) (8 states, `manifest.json`). Het chatbackend (`POST /api/chat`, #20) bestaat, de chat-UI (#21, #22) is het aanknopingspunt voor Finn.
 
 ## Principes
 

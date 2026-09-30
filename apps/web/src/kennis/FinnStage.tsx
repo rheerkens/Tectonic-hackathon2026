@@ -7,18 +7,9 @@ import './finn.css';
 export type FinnMood = 'welcome' | 'idle' | 'listening' | 'thinking' | 'answer' | 'verified' | 'uncertain' | 'retry';
 export type Touched = Partial<Record<'country' | 'client' | 'period', boolean>>;
 
-const LOOPS: ReadonlySet<FinnMood> = new Set(['idle', 'thinking']);
-
-/** The existing Finn assets (apps/web/public/mascots/finn): the GIF animates, the PNG is the still for reduced motion. */
-export function Finn({ mood, stamp = 0 }: { mood: FinnMood; stamp?: number }) {
-  const base = `/mascots/finn/finn-${mood}`;
-  return (
-    <picture>
-      <source media="(prefers-reduced-motion: reduce)" srcSet={`${base}.png`} />
-      {/* A fresh element per mood (and per search for one-shot moods) restarts the GIF. */}
-      <img key={LOOPS.has(mood) ? mood : `${mood}-${stamp}`} className="fs-finn" src={`${base}.gif`} width={256} height={256} alt="" />
-    </picture>
-  );
+/** Finn as the existing static poses (apps/web/public/mascots/finn). The pose follows the state; a new pose fades in. */
+export function Finn({ mood }: { mood: FinnMood }) {
+  return <img key={mood} className="fs-finn" src={`/mascots/finn/finn-${mood}.png`} width={256} height={256} alt="" />;
 }
 
 function Marked({ text, spans }: { text: string; spans: Span[] }) {
@@ -52,7 +43,6 @@ export interface FinnStageProps {
   mood: FinnMood;
   /** Finn's line: a question while the user still has to add something, a short result line afterwards. */
   line: string;
-  stamp: number;
 }
 
 export function FinnStage(p: FinnStageProps) {
@@ -114,7 +104,7 @@ export function FinnStage(p: FinnStageProps) {
         <p className="fs-say" role={p.mood === 'thinking' ? 'status' : undefined}>
           {p.line}
         </p>
-        <Finn mood={p.mood} stamp={p.stamp} />
+        <Finn mood={p.mood} />
       </div>
     </div>
   );

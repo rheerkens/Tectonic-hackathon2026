@@ -353,7 +353,6 @@ export function KennisPage() {
           busy={ask.isFetching}
           mood={finn.mood}
           line={finn.line}
-          stamp={runs}
         />
         <div className="kn-chips">
           <button type="button" className={`kn-chip kn-chip--toggle${compare ? ' is-on' : ''}`} aria-pressed={compare} onClick={() => setCompare(!compare)}>
