@@ -6,6 +6,7 @@ CREATE TABLE "chat_turns" (
 	"reply" text DEFAULT '' NOT NULL,
 	"tools" jsonb DEFAULT '[]'::jsonb NOT NULL,
 	"context_project_ids" jsonb DEFAULT '[]'::jsonb NOT NULL,
+	"context_source_access_hash" text DEFAULT '' NOT NULL,
 	"status" text NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );

@@ -2,7 +2,7 @@ import { projectMembers, projects, sources } from '@tectonic/db';
 import type { AgentTool } from '@earendil-works/pi-agent-core';
 import { Type, type Static, type TSchema } from '@earendil-works/pi-ai';
 import { CHAT_MAX_TOOL_RESULT, type ProjectChatToolName } from '@tectonic/shared';
-import { and, asc, eq, ilike, inArray, or } from 'drizzle-orm';
+import { and, arrayContained, asc, eq, ilike, inArray, or } from 'drizzle-orm';
 import type { AppContext } from '../app.ts';
 import { requireProjectAccess } from '../permissions.ts';
 
@@ -85,7 +85,19 @@ export function createTeamTools(context: TeamToolContext): AgentTool[] {
         if (args.teamId) await requireProjectAccess(ctx.db, args.teamId, userId, 'viewer');
         if (signal?.aborted) throw new Error('cancelled');
 
-        const filters = [eq(projectMembers.userId, userId), inArray(projectMembers.projectId, [...allowedProjectIds])];
+        const currentMemberships = await ctx.db.select({ projectId: projectMembers.projectId })
+          .from(projectMembers)
+          .where(eq(projectMembers.userId, userId));
+        const currentAllowedProjectIds = allowedProjectIds.filter((projectId) =>
+          currentMemberships.some((membership) => membership.projectId === projectId),
+        );
+        if (signal?.aborted) throw new Error('cancelled');
+
+        const filters = [
+          eq(projectMembers.userId, userId),
+          inArray(projectMembers.projectId, currentAllowedProjectIds),
+          arrayContained(sources.audienceProjectIds, currentAllowedProjectIds),
+        ];
         if (args.teamId) filters.push(eq(sources.projectId, args.teamId));
         if (args.query) {
           const query = `%${args.query.replace(/[\\%_]/g, '\\$&')}%`;

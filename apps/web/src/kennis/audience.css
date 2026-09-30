@@ -1,0 +1,4 @@
+.kn-audience-line { margin: 0 0 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 14px; }
+.kn-audience-chip { display: inline-block; padding: 2px 8px; border-radius: var(--radius-sm); background: var(--accent-soft); color: var(--accent-ink); font-weight: 600; }
+.kn-audience-and { color: var(--muted); }
+.kn-audience-note { margin: 0 0 8px; color: var(--muted); font-size: 13px; }

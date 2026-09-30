@@ -1,8 +1,13 @@
 import { open } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { getBuiltinModel } from '@earendil-works/pi-ai/providers/all';
-import { CHAT_MODEL, type ChatStatus } from '@tectonic/shared';
+import { getBuiltinModels } from '@earendil-works/pi-ai/providers/all';
+import { DEFAULT_PROJECT_CHAT_MODEL, type ChatStatus } from '@tectonic/shared';
+
+function configuredModel(provider: CredentialMode['provider']) {
+  const modelId = process.env.PROJECT_CHAT_MODEL?.trim() || DEFAULT_PROJECT_CHAT_MODEL;
+  return getBuiltinModels(provider).find((model) => model.id === modelId);
+}
 
 type CredentialMode = { provider: 'openai-codex' | 'openai'; token: string };
 type JsonObject = Record<string, unknown>;
@@ -106,7 +111,7 @@ export async function getCodexStatus(options: { productionLike?: boolean } = {})
     }
     return { available: false, message: 'Sign in with the Codex CLI on this machine to use project chat.' };
   }
-  const model = getBuiltinModel(result.credential.provider, CHAT_MODEL);
+  const model = configuredModel(result.credential.provider);
   if (!model) {
     return { available: false, message: 'The configured chat model is unavailable in this Pi installation.' };
   }
@@ -115,10 +120,10 @@ export async function getCodexStatus(options: { productionLike?: boolean } = {})
 
 export async function getCodexModel(): Promise<{
   provider: 'openai-codex' | 'openai';
-  model: ReturnType<typeof getBuiltinModel>;
+  model: NonNullable<ReturnType<typeof configuredModel>>;
 } | undefined> {
   const result = await readCredential();
   if (!('credential' in result)) return undefined;
-  const model = getBuiltinModel(result.credential.provider, CHAT_MODEL);
+  const model = configuredModel(result.credential.provider);
   return model ? { provider: result.credential.provider, model } : undefined;
 }

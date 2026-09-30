@@ -1,11 +1,11 @@
 import { expect, test } from 'bun:test';
 import { normalizeContext } from '@earendil-works/pi-ai';
 import { getBuiltinModel } from '@earendil-works/pi-ai/providers/all';
-import { CHAT_MODEL } from '@tectonic/shared';
+import { DEFAULT_PROJECT_CHAT_MODEL } from '@tectonic/shared';
 import { streamOpenAIChat } from '../src/project-chat/provider.ts';
 
 test('Codex transport sends the supplied token without needing a Pi OAuth store', async () => {
-  const catalogModel = getBuiltinModel('openai-codex', CHAT_MODEL);
+  const catalogModel = getBuiltinModel('openai-codex', DEFAULT_PROJECT_CHAT_MODEL);
   if (!catalogModel) throw new Error('Missing chat model');
   const token = `fixture.${Buffer.from(JSON.stringify({
     'https://api.openai.com/auth': { chatgpt_account_id: 'fixture-account' },

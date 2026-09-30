@@ -52,7 +52,9 @@ const clip = (text: string) => text.slice(0, 300);
 async function llmLoop(deps: ChatDeps & { llm: LlmClient }, env: ChatEnv, input: ChatInput, trace: Trace): Promise<string> {
   const { llm } = deps;
   const deadline = Date.now() + deps.timeoutMs;
-  const messages: Anthropic.MessageParam[] = input.messages.map((m) => ({ role: m.role, content: m.content }));
+  // The Messages API rejects a conversation that starts with an assistant turn (e.g. a UI greeting): drop leading ones.
+  const firstUser = input.messages.findIndex((m) => m.role === 'user');
+  const messages: Anthropic.MessageParam[] = input.messages.slice(firstUser).map((m) => ({ role: m.role, content: m.content }));
   const system = systemPrompt(env.context);
   let nudged = false;
 
@@ -61,8 +63,9 @@ async function llmLoop(deps: ChatDeps & { llm: LlmClient }, env: ChatEnv, input:
     if (remaining < 500) throw new Error('LLM deadline exceeded');
     const last = turn === MAX_TURNS;
     const response = await llm.createMessage({ system, messages, tools: TOOL_DEFINITIONS, noTools: last, timeoutMs: remaining });
-    // A refusal or a cut-off response (possibly with half a tool input) is not something to build an answer on.
-    if (response.stop_reason === 'refusal' || response.stop_reason === 'max_tokens') throw new Error(`LLM stopped with ${response.stop_reason}`);
+    // Only a finished turn or a tool request is usable. A refusal, a cut-off (max_tokens, model_context_window_exceeded:
+    // possibly half a tool input) or a pause is not something to build an answer on.
+    if (response.stop_reason !== 'end_turn' && response.stop_reason !== 'tool_use') throw new Error(`LLM stopped with ${response.stop_reason}`);
 
     const toolUses = response.content.filter((b): b is Anthropic.ToolUseBlock => b.type === 'tool_use');
     // Answered without ever rating the question: send it back once, so the answer matches the trust status we report.

@@ -2,13 +2,14 @@ import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { CHAT_MODEL } from '@tectonic/shared';
+import { DEFAULT_PROJECT_CHAT_MODEL } from '@tectonic/shared';
 import { getCodexStatus, readCodexToken } from '../src/project-chat/codex.ts';
 
 let directory: string;
 const previous = {
   CODEX_AUTH_FILE: process.env.CODEX_AUTH_FILE,
   CODEX_HOME: process.env.CODEX_HOME,
+  PROJECT_CHAT_MODEL: process.env.PROJECT_CHAT_MODEL,
   OPENAI_API_KEY: process.env.OPENAI_API_KEY,
 };
 
@@ -25,6 +26,7 @@ describe('Codex credential adapter', () => {
   beforeEach(async () => {
     directory = await mkdtemp(join(tmpdir(), 'codex-chat-test-'));
     delete process.env.OPENAI_API_KEY;
+    delete process.env.PROJECT_CHAT_MODEL;
     process.env.CODEX_AUTH_FILE = join(directory, 'auth.json');
   });
 
@@ -40,8 +42,12 @@ describe('Codex credential adapter', () => {
     const token = jwt({ exp: Math.floor(Date.now() / 1000) + 3600, 'https://api.openai.com/auth': { chatgpt_account_id: 'fixture-account' } });
     await setAuth({ auth_mode: 'chatgpt', tokens: { access_token: token } });
 
-    expect(await getCodexStatus()).toEqual({ available: true, model: CHAT_MODEL });
+    expect(await getCodexStatus()).toEqual({ available: true, model: DEFAULT_PROJECT_CHAT_MODEL });
     expect(await readCodexToken()).toBe(token);
+    process.env.PROJECT_CHAT_MODEL = ' gpt-6.1-sol ';
+    expect(await getCodexStatus()).toEqual({ available: true, model: 'gpt-6.1-sol' });
+    process.env.PROJECT_CHAT_MODEL = 'not-a-model';
+    expect(await getCodexStatus()).toEqual({ available: false, message: 'The configured chat model is unavailable in this Pi installation.' });
   });
 
   test('blocks local credentials in production and reports expired sign-in', async () => {
@@ -53,7 +59,7 @@ describe('Codex credential adapter', () => {
 
   test('honors explicit API key mode and ignores shell-only keys', async () => {
     await setAuth({ auth_mode: 'api_key', OPENAI_API_KEY: 'fixture-key' });
-    expect(await getCodexStatus()).toEqual({ available: true, model: CHAT_MODEL });
+    expect(await getCodexStatus()).toEqual({ available: true, model: DEFAULT_PROJECT_CHAT_MODEL });
     expect(await readCodexToken()).toBe('fixture-key');
 
     await rm(join(directory, 'auth.json'));

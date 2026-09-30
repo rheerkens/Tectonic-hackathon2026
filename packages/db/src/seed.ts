@@ -32,6 +32,8 @@ interface SeedSource {
   approvedById?: string;
   traceable?: boolean;
   supersededBy?: string;
+  /** Extra teams (keys) the viewer must also belong to. */
+  audience?: string[];
 }
 
 /**
@@ -169,6 +171,25 @@ const SOURCES: SeedSource[] = [
     approvedById: 'demo_roy',
   },
   {
+    // An older version nobody marked as replaced yet: try "Markeer als vervangen door S6" in the source panel.
+    code: 'S8',
+    team: 'be',
+    title: 'Procedure ziekmelding België (oud)',
+    kind: 'procedure',
+    version: 3,
+    topic: 'ziekmelding',
+    keywords: ZIEKMELDING,
+    country: 'BE',
+    value: 'Binnen 72 uur',
+    claim: 'Een ziekmelding wordt binnen 72 uur doorgegeven aan payroll.',
+    quote: 'Ziekmeldingen worden binnen 72 uur na de eerste ziektedag doorgegeven.',
+    validFrom: '2023-01-01',
+    validTo: '2025-12-31',
+    status: 'approved',
+    ownerId: 'demo_roy',
+    approvedById: 'demo_roy',
+  },
+  {
     code: 'S7',
     team: 'atlas',
     title: 'Teamsgesprek ziekmelding',
@@ -183,8 +204,28 @@ const SOURCES: SeedSource[] = [
     validFrom: '2026-09-01',
     status: 'unconfirmed',
   },
+  {
+    // Restricted: lives in Payroll België but only people in BOTH Payroll België and Klantteam Atlas may see it.
+    // Sebastien (only Payroll België) does not see it anywhere.
+    code: 'S9',
+    team: 'be',
+    audience: ['atlas'],
+    title: 'Afspraak Atlas: eindejaarspremie',
+    kind: 'agreement',
+    version: 1,
+    topic: 'eindejaarspremie',
+    keywords: 'eindejaarspremie premie uitbetalen uitbetaling december Atlas',
+    country: 'BE',
+    client: 'Atlas',
+    value: '15 december',
+    claim: 'Voor Atlas wordt de eindejaarspremie uiterlijk op 15 december uitbetaald.',
+    quote: 'Atlas en SD Worx spreken af dat de eindejaarspremie uiterlijk op 15 december wordt uitbetaald.',
+    validFrom: '2026-01-01',
+    status: 'approved',
+    ownerId: 'demo_roy',
+    approvedById: 'demo_roy',
+  },
 ];
-
 
 export interface SeedResult {
   seeded: boolean;
@@ -230,6 +271,8 @@ export async function seedDatabase(db: Database, options: { reset?: boolean } = 
     SOURCES.map(({ team, ...s }) => ({
       ...s,
       projectId: teamIds.get(team)!,
+      audienceProjectIds: (s.audience ?? []).map((k) => teamIds.get(k)!),
+      audience: undefined,
       client: s.client ?? null,
       validTo: s.validTo ?? null,
       version: s.version ?? null,

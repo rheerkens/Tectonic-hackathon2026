@@ -1,11 +1,11 @@
 import { sources } from '@tectonic/db';
-import { AskInputSchema, CheckInputSchema, DisputeInputSchema, assess, naiveAnswer, scoreSource, verdictFor, roleAtLeast, type Access, type CheckResult } from '@tectonic/shared';
+import { AskInputSchema, CheckInputSchema, DisputeInputSchema, SupersedeInputSchema, assess, naiveAnswer, scoreSource, verdictFor, roleAtLeast, type Access, type CheckResult } from '@tectonic/shared';
 import { and, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AppContext, AppEnv } from '../app.ts';
 import { conflict, forbidden, notFound } from '../errors.ts';
-import { getProjectRole } from '../permissions.ts';
+import { getProjectRole, userCanSeeSource } from '../permissions.ts';
 import { serializeSource } from '../serializers.ts';
 import { visibleSources as loadVisibleSources } from '../sources.ts';
 import { extractClaims } from '../claims.ts';
@@ -14,7 +14,7 @@ import { jsonBody } from '../validate.ts';
 const EXAMPLES = ['Tot wanneer mag Atlas loonmutaties aanleveren?', 'Binnen welke termijn moet een ziekmelding doorgegeven worden?'];
 
 export function knowledgeRoutes(ctx: AppContext) {
-  const { db, realtime } = ctx;
+  const { db, realtime, config } = ctx;
   const router = new Hono<AppEnv>();
 
   const visibleSources = (userId: string) => loadVisibleSources(db, userId);
@@ -52,7 +52,7 @@ export function knowledgeRoutes(ctx: AppContext) {
     const period = new Date().toISOString().slice(0, 7);
     const claims: CheckResult['claims'] = [];
     const contradictions: CheckResult['contradictions'] = [];
-    for (const { claim, country: found } of await extractClaims(text)) {
+    for (const { claim, country: found } of await extractClaims(text, config.llm)) {
       const r = assess(claim, rows.map(serializeSource), names, { country: found ?? country, client: null, period });
       claims.push({ text: claim, topic: r.topic, status: r.status, statusLabel: r.statusLabel });
       for (const source of r.sources) {
@@ -79,7 +79,7 @@ export function knowledgeRoutes(ctx: AppContext) {
     const [source] = await db.select().from(sources).where(eq(sources.id, c.req.param('sourceId'))).limit(1);
     const role = source ? await getProjectRole(db, source.projectId, principal.userId) : null;
     // Not a member means "no such source": the existence of a source in a team you cannot see is not revealed.
-    if (!source || !role) throw notFound('Source');
+    if (!source || !role || !(await userCanSeeSource(db, source, principal.userId))) throw notFound('Source');
     if (!roleAtLeast(role, 'editor')) throw forbidden('Your role cannot approve sources');
     // Only the accountable owner can vouch for a source; the team owner can adopt an ownerless one.
     if (source.ownerId !== principal.userId && !(role === 'owner' && source.ownerId === null)) {
@@ -92,7 +92,7 @@ export function knowledgeRoutes(ctx: AppContext) {
       .set({ status: 'approved', approvedById: principal.userId, ownerId: source.ownerId ?? principal.userId, updatedAt: new Date() })
       .where(and(eq(sources.id, source.id), eq(sources.projectId, source.projectId)));
     // Persisted above; only now do subscribers hear about it.
-    realtime.publish(source.projectId, { kind: 'sources.changed' }, principal.userId);
+    realtime.publish(source.projectId, { kind: 'sources.changed' }, principal.userId, source.audienceProjectIds);
     return c.json({ ok: true as const });
   });
 
@@ -101,7 +101,7 @@ export function knowledgeRoutes(ctx: AppContext) {
     const { disputed } = c.req.valid('json');
     const [source] = await db.select().from(sources).where(eq(sources.id, c.req.param('sourceId'))).limit(1);
     const role = source ? await getProjectRole(db, source.projectId, principal.userId) : null;
-    if (!source || !role) throw notFound('Source');
+    if (!source || !role || !(await userCanSeeSource(db, source, principal.userId))) throw notFound('Source');
     if (!roleAtLeast(role, 'editor')) throw forbidden('Your role cannot dispute sources');
     // Anyone may raise doubt; only the accountable owner may declare it resolved.
     if (!disputed && source.ownerId !== principal.userId && !(role === 'owner' && source.ownerId === null)) {
@@ -111,7 +111,31 @@ export function knowledgeRoutes(ctx: AppContext) {
       .update(sources)
       .set({ disputed, disputedById: disputed ? principal.userId : null, updatedAt: new Date() })
       .where(and(eq(sources.id, source.id), eq(sources.projectId, source.projectId)));
-    realtime.publish(source.projectId, { kind: 'sources.changed' }, principal.userId);
+    realtime.publish(source.projectId, { kind: 'sources.changed' }, principal.userId, source.audienceProjectIds);
+    return c.json({ ok: true as const });
+  });
+
+  router.post('/api/sources/:sourceId/supersede', jsonBody(SupersedeInputSchema), async (c) => {
+    const principal = c.get('principal');
+    const { supersededBy } = c.req.valid('json');
+    const [source] = await db.select().from(sources).where(eq(sources.id, c.req.param('sourceId'))).limit(1);
+    const role = source ? await getProjectRole(db, source.projectId, principal.userId) : null;
+    if (!source || !role || !(await userCanSeeSource(db, source, principal.userId))) throw notFound('Source');
+    if (!roleAtLeast(role, 'editor')) throw forbidden('Your role cannot supersede sources');
+    // The newer version must be one the caller may see, on the same topic, and not itself replaced (no cycles).
+    const { rows } = await visibleSources(principal.userId);
+    const next = rows.find((r) => r.code === supersededBy);
+    if (!next) throw notFound('Newer source');
+    if (next.id === source.id) throw conflict('A source cannot replace itself');
+    if (next.topic !== source.topic) throw conflict('The newer version must be on the same topic');
+    if (next.status === 'superseded' || next.supersededBy !== null) throw conflict('The newer version is itself superseded');
+    await db
+      .update(sources)
+      .set({ status: 'superseded', supersededBy: next.code, updatedAt: new Date() })
+      .where(and(eq(sources.id, source.id), eq(sources.projectId, source.projectId)));
+    // The newer source may live in another team: tell both.
+    realtime.publish(source.projectId, { kind: 'sources.changed' }, principal.userId, source.audienceProjectIds);
+    if (next.projectId !== source.projectId) realtime.publish(next.projectId, { kind: 'sources.changed' }, principal.userId, next.audienceProjectIds);
     return c.json({ ok: true as const });
   });
 

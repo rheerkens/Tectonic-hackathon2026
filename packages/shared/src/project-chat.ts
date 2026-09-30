@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const CHAT_MODEL = 'gpt-6.1-sol';
+export const DEFAULT_PROJECT_CHAT_MODEL = 'gpt-6-luna';
 export const CHAT_MAX_REPLY = 64_000;
 export const CHAT_MAX_TOOLS = 16;
 export const CHAT_MAX_TOOL_RESULT = 16_000;
