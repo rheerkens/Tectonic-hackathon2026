@@ -36,13 +36,17 @@ export interface ChatErrorInfo {
 export const MAX_TURNS = 20;
 export const MAX_LENGTH = 4000;
 
-/** What goes over the wire: at most the last 20 turns, starting with a user turn, assistants as their answer text. */
+/**
+ * What goes over the wire: at most the last 20 turns, starting with a user turn, assistants as their answer text.
+ * A question that failed and was never answered is left out, so the model does not see it as still open.
+ */
 export function toTurns(entries: ChatEntry[]): ChatTurn[] {
   const turns: ChatTurn[] = [];
-  for (const e of entries) {
-    if (e.kind === 'user') turns.push({ role: 'user', content: e.content.slice(0, MAX_LENGTH) });
+  entries.forEach((e, i) => {
+    const isLast = i === entries.length - 1;
+    if (e.kind === 'user' && (isLast || entries[i + 1]?.kind === 'assistant')) turns.push({ role: 'user', content: e.content.slice(0, MAX_LENGTH) });
     else if (e.kind === 'assistant') turns.push({ role: 'assistant', content: e.result.answer.trim().slice(0, MAX_LENGTH) || '(geen antwoord)' });
-  }
+  });
   const last = turns.slice(-MAX_TURNS);
   while (last.length > 1 && last[0]!.role === 'assistant') last.shift();
   return last;
@@ -103,9 +107,8 @@ export function useConversation(context: ChatContext) {
   const newId = () => `m${nextId.current++}`;
 
   const run = useCallback(
-    (list: ChatEntry[]) => {
+    (list: ChatEntry[], ctx: ChatContext) => {
       const mine = epoch.current;
-      const ctx = contextRef.current;
       setBusy(true);
       chat.mutateAsync({ messages: toTurns(list), context: ctx }).then(
         (result) => {
@@ -129,21 +132,24 @@ export function useConversation(context: ChatContext) {
     (text: string): boolean => {
       const content = text.trim();
       if (!content || pendingRef.current) return false;
-      const next: ChatEntry[] = [...entriesRef.current.filter((e) => e.kind !== 'error'), { id: newId(), kind: 'user', content, context: contextRef.current }];
+      // Earlier errors stay visible (their question simply went unanswered); toTurns leaves those questions out.
+      const ctx = contextRef.current;
+      const next: ChatEntry[] = [...entriesRef.current, { id: newId(), kind: 'user', content, context: ctx }];
       commit(next);
-      run(next);
+      run(next, ctx);
       return true;
     },
     [commit, run],
   );
 
-  /** After an error: drop the error bubble and send the same conversation again (the user message stays). */
+  /** After an error: drop the last error bubble and ask the same question again, for the context it was asked in. */
   const retry = useCallback(() => {
-    if (pendingRef.current) return;
-    const next = entriesRef.current.filter((e) => e.kind !== 'error');
-    if (next.at(-1)?.kind !== 'user') return;
+    if (pendingRef.current || entriesRef.current.at(-1)?.kind !== 'error') return;
+    const next = entriesRef.current.slice(0, -1);
+    const question = next.at(-1);
+    if (question?.kind !== 'user') return;
     commit(next);
-    run(next);
+    run(next, question.context);
   }, [commit, run]);
 
   const reset = useCallback(() => {
