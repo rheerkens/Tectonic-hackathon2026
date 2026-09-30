@@ -7,6 +7,7 @@ export const API_ERROR_CODES = [
   'validation_failed',
   'conflict',
   'bad_request',
+  'rate_limited',
   'internal',
 ] as const;
 export const ApiErrorCodeSchema = z.enum(API_ERROR_CODES);
@@ -28,5 +29,6 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   validation_failed: 400,
   conflict: 409,
   bad_request: 400,
+  rate_limited: 429,
   internal: 500,
 };
