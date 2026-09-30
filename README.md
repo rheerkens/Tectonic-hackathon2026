@@ -89,7 +89,7 @@ Implemented in [`packages/shared/src/onderbouwing.ts`](packages/shared/src/onder
 
 Answer status: **onderbouwd** at 80 or more, **deels** at 50 to 79, **onvoldoende** below 50, **geen** when no source applies.
 
-The **verdict** is separate from the score and says *why a source does or does not apply*. The first match wins: superseded, other country, other client, not valid in the period, unconfirmed, then *exception* (client-specific) or *general rule*. Only exceptions and general rules can be the answer. Note that **a dispute is shown, but does not change the score or the verdict yet** (see §11).
+The **verdict** is separate from the score and says *why a source does or does not apply*. The first match wins: superseded, other country, other client, not valid in the period, disputed (*Betwist*), unconfirmed, then *exception* (client-specific) or *general rule*. Only exceptions and general rules can be the answer. A **disputed source** loses the *Bevoegd goedgekeurd* points, gets the verdict *Betwist*, stays in the list and is never the answer until its owner resolves the dispute; if it was the only applicable source the status is *Geen onderbouwd antwoord*.
 
 ## 5. How an answer is built
 `assess(question, sources, projectNames, { country, client, period })`:
@@ -161,7 +161,7 @@ Target: under 3 minutes, two browser windows, the dev stack running with a fresh
 2. **Plain AI next to SD Trust.** Switch on *Vergelijk*. Then change *Land* to Nederland: SD Trust answers **18 oktober**, the plain assistant keeps giving the same Atlas sentence because it ignores country, client and period.
 3. **Period.** Back to België. Set *Periode* to November: the answer becomes *Geen onderbouwd antwoord*, because no source is valid for that period.
 4. **Check a message.** In *Controleer een bericht* paste a sentence such as "Atlas mag loonmutaties tot 25 oktober aanleveren." and press *Controleer*: it lists the sources on that topic that do not apply or are not confirmed. (The panel matches topics, not the date in the message; say so.)
-5. **Live, second window.** In window 2 (Roy) open S3 and press *Bevestig deze bron* (or *Betwist deze bron* on S4). Window 1 shows the toast *Kennisbank bijgewerkt*, recomputes the answer and shows the *Betwist* banner. Roy is visible in the presence strip.
+5. **Live, second window.** In window 2 (Roy) open S3 and press *Bevestig deze bron* (or *Betwist deze bron* on S4). Window 1 shows the toast *Kennisbank bijgewerkt*, recomputes the answer (a disputed S4 no longer counts, the general rule takes over) and shows the *Betwist* banner. Roy is visible in the presence strip.
 6. **Gaps and the sole expert.** Scroll to the *Kennis-weerkaart*: topic × country, *Gat* where nothing is recorded, *Enige kenner* where one person holds the knowledge.
 7. **Access.** Open `?as=sebastien`: no Atlas client, no Atlas agreement, the general rule only.
 
@@ -190,12 +190,12 @@ Reset this worktree with `bun run dev --reset-db` to load the corpus; an existin
 - **Semantic conflict detection** (#5). Claim extraction (#4) splits the text into sentences; `claim` and `value` in the seed are entered by hand, and the check endpoint and question matching use keyword overlap only (prefix match, no embeddings, no stemming).
 - **Capture** ("Add what you know", creating new sources from the UI) and any importer for real documents, Teams or e-mail. The app only reads the seed.
 - **Aikido scan and screenshots** (#12), the Builderbase checklist (#16, see [`docs/submission-checklist.md`](docs/submission-checklist.md)) and the **demo video** (#15, to be recorded by a human after the feature freeze).
-- **Access per source** (#32) and **version history** (#28): access is per team, not per source; `version` is a label and `superseded_by` is data, with no history view.
+- **Full version history** (#28): access per source is built (#32: a source can require extra teams, and hidden sources never appear in lists, answers, checks or chat), and a replaced source shows what replaced it (#72, owner only), but `version` is still a label and there is no complete history view.
 - Tests for scoring and the routes (#23), and an end-to-end suite.
 
 **Known limits and bugs**
 - `/api/check` matches a sentence to a topic but reports a contradiction when the value in the sentence differs from a source ("25 oktober" against S1's 20 oktober gives a contradiction with S1, status *Geen onderbouwd antwoord*). The match is still keyword and topic based, so a paraphrase may be missed. It also checks with no client, so Atlas-only sources show as *Andere klant*. The period is the current month.
-- A dispute is displayed and realtime-synced but does not lower the score or change the answer.
+- Any editor can dispute, and a dispute alone takes a source out of the answer until the owner resolves it (conservative by design; there is no review or expiry).
 - Only two markets (BE, NL), 16 seeded topics, three demo users. The period chip re-scores through `/api/ask`, but `GET /api/sources` (the map) always uses the current month.
 - Two `tools/dev` worktree-launcher tests fail on macOS (`/private` path); they fail without our changes too.
 
@@ -226,7 +226,7 @@ The target look and flow of the product. It is a prototype (Dutch UI, branded "K
 |---|---|
 | Left navigation *Kennis zoeken*, *Bronnen*, *Experts* | Only *Kennis zoeken*; there are no *Bronnen* or *Experts* pages |
 | Answer card, verdict table, four-check panel, context chips, exception beats general rule, versions, validity, "Vraag verduidelijking" | Built as in the mock |
-| Access shown and checked per source | Checked per team only; the panel shows the team name |
+| Access shown and checked per source | Built (#32): the panel shows *Wie mag dit zien* (owning team plus any extra teams); a source is hidden everywhere unless the viewer is in every one of them |
 | Exception handling when it has expired | Fixed in #63: a period outside the agreement returns *Geen onderbouwd antwoord* instead of a stale date |
 | Candidate corpus | The mock shows S1–S5; the seed has 33 sources. The October Atlas loonmutatie question assesses eight candidates, including the later mail and Teams adaptations S9–S11 |
 | Extras in the build, not in the mock | *Vergelijk*, *Kennis-weerkaart*, *Controleer een bericht*, *Betwist*, presence and live toasts |

@@ -34,7 +34,7 @@ export function createApiClient(getAuthHeaders: AuthHeaders) {
 
     let response: Response;
     try {
-      response = await fetch(url, { method: contract.method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
+      response = await fetch(url, { method: contract.method, headers, cache: 'no-store', body: body === undefined ? undefined : JSON.stringify(body) });
     } catch (error) {
       throw new ApiError(0, 'network', `Could not reach the server (${error instanceof Error ? error.message : 'network error'})`);
     }

@@ -22,7 +22,7 @@ export interface RuntimeInfo {
     ws: string;
     database: string;
   };
-  env: { DATABASE_URL: string; API_PORT: string; WEB_PORT: string; AUTH_MODE: string };
+  env: { API_PORT: string; WEB_PORT: string; AUTH_MODE: string };
   pids: { api: number | null; web: number | null; postgres: number | null };
   paths: { local: string; postgresData: string; logs: string; lock: string; runtime: string };
   error?: string;

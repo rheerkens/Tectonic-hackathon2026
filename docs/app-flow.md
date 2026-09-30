@@ -70,7 +70,7 @@ flowchart TD
 | 9 | Plakt een Teams-bericht in **Controleer een bericht** | `POST /api/check { text, country }` | `thinking` → `uncertain` bij `contradictions` (ook als `claims[].status` = `geen`), `verified` alleen als de zin gedekt is zonder tegenspraak | "Deze zin spreekt S1 tegen (20 oktober)." |
 | 10 | Klikt *Vraag verduidelijking* | Mail vooringevuld naar de bronhouder | `answer`, kort | "Mail aan Roy staat klaar." |
 | 11 | Roy (bronhouder) klikt *Bevestig deze bron* (window 2); Wanne krijgt 403 "Only the owner…" en Finn toont dan `retry` niet, maar `uncertain` met "Alleen de bronhouder kan dit bevestigen" | `POST /api/sources/:id/approve` → DB → `sources.changed` | Bij Wanne: antwoord herberekend, Finn volgt de nieuwe status | Toast "Kennisbank bijgewerkt" |
-| 12 | Editor klikt *Betwist deze bron*; alleen de bronhouder kan de betwisting oplossen | `POST /api/sources/:id/dispute` → DB → publish | `uncertain` zolang de beste bron `disputed` is, ook als `status` nog `onderbouwd` is | Banner "Betwist"; score en status veranderen nog niet (README §11) |
+| 12 | Editor klikt *Betwist deze bron*; alleen de bronhouder kan de betwisting oplossen | `POST /api/sources/:id/dispute` → DB → publish | Betwiste bron valt uit het antwoord (verdict *Betwist*, -40 punten); is het de enige, dan status `geen` en `uncertain` | Banner "Betwist"; bronhouder lost op, dan herstelt het antwoord |
 | 13 | Scrolt naar **Kennis-weerkaart**, klikt een cel | `GET /api/sources` | `idle`; bij lege cel `uncertain` | "Gat: niemand heeft dit vastgelegd." of "Enige kenner: …" |
 | 14 | Sebastien opent de app | Geen Atlas-team: `clients` is leeg, bronnen S1, S2, S5 zichtbaar, antwoord de algemene regel (20 oktober) | `welcome` → `idle` | "Je ziet alleen de algemene regel. Atlas-afspraken zijn niet zichtbaar voor jou." |
 | 15 | Verbinding valt weg | Websocket herverbindt | `retry` tot herverbonden | Bestaande `ConnectionStatus` blijft de bron van waarheid |
@@ -80,7 +80,6 @@ flowchart TD
 | `status` | Finn | Mag Finn "geverifieerd" suggereren? |
 |---|---|---|
 | `onderbouwd` (≥ 80) en beste bron niet betwist | `verified` | Ja, met badge en bron zichtbaar |
-| `onderbouwd` maar beste bron `disputed` | `uncertain` | Nee |
 | `deels` (50-79) | `answer` | Nee |
 | `onvoldoende` (< 50) | `uncertain` | Nee |
 | `geen` | `uncertain` | Nee |
@@ -91,7 +90,6 @@ flowchart TD
 - Zelf antwoorden verzinnen of bronnen kiezen.
 - Automatisch de chat openen, geluid afspelen, herhaaldelijk zwaaien.
 - Bij elke paginanavigatie opnieuw verwelkomen.
-- De betwisting meetellen in de score (dat doet de app zelf ook nog niet).
 
 ## Open punten voor de bouw
 
@@ -106,7 +104,7 @@ De vraagflow en Finn zijn in de browser gecontroleerd: Enter en Vraag Finn voere
 - Antwoorden kloppen: BE/Atlas/oktober 22 oktober 2026, NL 18 oktober, november `geen`, ziekmelding 24 uur.
 - Toegang klopt: Sebastien ziet alleen S1, S2, S5; zonder `x-dev-user` geeft de API 401.
 - Rechten kloppen: Wanne kan S3 niet bevestigen en een betwisting niet oplossen (403); Roy wel.
-- Gevonden en in dit document gecorrigeerd: `naive-answer` vraagt de volledige context; `/api/check` geeft bij tegenspraak status `geen`; een betwiste bron houdt status `onderbouwd`.
+- Gevonden en in dit document gecorrigeerd: `naive-answer` vraagt de volledige context; `/api/check` geeft bij tegenspraak status `geen`; een betwiste bron wordt nu nooit het antwoord (verdict *Betwist*).
 
 ## Afspelen en versturen
 

@@ -57,6 +57,9 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
     });
     const offError = client.onError((error) => {
       if (error.code === 'forbidden') {
+        // Never keep showing who is online in a team we lost access to.
+        const gone = error.projectId;
+        if (gone) setPresenceByTeam((old) => Object.fromEntries(Object.entries(old).filter(([id]) => id !== gone)));
         void qc.invalidateQueries({ queryKey: keys.access });
         toasts.push({ kind: 'warning', title: 'Toegang gewijzigd', message: error.message });
       }

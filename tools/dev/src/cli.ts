@@ -1,4 +1,7 @@
+import path from 'node:path';
 import { launch, stackStatus, stopStack } from './launcher.ts';
+import { databaseUrl, loadPassword } from './postgres.ts';
+import { assertProfile, localDir, resolveWorktree } from './worktree.ts';
 
 const args = process.argv.slice(2);
 const command = args[0] && !args[0].startsWith('--') ? args.shift()! : 'up';
@@ -27,6 +30,12 @@ function option(name: string): string | undefined {
 }
 
 const profile = option('--profile') ?? 'dev';
+try {
+  assertProfile(profile);
+} catch (error) {
+  console.error((error as Error).message);
+  process.exit(2);
+}
 
 switch (command) {
   case 'up': {
@@ -59,6 +68,10 @@ switch (command) {
       process.exitCode = 1;
       break;
     }
+    // The password lives only in a 0600 file; it is read here for the caller's shell, not stored in runtime.json.
+    const local = localDir((await resolveWorktree()).root, profile);
+    const password = loadPassword(path.join(local, 'pg-password'), info.paths.postgresData);
+    console.log(`export DATABASE_URL=${JSON.stringify(databaseUrl(info.ports.postgres, password))}`);
     for (const [key, value] of Object.entries(info.env)) console.log(`export ${key}=${JSON.stringify(value)}`);
     console.log(`export WEB_URL=${JSON.stringify(info.urls.web)}`);
     console.log(`export API_URL=${JSON.stringify(info.urls.api)}`);

@@ -9,7 +9,7 @@ import { startPostgres, type PostgresHandle } from './postgres.ts';
 import { spawnManaged, stopManaged, type ManagedProcess } from './procs.ts';
 import { createShutdown } from './shutdown.ts';
 import { buildUrls, readRuntime, runtimeFile, writeRuntime, type RuntimeInfo } from './runtime.ts';
-import { hashPath, listWorktreeRoots, localDir, resolveWorktree } from './worktree.ts';
+import { assertProfile, hashPath, listWorktreeRoots, localDir, resolveWorktree } from './worktree.ts';
 
 export interface LaunchOptions {
   cwd?: string;
@@ -24,6 +24,7 @@ export interface LaunchOptions {
 }
 
 const COLORS = { dev: '\x1b[36m', pg: '\x1b[35m', api: '\x1b[33m', web: '\x1b[32m', reset: '\x1b[0m', dim: '\x1b[2m', bold: '\x1b[1m' };
+const PROFILE_OK = /^[a-z0-9][a-z0-9_-]{0,31}$/;
 type Source = 'dev' | 'pg' | 'api' | 'web';
 
 export function makeLogger(quiet: boolean) {
@@ -47,8 +48,8 @@ async function portsReservedByOtherWorktrees(root: string, profile: string): Pro
     if (path.resolve(other) === path.resolve(root)) continue;
     const base = path.join(other, '.local');
     if (!existsSync(base)) continue;
-    for (const entry of ['dev', profile, ...listProfiles(base)]) {
-      const info = readRuntime(path.join(base, entry));
+    for (const entry of new Set(['dev', profile, ...listProfiles(base)])) {
+      const info = readRuntime(localDir(other, entry));
       if (info && info.status !== 'stopped') reserved.push(info.ports.web, info.ports.api, info.ports.postgres);
     }
   }
@@ -57,7 +58,7 @@ async function portsReservedByOtherWorktrees(root: string, profile: string): Pro
 
 function listProfiles(base: string): string[] {
   try {
-    return [...new Bun.Glob('*/runtime.json').scanSync({ cwd: base })].map((p) => path.dirname(p));
+    return [...new Bun.Glob('*/runtime.json').scanSync({ cwd: base })].map((p) => path.dirname(p)).filter((p) => PROFILE_OK.test(p));
   } catch {
     return [];
   }
@@ -72,7 +73,7 @@ export async function launch(options: LaunchOptions = {}): Promise<void> {
       `Bun ${rootPackage.engines.bun} is required (running ${Bun.version}). Install the pinned version: curl -fsSL https://bun.sh/install | bash -s -- bun-v${pinnedVersion}`,
     );
   }
-  const profile = options.profile ?? 'dev';
+  const profile = assertProfile(options.profile ?? 'dev');
   const worktree = await resolveWorktree(options.cwd ?? process.cwd());
   const local = localDir(worktree.root, profile);
   const paths = {
@@ -128,7 +129,7 @@ export async function launch(options: LaunchOptions = {}): Promise<void> {
     updatedAt: new Date().toISOString(),
     ports,
     urls: buildUrls(ports, ''),
-    env: { DATABASE_URL: '', API_PORT: String(ports.api), WEB_PORT: String(ports.web), AUTH_MODE: authMode },
+    env: { API_PORT: String(ports.api), WEB_PORT: String(ports.web), AUTH_MODE: authMode },
     pids: { api: null, web: null, postgres: null },
     paths,
   };
@@ -154,10 +155,9 @@ export async function launch(options: LaunchOptions = {}): Promise<void> {
 
   try {
     // 3. Database, migrations, seed.
-    postgres = await startPostgres({ dataDir: paths.postgresData, port: ports.postgres, log: (line) => log('pg', line) });
+    postgres = await startPostgres({ dataDir: paths.postgresData, passwordFile: path.join(local, 'pg-password'), port: ports.postgres, log: (line) => log('pg', line) });
     runtime.pids.postgres = postgres.pid;
-    runtime.urls = buildUrls(ports, postgres.url);
-    runtime.env.DATABASE_URL = postgres.url;
+    runtime.urls = buildUrls(ports, postgres.maskedUrl); // the password never goes into runtime.json or output
     await waitForDatabase(postgres.url);
     await runMigrations(postgres.url);
     const handle = createDb(postgres.url, { max: 2 });
@@ -180,7 +180,7 @@ export async function launch(options: LaunchOptions = {}): Promise<void> {
       // process.execPath, not `bun` from PATH: children run on the runtime checked above.
       cmd: [process.execPath, '--watch', '--no-clear-screen', 'src/index.ts'],
       cwd: path.join(worktree.root, 'apps/api'),
-      env: { ...childEnv, PORT: String(ports.api), HOST: '0.0.0.0', SERVE_STATIC: '0' },
+      env: { ...childEnv, PORT: String(ports.api), HOST: '127.0.0.1', SERVE_STATIC: '0' },
       onLine: (line) => log('api', line.replace(/^\[api\]\s*/, '')),
     });
     children.push(api);
@@ -197,7 +197,7 @@ export async function launch(options: LaunchOptions = {}): Promise<void> {
         name: 'web',
         cmd: [process.execPath, viteBin, '--host', '0.0.0.0', '--port', String(ports.web), '--strictPort', '--clearScreen', 'false'],
         cwd: path.join(worktree.root, 'apps/web'),
-        env: childEnv,
+        env: viteEnv(childEnv),
         onLine: (line) => {
           // Vite's own banner duplicates ours; keep everything else (errors, HMR notices).
           const plain = line.replace(/\x1b\[[0-9;]*m/g, '').trim();
@@ -223,6 +223,12 @@ export async function launch(options: LaunchOptions = {}): Promise<void> {
     await shutdown('startup failure', 1);
     process.exit(1);
   }
+}
+
+/** Vite only needs a tiny slice of the environment; keep DATABASE_URL and other secrets out of it. */
+const VITE_ENV_ALLOW = /^(PATH|HOME|USER|SHELL|TERM|LANG|LC_\w+|TMPDIR|CI|NODE_ENV|FORCE_COLOR|API_PORT|WEB_PORT|DEV_LAUNCHER_PID|VITE_\w+)$/;
+function viteEnv(env: Record<string, string | undefined>): Record<string, string | undefined> {
+  return Object.fromEntries(Object.entries(env).filter(([key]) => VITE_ENV_ALLOW.test(key)));
 }
 
 async function waitForHttp(url: string, timeoutMs: number): Promise<void> {
@@ -259,7 +265,7 @@ function printBanner(runtime: RuntimeInfo, log: ReturnType<typeof makeLogger>, a
 
 /** Used by `dev:stop`: signals the launcher recorded in the lock file (and only that process). */
 export async function stopStack(options: { cwd?: string; profile?: string } = {}): Promise<boolean> {
-  const profile = options.profile ?? 'dev';
+  const profile = assertProfile(options.profile ?? 'dev');
   const worktree = await resolveWorktree(options.cwd ?? process.cwd());
   const local = localDir(worktree.root, profile);
   const { readLock, isProcessAlive } = await import('./lock.ts');

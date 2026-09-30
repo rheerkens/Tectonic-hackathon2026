@@ -26,7 +26,7 @@ export const isSuperseded = (s: Pick<Source, 'status' | 'supersededBy'>) => s.st
 
 export function scoreSource(s: Source, ctx: Context): Onderbouwing {
   const checks = [
-    { key: 'approved', label: 'Bevoegd goedgekeurd', ok: !isSuperseded(s) && s.status !== 'unconfirmed' && s.approvedById !== null, max: POINTS.approved },
+    { key: 'approved', label: 'Bevoegd goedgekeurd', ok: !isSuperseded(s) && !s.disputed && s.status !== 'unconfirmed' && s.approvedById !== null, max: POINTS.approved },
     { key: 'owner', label: 'Eigenaar bekend', ok: s.ownerId !== null, max: POINTS.owner },
     { key: 'valid', label: 'Geldig voor deze periode', ok: validForPeriod(s, ctx.period), max: POINTS.valid },
     { key: 'traceable', label: 'Bron herleidbaar', ok: s.traceable, max: POINTS.traceable },
@@ -41,6 +41,7 @@ export function verdictFor(s: Source, ctx: Context): Verdict {
   if (s.country !== ctx.country) return { kind: 'other-country', label: 'Ander land' };
   if (s.client !== null && s.client !== ctx.client) return { kind: 'other-client', label: 'Andere klant' };
   if (!validForPeriod(s, ctx.period)) return { kind: 'expired', label: 'Niet geldig in deze periode' };
+  if (s.disputed) return { kind: 'disputed', label: 'Betwist' };
   if (s.status === 'unconfirmed' || s.approvedById === null) return { kind: 'unconfirmed', label: 'Niet bevestigd' };
   if (s.client !== null) return { kind: 'exception', label: 'Geldige uitzondering' };
   return { kind: 'general', label: `Algemene regel: ${s.value}` };
@@ -136,12 +137,12 @@ function evidence(subject: string[], topicSources: Source[]): number {
   return subject.reduce((sum, w) => sum + (curated.has(stem(w)) ? 1 : prose.has(stem(w)) ? 0.5 : 0), 0);
 }
 
-const VERDICT_RANK: Record<Verdict['kind'], number> = { exception: 0, general: 1, unconfirmed: 2, expired: 3, superseded: 4, 'other-client': 5, 'other-country': 6 };
+const VERDICT_RANK: Record<Verdict['kind'], number> = { exception: 0, general: 1, disputed: 2, unconfirmed: 3, expired: 4, superseded: 5, 'other-client': 6, 'other-country': 7 };
 
 /**
  * Picks the topic that best matches the question, rates every source on that topic for the given
  * context, and chooses the answer: an applicable client-specific exception beats the general rule,
- * then the higher onderbouwing wins.
+ * then the higher onderbouwing wins. A disputed source is listed but never the answer until its owner resolves the dispute.
  */
 export function assess(question: string, sources: Source[], projectNames: Map<string, string>, ctx: Context): AskResult {
   const specific = subjectWords(question, sources, ctx);

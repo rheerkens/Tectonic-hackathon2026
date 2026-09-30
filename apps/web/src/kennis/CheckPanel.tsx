@@ -7,7 +7,7 @@ import './check.css';
 const EXAMPLE = 'ja, dat geldt ook voor NL';
 const TONE = { onderbouwd: 'good', deels: 'warn', onvoldoende: 'warn', geen: 'muted' } as const;
 const VERDICT_TONE: Record<Verdict['kind'], 'good' | 'neutral' | 'muted' | 'warn'> = {
-  exception: 'good', general: 'neutral', unconfirmed: 'warn', expired: 'muted', superseded: 'muted', 'other-client': 'muted', 'other-country': 'muted',
+  exception: 'good', general: 'neutral', disputed: 'warn', unconfirmed: 'warn', expired: 'muted', superseded: 'muted', 'other-client': 'muted', 'other-country': 'muted',
 };
 
 export function CheckPanel({ country, client, period }: { country: Country; client: string | null; period: string }) {

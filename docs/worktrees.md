@@ -21,14 +21,14 @@
   "worktree": { "root": "/path/to/checkout", "name": "checkout", "id": "1a2b3c4d" },
   "launcherPid": 12345,
   "ports": { "web": 49000, "api": 49001, "postgres": 49002 },
-  "urls": { "web": "http://localhost:49000", "webLan": ["http://100.79.13.72:49000"], "api": "...", "apiHealth": "...", "ws": "...", "database": "postgres://..." },
-  "env": { "DATABASE_URL": "...", "API_PORT": "49001", "WEB_PORT": "49000", "AUTH_MODE": "dev-bypass" },
+  "urls": { "web": "http://localhost:49000", "webLan": ["http://100.79.13.72:49000"], "api": "...", "apiHealth": "...", "ws": "...", "database": "postgres://tectonic:***@127.0.0.1:49002/tectonic" },
+  "env": { "API_PORT": "49001", "WEB_PORT": "49000", "AUTH_MODE": "dev-bypass" },
   "pids": { "api": 1, "web": 2, "postgres": 3 },
   "paths": { "local": "...", "postgresData": "...", "logs": "...", "lock": "...", "runtime": "..." }
 }
 ```
 
-`bun run dev:env` prints the `env` block as shell exports: `eval "$(bun run --silent dev:env)"` then `bunx drizzle-kit studio` or `psql "$DATABASE_URL"`.
+The database password is random per profile and lives only in `.local/<profile>/pg-password` (mode 0600), never in `runtime.json` or launcher output. `bun run dev:env` prints `DATABASE_URL` (with password) plus the `env` block as shell exports: `eval "$(bun run --silent dev:env)"` then `bunx drizzle-kit studio` or `psql "$DATABASE_URL"`.
 
 ## Common tasks
 
