@@ -4,6 +4,16 @@ Six silent loops illustrate an agent reading Teams, Outlook, SharePoint, a PDF, 
 
 **Agent handoff:** read [AGENTS.md](./AGENTS.md), then use the workflow below. [PRODUCT.md](./PRODUCT.md) records the visual requirements.
 
+## Shared style for the demo video
+
+[style.json](./style.json) is the shared presentation style for the current 150 second demo and the Finn intro. It preserves the existing demo's dark background with a subtle violet glow, Segoe UI typography, white headings, muted lavender body text and lavender accents. Read these values in renderers instead of choosing separate colors per scene. The background formula uses full frame pixel coordinates at 1920 × 1080; do not restart the gradient inside a panel.
+
+Keep the header logo in the same position and at the same size across scenes. New compositions use 60 fps, while the authentic Microsoft source clips retain their 30 fps and 8:5 proportions. Use a 0.6 second transition into the demo. The general product identity remains documented in `docs/branding/README.md`; this video style records the appearance of the existing montage. Source application interfaces and logo artwork keep their original colors.
+
+The local Finn renderer and the local `render_150.py` consume this file. Generated previews, media and local production scripts remain outside Git under `tools/video/output/` or the existing production folder.
+
+For the current demo, [DEMO.md](./DEMO.md) documents the checked-in capture and render scripts. They capture the running UI with a typed question, refresh the platform scenes, preserve the approved ElevenLabs audio and join the Finn intro. Required source media stays outside Git.
+
 ## How this version was generated
 
 1. Located the existing six-scene work in T3 thread `05883ed7-940e-4c13-8e0a-c470dd021b3e` and replaced its invented app layouts with public Microsoft product images.
@@ -130,6 +140,6 @@ The 1-second trim skips recording startup; it is not a scene-start calibration. 
 
 ## Validation before handing off
 
-Run `bun run check` and `bun test tools/dev`. Root `AGENTS.md` also requests `bun run test:e2e` for UI changes, but this branch currently has no such script; report that limitation rather than claiming it ran. Do not add tests under the hackathon rules.
+Run `bun run check` and `bun test tools/dev`. Root `AGENTS.md` also requests `bun run test:e2e` for UI changes. Do not add tests under the hackathon rules.
 
 Inspect changed scenes in the real browser, then verify all exported videos play without errors, retain their intended aspect ratio and duration, and wrap without a visible jump. Verify the gallery pause control, reduced-motion handling, mobile overflow and readable text under dark system appearance. Keep recordings and `.local/` out of commits.

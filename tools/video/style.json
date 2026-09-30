@@ -1,0 +1,40 @@
+{
+  "name": "SDtrust video",
+  "version": 1,
+  "scope": "Shared presentation style for the current demo montage and Finn intro. Source application interfaces retain their own appearance.",
+  "reference": "SDTrust_150_NL_ElevenLabs_PR53.mp4",
+  "canvas": [1920, 1080],
+  "background": {
+    "base_rgb": [12, 16, 37],
+    "glow_rgb": [17, 15, 33],
+    "center": [1500, 200],
+    "radius": [1200, 800],
+    "formula": "g = exp(-(((x-cx)/rx)^2 + ((y-cy)/ry)^2)); rgb = floor(base_rgb + g * glow_rgb)"
+  },
+  "colors": {
+    "title": "#FFFFFF",
+    "body": "#C9C6E7",
+    "accent": "#9D98FF"
+  },
+  "font": {
+    "family": "Segoe UI",
+    "regular_file": "segoeui.ttf",
+    "bold_file": "segoeuib.ttf"
+  },
+  "header": {
+    "logo_box": [54, 31, 140, 42],
+    "title_origin": [240, 27],
+    "title_size": 26
+  },
+  "brand": {
+    "name": "SDtrust",
+    "logo_source": "docs/branding/assets/reverse.svg",
+    "preserve_logo_aspect_ratio": true
+  },
+  "motion": {
+    "new_compositions_fps": 60,
+    "source_snippets_fps": 30,
+    "transition_seconds": 0.6,
+    "source_snippets_aspect_ratio": "8:5"
+  }
+}
