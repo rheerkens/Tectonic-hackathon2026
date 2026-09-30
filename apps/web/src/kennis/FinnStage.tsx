@@ -70,7 +70,6 @@ export function FinnStage(p: FinnStageProps) {
         role="search"
         data-loading={p.busy}
         aria-busy={p.busy}
-        onFocus={() => setFocused(true)}
         onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setFocused(false); }}
         onSubmit={(e) => {
           e.preventDefault();
@@ -94,6 +93,8 @@ export function FinnStage(p: FinnStageProps) {
             placeholder="Stel een vraag over een klant, procedure of afspraak…"
             aria-label="Stel je vraag"
             spellCheck={false}
+            // Only editing expands the card: focusing the button would move it between pointerdown and pointerup and lose the click.
+            onFocus={() => setFocused(true)}
             onChange={(e) => p.onQuestion(e.target.value.replace(/\n/g, ' '))}
             onKeyDown={(e) => {
               // Enter sends, like the search field it replaces; the question is one line, so there is nothing to break.
