@@ -22,6 +22,10 @@ export interface SocketData {
   /** Messages received but not yet handled; bounded so a silent client cannot pile up work. */
   pending: number;
   badMessages: number;
+  /** Bumped on every successful auth and on close; in-flight permission checks from an older generation are discarded. */
+  gen: number;
+  /** Outbound event chain so async permission checks still deliver events in seq order. */
+  out: Promise<void>;
 }
 
 export interface Realtime {
@@ -92,6 +96,12 @@ export function createRealtime(deps: { db: Database; authenticator: Authenticato
     broadcastPresence(projectId);
   };
 
+  /** Captures the socket's auth generation and room membership; returns whether a check result is still current. */
+  const stillCurrent = (ws: ServerWebSocket<SocketData>, projectId: string) => {
+    const gen = ws.data.gen;
+    return () => ws.readyState === 1 && ws.data.gen === gen && rooms.get(projectId)?.get(ws.data.id) === ws;
+  };
+
   const evict = (ws: ServerWebSocket<SocketData>, projectId: string) => {
     send(ws, { type: 'error', code: 'forbidden', message: 'Your access to this project was removed', projectId });
     leaveRoom(ws, projectId, true);
@@ -125,6 +135,7 @@ export function createRealtime(deps: { db: Database; authenticator: Authenticato
       ws.data.authTimer = null;
       // Re-auth resets the socket: drop the previous principal's rooms/presence, subscribe again afresh.
       for (const projectId of [...ws.data.subscriptions]) leaveRoom(ws, projectId, true);
+      ws.data.gen += 1;
       ws.data.principal = principal;
       send(ws, {
         type: 'hello',
@@ -164,6 +175,7 @@ export function createRealtime(deps: { db: Database; authenticator: Authenticato
     close(ws) {
       if (ws.data.authTimer) clearTimeout(ws.data.authTimer);
       sockets.delete(ws.data.id);
+      ws.data.gen += 1;
       for (const projectId of [...ws.data.subscriptions]) leaveRoom(ws, projectId, false);
     },
   };
@@ -212,7 +224,11 @@ export function createRealtime(deps: { db: Database; authenticator: Authenticato
       for (const ws of [...(rooms.get(projectId)?.values() ?? [])]) {
         const userId = ws.data.principal?.userId;
         if (!userId) continue;
-        void Promise.all([projectId, ...audienceProjectIds].map((id) => getProjectRole(db, id, userId))).then(([own, ...rest]) => {
+        const current = stillCurrent(ws, projectId);
+        const check = Promise.all([projectId, ...audienceProjectIds].map((id) => getProjectRole(db, id, userId)));
+        check.catch(() => {});
+        ws.data.out = ws.data.out.then(() => check).then(([own, ...rest]) => {
+          if (!current()) return;
           if (!own) return evict(ws, projectId);
           if (rest.every((r) => r !== null)) send(ws, message);
         }).catch(() => {});
@@ -224,13 +240,14 @@ export function createRealtime(deps: { db: Database; authenticator: Authenticato
       if (!room) return;
       for (const ws of [...room.values()]) {
         const principal = ws.data.principal;
+        const current = stillCurrent(ws, projectId);
         const role = principal ? await getProjectRole(db, projectId, principal.userId) : null;
-        if (!role) evict(ws, projectId);
+        if (!role && current()) evict(ws, projectId);
       }
     },
     upgrade(request, s) {
       if (!server) server = s;
-      const data: SocketData = { id: String(nextConnectionId++), principal: null, subscriptions: new Set(), authTimer: null, queue: Promise.resolve(), pending: 0, badMessages: 0 };
+      const data: SocketData = { id: String(nextConnectionId++), principal: null, subscriptions: new Set(), authTimer: null, queue: Promise.resolve(), pending: 0, badMessages: 0, gen: 0, out: Promise.resolve() };
       const ok = s.upgrade(request, { data });
       // Bun ignores the response once the upgrade succeeded; a 426 is returned otherwise.
       return ok ? new Response(null) : new Response('Expected a WebSocket upgrade', { status: 426 });
