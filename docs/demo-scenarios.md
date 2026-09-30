@@ -92,7 +92,7 @@ No source exists on: dertiende maand, bedrijfswagen, pensioen, kerstpakket.
 - Country and month named in the message override the selects; one country, one month or "volgende/vorige maand", an optional year; never the client. In a follow-up the earlier question counts too: "Tot wanneer mag Atlas in Nederland loonmutaties aanleveren?" then "En voor november?" is rated for Nederland, november 2026. A message that finds a topic on its own ("Tot wanneer mag Atlas aanleveren?" after the ziekmelding question) is not a follow-up.
 
 ### D7. Period sensitivity (#63)
-- wanne; België, Atlas. **Oktober:** D1. **November** (Periode select, or turn 2 "En voor november?" / "En voor volgende maand?"): *Geen onderbouwd antwoord*; S1, S4, S9, S10, S11 "Niet geldig in deze periode", S3 not confirmed, S2 superseded, S5 other country. Tools: `find_knowledge`, `assess_trust`.
+- wanne; België, Atlas. **Oktober:** D1. **November** (Periode select, or turn 2 "En voor november?" / "En voor volgende maand?"): *Geen onderbouwd antwoord*; S1, S4, S9, S10, S11 and S3 "Niet geldig in deze periode", S2 superseded, S5 other country. Tools: `find_knowledge`, `assess_trust`.
 - **Visible:** "Bronnen die voor een andere periode gelden ([S1], ...) neem ik niet over voor november 2026"; all pills off; *Kennislacune* note naming "loonmutaties"; footer "November 2026". The October date is not reused.
 
 ### D8. General rule only
