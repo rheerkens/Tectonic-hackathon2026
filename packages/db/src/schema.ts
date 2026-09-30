@@ -1,4 +1,5 @@
 import { MEMBER_ROLES, SOURCE_KINDS, SOURCE_STATUSES } from '@tectonic/shared';
+import { sql } from 'drizzle-orm';
 import { boolean, date, index, integer, pgEnum, pgTable, primaryKey, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 
 export const memberRoleEnum = pgEnum('member_role', MEMBER_ROLES);
@@ -75,6 +76,8 @@ export const sources = pgTable(
     disputed: boolean('disputed').notNull().default(false),
     disputedById: text('disputed_by_id').references(() => users.id, { onDelete: 'set null' }),
     supersededBy: text('superseded_by'),
+    /** Access per source: the viewer must be a member of the owning project AND of every project listed here. */
+    audienceProjectIds: uuid('audience_project_ids').array().notNull().default(sql`'{}'::uuid[]`),
     ...timestamps,
   },
   (t) => [uniqueIndex('sources_code_idx').on(t.code), index('sources_project_topic_idx').on(t.projectId, t.topic)],

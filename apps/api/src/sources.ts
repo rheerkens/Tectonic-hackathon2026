@@ -1,5 +1,6 @@
 import { projectMembers, projects, sources, type Database } from '@tectonic/db';
 import { eq, inArray } from 'drizzle-orm';
+import { canSeeSource } from './permissions.ts';
 
 /** The teams a user belongs to. Everything the API shows is scoped to these: access is part of trust. */
 export async function myTeams(db: Database, userId: string) {
@@ -14,6 +15,8 @@ export async function myTeams(db: Database, userId: string) {
 export async function visibleSources(db: Database, userId: string) {
   const teams = await myTeams(db, userId);
   if (teams.length === 0) return { teams, rows: [] };
-  const rows = await db.select().from(sources).where(inArray(sources.projectId, teams.map((t) => t.id)));
-  return { teams, rows };
+  const memberOf = new Set(teams.map((t) => t.id));
+  const all = await db.select().from(sources).where(inArray(sources.projectId, [...memberOf]));
+  // Per-source audience: hidden from lists, answers, checks, chat and the client list unless the caller is in every audience team.
+  return { teams, rows: all.filter((x) => canSeeSource(x, memberOf)) };
 }

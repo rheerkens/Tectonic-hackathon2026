@@ -25,7 +25,7 @@ export interface Realtime {
   /** Must be called once with the Bun server so events can be published. */
   attach(server: Server<SocketData>): void;
   /** Broadcasts a persisted change to everyone subscribed to the project. */
-  publish(projectId: string, event: RealtimeEvent, actorId: string | null): void;
+  publish(projectId: string, event: RealtimeEvent, actorId: string | null, audienceProjectIds?: string[]): void;
   /** Re-validates every subscriber of a project after membership changes. */
   revalidateSubscribers(projectId: string): Promise<void>;
   /** Hono route handler that upgrades the request to a WebSocket. */
@@ -177,9 +177,21 @@ export function createRealtime(deps: { db: Database; authenticator: Authenticato
     attach(s) {
       server = s;
     },
-    publish(projectId, event, actorId) {
+    publish(projectId, event, actorId, audienceProjectIds = []) {
       seq += 1;
-      broadcast(projectId, { type: 'event', projectId, seq, actorId, event });
+      const message: ServerMessage = { type: 'event', projectId, seq, actorId, event };
+      if (audienceProjectIds.length > 0) {
+        // Restricted source: only subscribers who are in every audience team hear about it.
+        for (const ws of [...(rooms.get(projectId)?.values() ?? [])]) {
+          const userId = ws.data.principal?.userId;
+          if (!userId) continue;
+          void Promise.all(audienceProjectIds.map((id) => getProjectRole(db, id, userId))).then((roles) => {
+            if (roles.every((r) => r !== null)) send(ws, message);
+          }).catch(() => {});
+        }
+        return;
+      }
+      broadcast(projectId, message);
       log.debug('realtime.publish', { projectId, kind: event.kind, seq });
     },
     async revalidateSubscribers(projectId) {

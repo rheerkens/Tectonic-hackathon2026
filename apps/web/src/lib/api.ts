@@ -69,6 +69,7 @@ export function createApiClient(getAuthHeaders: AuthHeaders) {
     naiveAnswer: (body: Body<'naiveAnswer'>) => request('naiveAnswer', {}, body),
     check: (body: Body<'check'>) => request('check', {}, body),
     disputeSource: (sourceId: string, body: Body<'disputeSource'>) => request('disputeSource', { sourceId }, body),
+    supersedeSource: (sourceId: string, body: Body<'supersedeSource'>) => request('supersedeSource', { sourceId }, body),
     approveSource: (sourceId: string) => request('approveSource', { sourceId }),
   };
 }

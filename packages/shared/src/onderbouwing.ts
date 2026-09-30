@@ -21,9 +21,12 @@ export function validForPeriod(s: Pick<Source, 'validFrom' | 'validTo'>, period:
   return s.validFrom.slice(0, 10) <= end && (s.validTo === null || s.validTo.slice(0, 10) >= start);
 }
 
+/** A source is out of the running once a newer version replaces it, whichever of the two fields says so. */
+export const isSuperseded = (s: Pick<Source, 'status' | 'supersededBy'>) => s.status === 'superseded' || s.supersededBy !== null;
+
 export function scoreSource(s: Source, ctx: Context): Onderbouwing {
   const checks = [
-    { key: 'approved', label: 'Bevoegd goedgekeurd', ok: s.status !== 'unconfirmed' && s.approvedById !== null, max: POINTS.approved },
+    { key: 'approved', label: 'Bevoegd goedgekeurd', ok: !isSuperseded(s) && s.status !== 'unconfirmed' && s.approvedById !== null, max: POINTS.approved },
     { key: 'owner', label: 'Eigenaar bekend', ok: s.ownerId !== null, max: POINTS.owner },
     { key: 'valid', label: 'Geldig voor deze periode', ok: validForPeriod(s, ctx.period), max: POINTS.valid },
     { key: 'traceable', label: 'Bron herleidbaar', ok: s.traceable, max: POINTS.traceable },
@@ -34,7 +37,7 @@ export function scoreSource(s: Source, ctx: Context): Onderbouwing {
 
 /** Why does (or doesn't) this source apply to the question's context? Order matters: the first match wins. */
 export function verdictFor(s: Source, ctx: Context): Verdict {
-  if (s.status === 'superseded') return { kind: 'superseded', label: 'Vervangen' };
+  if (isSuperseded(s)) return { kind: 'superseded', label: s.supersededBy ? `Vervangen door ${s.supersededBy}` : 'Vervangen' };
   if (s.country !== ctx.country) return { kind: 'other-country', label: 'Ander land' };
   if (s.client !== null && s.client !== ctx.client) return { kind: 'other-client', label: 'Andere klant' };
   if (!validForPeriod(s, ctx.period)) return { kind: 'expired', label: 'Niet geldig in deze periode' };
