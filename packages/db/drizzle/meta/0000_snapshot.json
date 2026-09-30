@@ -1,5 +1,5 @@
 {
-  "id": "3b322a2c-b1ce-4699-be3c-dcf744a1b8a1",
+  "id": "df0e2254-fdb1-4c48-a68b-039c4c2d80a4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -169,8 +169,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.tasks": {
-      "name": "tasks",
+    "public.sources": {
+      "name": "sources",
       "schema": "",
       "columns": {
         "id": {
@@ -179,6 +179,12 @@
           "primaryKey": true,
           "notNull": true,
           "default": "gen_random_uuid()"
+        },
+        "code": {
+          "name": "code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
         },
         "project_id": {
           "name": "project_id",
@@ -192,54 +198,107 @@
           "primaryKey": false,
           "notNull": true
         },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "''"
-        },
-        "status": {
-          "name": "status",
-          "type": "task_status",
+        "kind": {
+          "name": "kind",
+          "type": "source_kind",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true,
-          "default": "'backlog'"
-        },
-        "priority": {
-          "name": "priority",
-          "type": "task_priority",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'medium'"
-        },
-        "assignee_id": {
-          "name": "assignee_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "position": {
-          "name": "position",
-          "type": "double precision",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
+          "notNull": true
         },
         "version": {
           "name": "version",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
-          "default": 1
+          "notNull": false
         },
-        "created_by_id": {
-          "name": "created_by_id",
+        "topic": {
+          "name": "topic",
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "keywords": {
+          "name": "keywords",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "country": {
+          "name": "country",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "client": {
+          "name": "client",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "value": {
+          "name": "value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "claim": {
+          "name": "claim",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quote": {
+          "name": "quote",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "valid_from": {
+          "name": "valid_from",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "valid_to": {
+          "name": "valid_to",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "source_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'unconfirmed'"
+        },
+        "owner_id": {
+          "name": "owner_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "approved_by_id": {
+          "name": "approved_by_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "traceable": {
+          "name": "traceable",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "superseded_by": {
+          "name": "superseded_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -257,8 +316,23 @@
         }
       },
       "indexes": {
-        "tasks_project_status_position_idx": {
-          "name": "tasks_project_status_position_idx",
+        "sources_code_idx": {
+          "name": "sources_code_idx",
+          "columns": [
+            {
+              "expression": "code",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "sources_project_topic_idx": {
+          "name": "sources_project_topic_idx",
           "columns": [
             {
               "expression": "project_id",
@@ -267,13 +341,7 @@
               "nulls": "last"
             },
             {
-              "expression": "status",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "position",
+              "expression": "topic",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -286,9 +354,9 @@
         }
       },
       "foreignKeys": {
-        "tasks_project_id_projects_id_fk": {
-          "name": "tasks_project_id_projects_id_fk",
-          "tableFrom": "tasks",
+        "sources_project_id_projects_id_fk": {
+          "name": "sources_project_id_projects_id_fk",
+          "tableFrom": "sources",
           "tableTo": "projects",
           "columnsFrom": [
             "project_id"
@@ -299,12 +367,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "tasks_assignee_id_users_id_fk": {
-          "name": "tasks_assignee_id_users_id_fk",
-          "tableFrom": "tasks",
+        "sources_owner_id_users_id_fk": {
+          "name": "sources_owner_id_users_id_fk",
+          "tableFrom": "sources",
           "tableTo": "users",
           "columnsFrom": [
-            "assignee_id"
+            "owner_id"
           ],
           "columnsTo": [
             "id"
@@ -312,17 +380,17 @@
           "onDelete": "set null",
           "onUpdate": "no action"
         },
-        "tasks_created_by_id_users_id_fk": {
-          "name": "tasks_created_by_id_users_id_fk",
-          "tableFrom": "tasks",
+        "sources_approved_by_id_users_id_fk": {
+          "name": "sources_approved_by_id_users_id_fk",
+          "tableFrom": "sources",
           "tableTo": "users",
           "columnsFrom": [
-            "created_by_id"
+            "approved_by_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
@@ -388,24 +456,23 @@
         "owner"
       ]
     },
-    "public.task_priority": {
-      "name": "task_priority",
+    "public.source_kind": {
+      "name": "source_kind",
       "schema": "public",
       "values": [
-        "low",
-        "medium",
-        "high",
-        "urgent"
+        "agreement",
+        "procedure",
+        "manual",
+        "chat"
       ]
     },
-    "public.task_status": {
-      "name": "task_status",
+    "public.source_status": {
+      "name": "source_status",
       "schema": "public",
       "values": [
-        "backlog",
-        "in_progress",
-        "review",
-        "done"
+        "approved",
+        "unconfirmed",
+        "superseded"
       ]
     }
   },

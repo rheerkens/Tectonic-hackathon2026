@@ -1,26 +1,7 @@
 import { z } from 'zod';
 
 // ---- enums -----------------------------------------------------------------
-export const TASK_STATUSES = ['backlog', 'in_progress', 'review', 'done'] as const;
-export const TaskStatusSchema = z.enum(TASK_STATUSES);
-export type TaskStatus = z.infer<typeof TaskStatusSchema>;
-export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
-  backlog: 'Backlog',
-  in_progress: 'In progress',
-  review: 'Review',
-  done: 'Done',
-};
-
-export const TASK_PRIORITIES = ['low', 'medium', 'high', 'urgent'] as const;
-export const TaskPrioritySchema = z.enum(TASK_PRIORITIES);
-export type TaskPriority = z.infer<typeof TaskPrioritySchema>;
-export const TASK_PRIORITY_LABELS: Record<TaskPriority, string> = {
-  low: 'Low',
-  medium: 'Medium',
-  high: 'High',
-  urgent: 'Urgent',
-};
-
+/** A project is a team ("Payroll België", "Klantteam Atlas"): membership decides which sources you may see. */
 export const MEMBER_ROLES = ['viewer', 'editor', 'owner'] as const;
 export const MemberRoleSchema = z.enum(MEMBER_ROLES);
 export type MemberRole = z.infer<typeof MemberRoleSchema>;
@@ -29,9 +10,22 @@ export const AUTH_SOURCES = ['dev-bypass', 'clerk'] as const;
 export const AuthSourceSchema = z.enum(AUTH_SOURCES);
 export type AuthSource = z.infer<typeof AuthSourceSchema>;
 
+export const SOURCE_KINDS = ['agreement', 'procedure', 'manual', 'chat'] as const;
+export const SourceKindSchema = z.enum(SOURCE_KINDS);
+export type SourceKind = z.infer<typeof SourceKindSchema>;
+
+export const SOURCE_STATUSES = ['approved', 'unconfirmed', 'superseded'] as const;
+export const SourceStatusSchema = z.enum(SOURCE_STATUSES);
+export type SourceStatus = z.infer<typeof SourceStatusSchema>;
+
+export const COUNTRIES = ['BE', 'NL'] as const;
+export const CountrySchema = z.enum(COUNTRIES);
+export type Country = z.infer<typeof CountrySchema>;
+export const COUNTRY_LABELS: Record<Country, string> = { BE: 'België', NL: 'Nederland' };
+
 // ---- entities --------------------------------------------------------------
 const isoDate = z.string();
-const hexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Expected a #rrggbb color');
+const period = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'Expected YYYY-MM');
 
 export const UserSchema = z.object({
   id: z.string(),
@@ -53,45 +47,6 @@ export const ProjectSchema = z.object({
 });
 export type Project = z.infer<typeof ProjectSchema>;
 
-export const ProjectMemberSchema = z.object({
-  projectId: z.uuid(),
-  userId: z.string(),
-  role: MemberRoleSchema,
-  user: UserSchema,
-});
-export type ProjectMember = z.infer<typeof ProjectMemberSchema>;
-
-export const TaskSchema = z.object({
-  id: z.uuid(),
-  projectId: z.uuid(),
-  title: z.string(),
-  description: z.string(),
-  status: TaskStatusSchema,
-  priority: TaskPrioritySchema,
-  assigneeId: z.string().nullable(),
-  position: z.number(),
-  version: z.number().int(),
-  createdById: z.string(),
-  createdAt: isoDate,
-  updatedAt: isoDate,
-});
-export type Task = z.infer<typeof TaskSchema>;
-
-export const ProjectSummarySchema = ProjectSchema.extend({
-  role: MemberRoleSchema,
-  taskCount: z.number().int(),
-  doneCount: z.number().int(),
-  memberCount: z.number().int(),
-});
-export type ProjectSummary = z.infer<typeof ProjectSummarySchema>;
-
-export const ProjectDetailSchema = ProjectSchema.extend({
-  role: MemberRoleSchema,
-  members: ProjectMemberSchema.array(),
-  tasks: TaskSchema.array(),
-});
-export type ProjectDetail = z.infer<typeof ProjectDetailSchema>;
-
 export const MeSchema = UserSchema.extend({ authSource: AuthSourceSchema });
 export type Me = z.infer<typeof MeSchema>;
 
@@ -107,49 +62,88 @@ export type Health = z.infer<typeof HealthSchema>;
 
 export const OkSchema = z.object({ ok: z.literal(true) });
 
+// ---- knowledge sources -----------------------------------------------------
+export const SourceSchema = z.object({
+  id: z.uuid(),
+  /** Short reference shown in the UI: S1, S2, ... */
+  code: z.string(),
+  projectId: z.uuid(),
+  title: z.string(),
+  kind: SourceKindSchema,
+  version: z.number().int().nullable(),
+  topic: z.string(),
+  keywords: z.string(),
+  country: CountrySchema,
+  /** null = applies to every client; a name = a client-specific agreement. */
+  client: z.string().nullable(),
+  /** The headline answer, e.g. "22 oktober 2026". */
+  value: z.string(),
+  claim: z.string(),
+  quote: z.string(),
+  validFrom: isoDate,
+  validTo: isoDate.nullable(),
+  status: SourceStatusSchema,
+  ownerId: z.string().nullable(),
+  approvedById: z.string().nullable(),
+  /** Can the claim be traced back to a document or message? */
+  traceable: z.boolean(),
+  supersededBy: z.string().nullable(),
+  createdAt: isoDate,
+});
+export type Source = z.infer<typeof SourceSchema>;
+
+export const ONDERBOUWING_KEYS = ['approved', 'owner', 'valid', 'traceable'] as const;
+export const OnderbouwingCheckSchema = z.object({
+  key: z.enum(ONDERBOUWING_KEYS),
+  label: z.string(),
+  points: z.number().int(),
+  max: z.number().int(),
+});
+export type OnderbouwingCheck = z.infer<typeof OnderbouwingCheckSchema>;
+export const OnderbouwingSchema = z.object({ score: z.number().int(), checks: OnderbouwingCheckSchema.array() });
+export type Onderbouwing = z.infer<typeof OnderbouwingSchema>;
+
+export const VERDICT_KINDS = ['exception', 'general', 'unconfirmed', 'expired', 'superseded', 'other-client', 'other-country'] as const;
+export const VerdictSchema = z.object({ kind: z.enum(VERDICT_KINDS), label: z.string() });
+export type Verdict = z.infer<typeof VerdictSchema>;
+
+export const AssessedSourceSchema = SourceSchema.extend({
+  projectName: z.string(),
+  onderbouwing: OnderbouwingSchema,
+  verdict: VerdictSchema,
+});
+export type AssessedSource = z.infer<typeof AssessedSourceSchema>;
+
+export const ANSWER_STATUSES = ['onderbouwd', 'deels', 'onvoldoende', 'geen'] as const;
+export const AnswerStatusSchema = z.enum(ANSWER_STATUSES);
+export type AnswerStatus = z.infer<typeof AnswerStatusSchema>;
+
+export const AskResultSchema = z.object({
+  topic: z.string().nullable(),
+  status: AnswerStatusSchema,
+  statusLabel: z.string(),
+  best: AssessedSourceSchema.nullable(),
+  /** All sources on the topic: the best one first, then the ones that do not apply and why. */
+  sources: AssessedSourceSchema.array(),
+});
+export type AskResult = z.infer<typeof AskResultSchema>;
+
+export const AccessSchema = z.object({
+  teams: z.object({ id: z.uuid(), name: z.string(), color: z.string(), role: MemberRoleSchema }).array(),
+  clients: z.string().array(),
+  /** Questions the demo data can answer, for the example chips. */
+  examples: z.string().array(),
+});
+export type Access = z.infer<typeof AccessSchema>;
+
 // ---- inputs ----------------------------------------------------------------
-export const CreateProjectInputSchema = z.object({
-  name: z.string().trim().min(1, 'Name is required').max(80),
-  description: z.string().trim().max(500).default(''),
-  color: hexColor.optional(),
+export const AskInputSchema = z.object({
+  question: z.string().trim().min(3, 'Stel een vraag').max(300),
+  country: CountrySchema,
+  client: z.string().trim().max(80).nullable(),
+  period,
 });
-export type CreateProjectInput = z.input<typeof CreateProjectInputSchema>;
-
-export const UpdateProjectInputSchema = z
-  .object({
-    name: z.string().trim().min(1).max(80),
-    description: z.string().trim().max(500),
-    color: hexColor,
-  })
-  .partial();
-export type UpdateProjectInput = z.input<typeof UpdateProjectInputSchema>;
-
-export const CreateTaskInputSchema = z.object({
-  title: z.string().trim().min(1, 'Title is required').max(200),
-  description: z.string().trim().max(4000).default(''),
-  status: TaskStatusSchema.default('backlog'),
-  priority: TaskPrioritySchema.default('medium'),
-  assigneeId: z.string().nullable().optional(),
-});
-export type CreateTaskInput = z.input<typeof CreateTaskInputSchema>;
-
-export const UpdateTaskInputSchema = z
-  .object({
-    title: z.string().trim().min(1, 'Title is required').max(200),
-    description: z.string().trim().max(4000),
-    status: TaskStatusSchema,
-    priority: TaskPrioritySchema,
-    assigneeId: z.string().nullable(),
-    position: z.number().finite(),
-  })
-  .partial();
-export type UpdateTaskInput = z.input<typeof UpdateTaskInputSchema>;
-
-export const AddMemberInputSchema = z.object({
-  userId: z.string().min(1),
-  role: MemberRoleSchema.default('editor'),
-});
-export type AddMemberInput = z.input<typeof AddMemberInputSchema>;
+export type AskInput = z.input<typeof AskInputSchema>;
 
 /** Role hierarchy helper shared by the API and the UI. */
 const ROLE_RANK: Record<MemberRole, number> = { viewer: 0, editor: 1, owner: 2 };
@@ -157,122 +151,3 @@ export function roleAtLeast(role: MemberRole | null | undefined, required: Membe
   if (!role) return false;
   return ROLE_RANK[role] >= ROLE_RANK[required];
 }
-
-/** Sort tasks the way the board renders them. */
-export function sortTasks<T extends { position: number; createdAt: string }>(tasks: readonly T[]): T[] {
-  return [...tasks].sort((a, b) => a.position - b.position || a.createdAt.localeCompare(b.createdAt));
-}
-
-
-// ---- trust lens: knowledge sources -----------------------------------------
-export const SOURCE_KINDS = ['policy', 'manual', 'expert_note', 'wiki', 'email', 'teams_chat'] as const;
-export const SourceKindSchema = z.enum(SOURCE_KINDS);
-export type SourceKind = z.infer<typeof SourceKindSchema>;
-export const SOURCE_KIND_LABELS: Record<SourceKind, string> = {
-  policy: 'Policy',
-  manual: 'Manual',
-  expert_note: 'Expert note',
-  wiki: 'Wiki page',
-  email: 'Email',
-  teams_chat: 'Teams chat',
-};
-
-/** Markets a question can be asked about. */
-export const COUNTRIES = ['BE', 'NL'] as const;
-export const CountrySchema = z.enum(COUNTRIES);
-export type Country = z.infer<typeof CountrySchema>;
-export const SourceCountrySchema = z.enum([...COUNTRIES, 'ALL']);
-export type SourceCountry = z.infer<typeof SourceCountrySchema>;
-
-export const SourceSchema = z.object({
-  id: z.uuid(),
-  projectId: z.uuid(),
-  title: z.string(),
-  kind: SourceKindSchema,
-  topic: z.string(),
-  country: SourceCountrySchema,
-  /** The one-sentence answer this source gives. Sources on one topic that disagree here are in conflict. */
-  claim: z.string(),
-  content: z.string(),
-  ownerId: z.string().nullable(),
-  verifiedById: z.string().nullable(),
-  flaggedOutdated: z.boolean(),
-  reviewedAt: isoDate,
-  createdAt: isoDate,
-});
-export type Source = z.infer<typeof SourceSchema>;
-
-export const TRUST_FACTOR_KEYS = ['freshness', 'ownership', 'authority', 'applicability'] as const;
-export const TrustFactorSchema = z.object({
-  key: z.enum(TRUST_FACTOR_KEYS),
-  label: z.string(),
-  /** 0..1 */
-  value: z.number(),
-  /** Share of the total score. */
-  weight: z.number(),
-  note: z.string(),
-});
-export type TrustFactor = z.infer<typeof TrustFactorSchema>;
-
-export const TrustLevelSchema = z.enum(['high', 'medium', 'low']);
-export type TrustLevel = z.infer<typeof TrustLevelSchema>;
-
-export const TrustSchema = z.object({ score: z.number().int(), level: TrustLevelSchema, factors: TrustFactorSchema.array() });
-export type Trust = z.infer<typeof TrustSchema>;
-
-export const SourceWithTrustSchema = SourceSchema.extend({ trust: TrustSchema });
-export type SourceWithTrust = z.infer<typeof SourceWithTrustSchema>;
-
-export const ReasonSchema = z.object({ tone: z.enum(['good', 'warn', 'bad']), text: z.string() });
-export type Reason = z.infer<typeof ReasonSchema>;
-
-export const ExpertSchema = z.object({ userId: z.string(), reason: z.string() });
-export type Expert = z.infer<typeof ExpertSchema>;
-
-export const AskResultSchema = z.object({
-  topic: z.string().nullable(),
-  /** The claim of the most trustworthy applicable source, or null when there is a gap. */
-  answer: z.string().nullable(),
-  confidence: z.number().int(),
-  level: TrustLevelSchema,
-  reasons: ReasonSchema.array(),
-  best: SourceWithTrustSchema.nullable(),
-  /** Applicable sources that give a different answer than `best`. */
-  conflicts: SourceWithTrustSchema.array(),
-  /** Sources on the topic written for another market. */
-  inapplicable: SourceWithTrustSchema.array(),
-  /** Every applicable source, most trusted first. */
-  sources: SourceWithTrustSchema.array(),
-  experts: ExpertSchema.array(),
-});
-export type AskResult = z.infer<typeof AskResultSchema>;
-
-export const KnowledgeIssueSchema = z.object({
-  type: z.enum(['outdated', 'ownerless', 'conflict']),
-  topic: z.string(),
-  sourceIds: z.uuid().array(),
-  text: z.string(),
-});
-export type KnowledgeIssue = z.infer<typeof KnowledgeIssueSchema>;
-
-export const SourcesOverviewSchema = z.object({ sources: SourceWithTrustSchema.array(), issues: KnowledgeIssueSchema.array() });
-export type SourcesOverview = z.infer<typeof SourcesOverviewSchema>;
-
-export const AskInputSchema = z.object({
-  question: z.string().trim().min(3, 'Ask a question').max(300),
-  country: CountrySchema,
-});
-export type AskInput = z.input<typeof AskInputSchema>;
-
-export const CreateSourceInputSchema = z.object({
-  title: z.string().trim().min(1).max(160),
-  kind: SourceKindSchema,
-  topic: z.string().trim().toLowerCase().regex(/^[a-z0-9-]{2,40}$/, 'Use a short slug like "13th-month"'),
-  country: SourceCountrySchema,
-  claim: z.string().trim().min(1).max(300),
-  content: z.string().trim().max(4000).default(''),
-});
-export type CreateSourceInput = z.input<typeof CreateSourceInputSchema>;
-
-export const FlagSourceInputSchema = z.object({ flagged: z.boolean() });
-export type FlagSourceInput = z.input<typeof FlagSourceInputSchema>;

@@ -20,7 +20,7 @@ switch (command) {
     const handle = createDb(url, { max: 2 });
     try {
       const result = await seedDatabase(handle.db, { reset: flags.includes('--reset') });
-      console.log(result.seeded ? `Seeded ${result.projects} projects / ${result.tasks} tasks` : 'Database already has data; nothing seeded');
+      console.log(result.seeded ? `Seeded ${result.projects} teams / ${result.sources} sources` : 'Database already has data; nothing seeded');
     } finally {
       await handle.close();
     }

@@ -1,117 +1,68 @@
-import { knowledgeSources, type KnowledgeSourceRow } from '@tectonic/db';
-import { AskInputSchema, CreateSourceInputSchema, FlagSourceInputSchema, assess, findIssues, scoreSource } from '@tectonic/shared';
-import type { Source, SourceWithTrust, SourcesOverview } from '@tectonic/shared';
-import { and, asc, eq } from 'drizzle-orm';
+import { projectMembers, projects, sources, type Database } from '@tectonic/db';
+import { AskInputSchema, assess, roleAtLeast, type Access } from '@tectonic/shared';
+import { and, eq, inArray } from 'drizzle-orm';
 import { Hono } from 'hono';
 import type { AppContext, AppEnv } from '../app.ts';
-import { forbidden, notFound } from '../errors.ts';
-import { requireProjectAccess } from '../permissions.ts';
+import { conflict, forbidden, notFound } from '../errors.ts';
+import { getProjectRole } from '../permissions.ts';
+import { serializeSource } from '../serializers.ts';
 import { jsonBody } from '../validate.ts';
 
-const iso = (d: Date) => d.toISOString();
+const EXAMPLES = ['Tot wanneer mag Atlas loonmutaties aanleveren?', 'Binnen welke termijn moet een ziekmelding doorgegeven worden?'];
 
-function serializeSource(row: KnowledgeSourceRow): Source {
-  return {
-    id: row.id,
-    projectId: row.projectId,
-    title: row.title,
-    kind: row.kind,
-    topic: row.topic,
-    country: row.country as Source['country'],
-    claim: row.claim,
-    content: row.content,
-    ownerId: row.ownerId,
-    verifiedById: row.verifiedById,
-    flaggedOutdated: row.flaggedOutdated,
-    reviewedAt: iso(row.reviewedAt),
-    createdAt: iso(row.createdAt),
-  };
+/** The teams a user belongs to. Everything the API shows is scoped to these: access is part of trust. */
+async function myTeams(db: Database, userId: string) {
+  return db
+    .select({ id: projects.id, name: projects.name, color: projects.color, role: projectMembers.role })
+    .from(projectMembers)
+    .innerJoin(projects, eq(projects.id, projectMembers.projectId))
+    .where(eq(projectMembers.userId, userId));
 }
-
-const withTrust = (row: KnowledgeSourceRow): SourceWithTrust => {
-  const source = serializeSource(row);
-  return { ...source, trust: scoreSource(source, { country: null, now: Date.now() }) };
-};
 
 export function knowledgeRoutes(ctx: AppContext) {
   const { db, realtime } = ctx;
   const router = new Hono<AppEnv>();
 
-  /** Every query is scoped by projectId: a source id from another portfolio is a 404, never data. */
-  const loadAll = (projectId: string) => db.select().from(knowledgeSources).where(eq(knowledgeSources.projectId, projectId)).orderBy(asc(knowledgeSources.createdAt));
-  const loadOne = async (projectId: string, sourceId: string) => {
-    const [row] = await db
-      .select()
-      .from(knowledgeSources)
-      .where(and(eq(knowledgeSources.id, sourceId), eq(knowledgeSources.projectId, projectId)))
-      .limit(1);
-    if (!row) throw notFound('Source');
-    return row;
-  };
+  async function visibleSources(userId: string) {
+    const teams = await myTeams(db, userId);
+    if (teams.length === 0) return { teams, rows: [] };
+    const rows = await db.select().from(sources).where(inArray(sources.projectId, teams.map((t) => t.id)));
+    return { teams, rows };
+  }
 
-  router.get('/api/projects/:projectId/sources', async (c) => {
-    const projectId = c.req.param('projectId');
-    await requireProjectAccess(db, projectId, c.get('principal').userId, 'viewer');
-    const sources = (await loadAll(projectId)).map(serializeSource);
-    const now = Date.now();
-    return c.json({
-      sources: sources.map((s) => ({ ...s, trust: scoreSource(s, { country: null, now }) })),
-      issues: findIssues(sources, now),
-    } satisfies SourcesOverview);
+  router.get('/api/access', async (c) => {
+    const { teams, rows } = await visibleSources(c.get('principal').userId);
+    const clients = [...new Set(rows.map((r) => r.client).filter((x): x is string => x !== null))].sort();
+    return c.json({ teams, clients, examples: EXAMPLES } satisfies Access);
   });
 
-  router.post('/api/projects/:projectId/ask', jsonBody(AskInputSchema), async (c) => {
-    const projectId = c.req.param('projectId');
-    await requireProjectAccess(db, projectId, c.get('principal').userId, 'viewer');
-    const { question, country } = c.req.valid('json');
-    const sources = (await loadAll(projectId)).map(serializeSource);
-    return c.json(assess(question, sources, { country, now: Date.now() }));
+  router.post('/api/ask', jsonBody(AskInputSchema), async (c) => {
+    const { question, country, client, period } = c.req.valid('json');
+    const { teams, rows } = await visibleSources(c.get('principal').userId);
+    const names = new Map(teams.map((t) => [t.id, t.name]));
+    return c.json(assess(question, rows.map(serializeSource), names, { country, client, period }));
   });
 
-  router.post('/api/projects/:projectId/sources', jsonBody(CreateSourceInputSchema), async (c) => {
-    const projectId = c.req.param('projectId');
+  router.post('/api/sources/:sourceId/approve', async (c) => {
     const principal = c.get('principal');
-    await requireProjectAccess(db, projectId, principal.userId, 'editor');
-    const input = c.req.valid('json');
-    // The creator owns what they add: that is the accountability the trust score rewards.
-    const [created] = await db.insert(knowledgeSources).values({ ...input, projectId, ownerId: principal.userId }).returning();
-    if (!created) throw new Error('insert failed');
-    realtime.publish(projectId, { kind: 'sources.changed' }, principal.userId);
-    return c.json(withTrust(created), 201);
-  });
-
-  router.post('/api/projects/:projectId/sources/:sourceId/verify', async (c) => {
-    const projectId = c.req.param('projectId');
-    const principal = c.get('principal');
-    const { role } = await requireProjectAccess(db, projectId, principal.userId, 'editor');
-    const existing = await loadOne(projectId, c.req.param('sourceId'));
-    // Only the accountable owner (or the portfolio owner, for ownerless sources) can vouch for a source.
-    if (existing.ownerId !== principal.userId && !(role === 'owner' && !existing.ownerId)) {
-      throw forbidden('Only the owner of this source can verify it');
+    const [source] = await db.select().from(sources).where(eq(sources.id, c.req.param('sourceId'))).limit(1);
+    const role = source ? await getProjectRole(db, source.projectId, principal.userId) : null;
+    // Not a member means "no such source": the existence of a source in a team you cannot see is not revealed.
+    if (!source || !role) throw notFound('Source');
+    if (!roleAtLeast(role, 'editor')) throw forbidden('Your role cannot approve sources');
+    // Only the accountable owner can vouch for a source; the team owner can adopt an ownerless one.
+    if (source.ownerId !== principal.userId && !(role === 'owner' && source.ownerId === null)) {
+      throw forbidden('Only the owner of this source can approve it');
     }
-    const [updated] = await db
-      .update(knowledgeSources)
-      .set({ verifiedById: principal.userId, ownerId: existing.ownerId ?? principal.userId, flaggedOutdated: false, reviewedAt: new Date(), updatedAt: new Date() })
-      .where(and(eq(knowledgeSources.id, existing.id), eq(knowledgeSources.projectId, projectId)))
-      .returning();
-    if (!updated) throw notFound('Source');
-    realtime.publish(projectId, { kind: 'sources.changed' }, principal.userId);
-    return c.json(withTrust(updated));
-  });
+    if (source.status === 'superseded') throw conflict('A superseded source cannot be approved');
 
-  router.post('/api/projects/:projectId/sources/:sourceId/flag', jsonBody(FlagSourceInputSchema), async (c) => {
-    const projectId = c.req.param('projectId');
-    const principal = c.get('principal');
-    await requireProjectAccess(db, projectId, principal.userId, 'editor');
-    const existing = await loadOne(projectId, c.req.param('sourceId'));
-    const [updated] = await db
-      .update(knowledgeSources)
-      .set({ flaggedOutdated: c.req.valid('json').flagged, updatedAt: new Date() })
-      .where(and(eq(knowledgeSources.id, existing.id), eq(knowledgeSources.projectId, projectId)))
-      .returning();
-    if (!updated) throw notFound('Source');
-    realtime.publish(projectId, { kind: 'sources.changed' }, principal.userId);
-    return c.json(withTrust(updated));
+    await db
+      .update(sources)
+      .set({ status: 'approved', approvedById: principal.userId, ownerId: source.ownerId ?? principal.userId, updatedAt: new Date() })
+      .where(and(eq(sources.id, source.id), eq(sources.projectId, source.projectId)));
+    // Persisted above; only now do subscribers hear about it.
+    realtime.publish(source.projectId, { kind: 'sources.changed' }, principal.userId);
+    return c.json({ ok: true as const });
   });
 
   return router;

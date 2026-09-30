@@ -1,264 +1,202 @@
-import { DEMO_USERS, type SourceCountry, type SourceKind, type TaskPriority, type TaskStatus } from '@tectonic/shared';
+import { DEMO_USERS, type Country, type SourceKind, type SourceStatus } from '@tectonic/shared';
 import { count, sql } from 'drizzle-orm';
 import type { Database } from './client.ts';
-import { knowledgeSources, projectMembers, projects, tasks, users } from './schema.ts';
+import { projectMembers, projects, sources, users } from './schema.ts';
 
-/** Small deterministic PRNG (mulberry32) so seed data is identical everywhere. */
-function prng(seed: number) {
-  let a = seed >>> 0;
-  return () => {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-interface SeedProject {
+interface SeedTeam {
+  key: string;
   name: string;
   description: string;
   color: string;
   ownerId: string;
   members: Array<{ userId: string; role: 'editor' | 'viewer' }>;
-  tasks: Array<{ title: string; status: TaskStatus; description?: string }>;
 }
 
-const SEED_PROJECTS: SeedProject[] = [
-  {
-    name: 'Launch Website',
-    description: 'Marketing site for the hackathon launch, from copy to deploy.',
-    color: '#6366f1',
-    ownerId: 'demo_ada',
-    members: [
-      { userId: 'demo_grace', role: 'editor' },
-      { userId: 'demo_margaret', role: 'viewer' },
-    ],
-    tasks: [
-      { title: 'Draft landing page copy', status: 'done' },
-      { title: 'Design hero illustration', status: 'done' },
-      { title: 'Set up analytics events', status: 'review' },
-      { title: 'Build pricing section', status: 'in_progress', description: 'Three tiers, monthly/yearly toggle.' },
-      { title: 'Write launch blog post', status: 'in_progress' },
-      { title: 'Configure custom domain', status: 'backlog' },
-      { title: 'Add newsletter signup form', status: 'backlog' },
-      { title: 'Accessibility audit', status: 'backlog', description: 'Keyboard navigation, contrast, screen reader labels.' },
-    ],
-  },
-  {
-    name: 'Mobile App',
-    description: 'Capacitor shell around the web app with push notifications.',
-    color: '#0ea5e9',
-    ownerId: 'demo_grace',
-    members: [
-      { userId: 'demo_ada', role: 'editor' },
-      { userId: 'demo_alan', role: 'editor' },
-    ],
-    tasks: [
-      { title: 'Generate app icons and splash screens', status: 'done' },
-      { title: 'Wire up deep links', status: 'review' },
-      { title: 'Implement offline banner', status: 'in_progress' },
-      { title: 'Push notification permissions flow', status: 'in_progress' },
-      { title: 'TestFlight build', status: 'backlog' },
-      { title: 'Play Store internal track', status: 'backlog' },
-      { title: 'Crash reporting integration', status: 'backlog' },
-    ],
-  },
-  {
-    name: 'Hackathon Ops',
-    description: 'Everything needed to run the event smoothly.',
-    color: '#f59e0b',
-    ownerId: 'demo_margaret',
-    members: [
-      { userId: 'demo_ada', role: 'editor' },
-      { userId: 'demo_grace', role: 'editor' },
-    ],
-    tasks: [
-      { title: 'Book venue and catering', status: 'done' },
-      { title: 'Confirm judges', status: 'done' },
-      { title: 'Print name badges', status: 'review' },
-      { title: 'Prepare demo-day schedule', status: 'in_progress' },
-      { title: 'Order team t-shirts', status: 'backlog' },
-      { title: 'Set up Wi-Fi credentials sheet', status: 'backlog' },
-      { title: 'Write judging rubric', status: 'backlog' },
-      { title: 'Arrange prize vouchers', status: 'backlog' },
-      { title: 'Post-event survey', status: 'backlog' },
-    ],
-  },
-];
-
 interface SeedSource {
+  code: string;
+  team: string;
   title: string;
   kind: SourceKind;
+  version?: number;
   topic: string;
-  country: SourceCountry;
+  keywords: string;
+  country: Country;
+  client?: string;
+  value: string;
   claim: string;
-  content: string;
-  ownerId: string | null;
-  verifiedById?: string;
-  /** Days since the source was last reviewed, relative to seeding time. */
-  reviewedDaysAgo: number;
-  flaggedOutdated?: boolean;
+  quote: string;
+  validFrom: string;
+  validTo?: string;
+  status: SourceStatus;
+  ownerId?: string;
+  approvedById?: string;
+  traceable?: boolean;
+  supersededBy?: string;
 }
 
 /**
- * The persona: Ada just inherited the Vandeputte Logistics payroll portfolio. Grace is the Belgian payroll
- * expert, Margaret covers the Netherlands, Alan is compliance. The corpus is synthetic, and deliberately
- * messy: contradicting, outdated and ownerless sources are the point.
+ * Wanne, Roy and Sebastien are the three payroll consultants of the demo. Wanne asks the questions.
+ * Sebastien is NOT in "Klantteam Atlas", so he cannot see the Atlas agreement: access is part of trust.
  */
-const SEED_PORTFOLIO = {
-  name: 'Vandeputte Logistics',
-  description: 'Inherited payroll portfolio (BE + NL). Synthetic demo data, not legal advice.',
-  color: '#1a73e8',
-  ownerId: 'demo_ada',
-  members: [
-    { userId: 'demo_grace', role: 'editor' as const },
-    { userId: 'demo_margaret', role: 'editor' as const },
-    { userId: 'demo_alan', role: 'editor' as const },
-  ],
-};
-
-const SEED_SOURCES: SeedSource[] = [
-  // 13th month: a solid policy, an outdated wiki page and a Teams chat that disagree (Belgium)
+const TEAMS: SeedTeam[] = [
   {
-    title: 'BE payroll policy: year-end bonus',
-    kind: 'policy',
-    topic: '13th-month',
-    country: 'BE',
-    claim: 'Paid in December, pro rata to months worked',
-    content: 'Belgium has no statutory 13th month. Vandeputte pays a year-end bonus via the sector agreement, in the December payroll, pro rata to months worked.',
-    ownerId: 'demo_grace',
-    verifiedById: 'demo_grace',
-    reviewedDaysAgo: 30,
+    key: 'be',
+    name: 'Payroll België',
+    description: 'Procedures en handleidingen voor payroll in België en Nederland.',
+    color: '#4f46e5',
+    ownerId: 'demo_roy',
+    members: [
+      { userId: 'demo_wanne', role: 'editor' },
+      { userId: 'demo_sebastien', role: 'editor' },
+    ],
   },
   {
-    title: 'Payroll wiki: 13th month',
-    kind: 'wiki',
-    topic: '13th-month',
-    country: 'ALL',
-    claim: 'Paid in November, in full',
-    content: 'The 13th month is paid in the November payroll, in full, to all employees.',
-    ownerId: null,
-    reviewedDaysAgo: 420,
-  },
-  {
-    title: 'Teams: client call notes on the 13th month',
-    kind: 'teams_chat',
-    topic: '13th-month',
-    country: 'BE',
-    claim: 'Paid in December, only after 6 months seniority',
-    content: 'Client said the 13th month goes out with the December payroll, but only for people with more than 6 months seniority.',
-    ownerId: 'demo_alan',
-    reviewedDaysAgo: 20,
-  },
-  {
-    title: 'NL payroll policy: 13th month',
-    kind: 'policy',
-    topic: '13th-month',
-    country: 'NL',
-    claim: 'Paid in December, pro rata to months worked',
-    content: 'In the Netherlands the 13th month (dertiende maand) is contractual. It is paid in December, pro rata to months worked. Holiday allowance is separate.',
-    ownerId: 'demo_margaret',
-    verifiedById: 'demo_margaret',
-    reviewedDaysAgo: 45,
-  },
-  // Notice period: manual vs an old email
-  {
-    title: 'BE manual: notice periods',
-    kind: 'manual',
-    topic: 'notice-period',
-    country: 'BE',
-    claim: 'Notice follows the seniority table of the 2014 unified statute',
-    content: 'For dismissal in Belgium the notice period is taken from the seniority table of the unified statute (2014), for blue and white collar alike.',
-    ownerId: 'demo_alan',
-    verifiedById: 'demo_alan',
-    reviewedDaysAgo: 60,
-  },
-  {
-    title: 'Email: notice period rules (2012)',
-    kind: 'email',
-    topic: 'notice-period',
-    country: 'BE',
-    claim: 'Blue and white collar workers have separate notice rules',
-    content: 'Forwarded email from a former colleague explaining the separate notice rules for blue and white collar workers.',
-    ownerId: null,
-    reviewedDaysAgo: 900,
-  },
-  // Meal vouchers: a knowledge gap, one ownerless chat
-  {
-    title: 'Teams: meal voucher amount',
-    kind: 'teams_chat',
-    topic: 'meal-vouchers',
-    country: 'BE',
-    claim: 'Meal vouchers are 8 euro per worked day',
-    content: 'Someone mentioned in the payroll channel that Vandeputte meal vouchers are 8 euro per worked day.',
-    ownerId: null,
-    reviewedDaysAgo: 120,
-  },
-  // Sick pay: two markets, both solid
-  {
-    title: 'BE manual: guaranteed salary',
-    kind: 'manual',
-    topic: 'sick-pay',
-    country: 'BE',
-    claim: 'Employer pays guaranteed salary for the first 30 days',
-    content: 'For employees the employer continues the salary for the first 30 days of illness, after which the health insurer takes over.',
-    ownerId: 'demo_grace',
-    verifiedById: 'demo_grace',
-    reviewedDaysAgo: 90,
-  },
-  {
-    title: 'NL policy: sick pay',
-    kind: 'policy',
-    topic: 'sick-pay',
-    country: 'NL',
-    claim: 'Employer pays at least 70% of salary for up to 104 weeks',
-    content: 'In the Netherlands the employer pays at least 70% of the salary for up to 104 weeks of illness.',
-    ownerId: 'demo_margaret',
-    verifiedById: 'demo_margaret',
-    reviewedDaysAgo: 40,
-  },
-  // Handover: corroborated, high trust
-  {
-    title: 'Portfolio handover checklist',
-    kind: 'policy',
-    topic: 'handover',
-    country: 'ALL',
-    claim: 'A handover needs a signed mandate, the last 3 payroll runs and the open-issues log',
-    content: 'When a payroll portfolio changes consultant, the handover needs a signed mandate, the last 3 payroll runs and the open-issues log.',
-    ownerId: 'demo_ada',
-    verifiedById: 'demo_grace',
-    reviewedDaysAgo: 14,
-  },
-  {
-    title: 'Expert note: what a good handover looks like',
-    kind: 'expert_note',
-    topic: 'handover',
-    country: 'ALL',
-    claim: 'A handover needs a signed mandate, the last 3 payroll runs and the open-issues log',
-    content: 'Grace: never accept a portfolio without the signed mandate, the last 3 payroll runs and the open-issues log.',
-    ownerId: 'demo_grace',
-    reviewedDaysAgo: 25,
+    key: 'atlas',
+    name: 'Klantteam Atlas',
+    description: 'Afspraken en gesprekken met klant Atlas.',
+    color: '#0ea5e9',
+    ownerId: 'demo_roy',
+    members: [{ userId: 'demo_wanne', role: 'editor' }],
   },
 ];
 
-const PRIORITIES: TaskPriority[] = ['low', 'medium', 'medium', 'high', 'urgent'];
+const LOONMUTATIES = 'loonmutaties aanleveren aanleverdatum deadline inleveren doorgeven';
+const ZIEKMELDING = 'ziekmelding ziek melden afwezigheid termijn doorgeven';
+
+const SOURCES: SeedSource[] = [
+  {
+    code: 'S4',
+    team: 'atlas',
+    title: 'Klantafspraak Atlas',
+    kind: 'agreement',
+    version: 2,
+    topic: 'loonmutaties',
+    keywords: LOONMUTATIES,
+    country: 'BE',
+    client: 'Atlas',
+    value: '22 oktober 2026',
+    claim: 'Voor Atlas geldt een goedgekeurde uitzondering op de algemene aanleverdatum van 20 oktober.',
+    quote: 'Atlas mag loonmutaties aanleveren tot en met 22 oktober 2026.',
+    validFrom: '2026-10-01',
+    validTo: '2026-10-31',
+    status: 'approved',
+    ownerId: 'demo_roy',
+    approvedById: 'demo_roy',
+  },
+  {
+    code: 'S1',
+    team: 'be',
+    title: 'Algemene procedure België',
+    kind: 'manual',
+    version: 5,
+    topic: 'loonmutaties',
+    keywords: LOONMUTATIES,
+    country: 'BE',
+    value: '20 oktober',
+    claim: 'Loonmutaties worden uiterlijk op 20 oktober van de maand aangeleverd.',
+    quote: 'Loonmutaties moeten uiterlijk op de 20e van de maand binnen zijn.',
+    validFrom: '2026-01-01',
+    status: 'approved',
+    ownerId: 'demo_sebastien',
+    approvedById: 'demo_sebastien',
+  },
+  {
+    code: 'S2',
+    team: 'be',
+    title: 'Oude procedure België',
+    kind: 'procedure',
+    version: 3,
+    topic: 'loonmutaties',
+    keywords: LOONMUTATIES,
+    country: 'BE',
+    value: '15 oktober',
+    claim: 'Loonmutaties worden uiterlijk op 15 van de maand aangeleverd.',
+    quote: 'Aanleveren kan tot de 15e van de maand.',
+    validFrom: '2024-01-01',
+    validTo: '2025-12-31',
+    status: 'superseded',
+    approvedById: 'demo_sebastien',
+    supersededBy: 'S1',
+  },
+  {
+    code: 'S3',
+    team: 'atlas',
+    title: 'Teamsgesprek',
+    kind: 'chat',
+    topic: 'loonmutaties',
+    keywords: LOONMUTATIES,
+    country: 'BE',
+    client: 'Atlas',
+    value: '25 oktober',
+    claim: 'Volgens een bericht in het team mag Atlas tot 25 oktober aanleveren.',
+    quote: 'Ik dacht dat Atlas dit keer tot de 25e mocht aanleveren?',
+    validFrom: '2026-10-05',
+    status: 'unconfirmed',
+  },
+  {
+    code: 'S5',
+    team: 'be',
+    title: 'Procedure Nederland',
+    kind: 'procedure',
+    version: 2,
+    topic: 'loonmutaties',
+    keywords: LOONMUTATIES,
+    country: 'NL',
+    value: '18 oktober',
+    claim: 'In Nederland worden loonmutaties uiterlijk op 18 oktober aangeleverd.',
+    quote: 'Nederlandse klanten leveren loonmutaties aan tot de 18e.',
+    validFrom: '2026-01-01',
+    status: 'approved',
+    ownerId: 'demo_sebastien',
+    approvedById: 'demo_sebastien',
+  },
+  {
+    code: 'S6',
+    team: 'be',
+    title: 'Procedure ziekmelding België',
+    kind: 'procedure',
+    version: 4,
+    topic: 'ziekmelding',
+    keywords: ZIEKMELDING,
+    country: 'BE',
+    value: 'Binnen 24 uur',
+    claim: 'Een ziekmelding wordt binnen 24 uur doorgegeven aan payroll.',
+    quote: 'Ziekmeldingen worden binnen 24 uur na de eerste ziektedag doorgegeven.',
+    validFrom: '2026-01-01',
+    status: 'approved',
+    ownerId: 'demo_roy',
+    approvedById: 'demo_roy',
+  },
+  {
+    code: 'S7',
+    team: 'atlas',
+    title: 'Teamsgesprek ziekmelding',
+    kind: 'chat',
+    topic: 'ziekmelding',
+    keywords: ZIEKMELDING,
+    country: 'BE',
+    client: 'Atlas',
+    value: 'Binnen 48 uur',
+    claim: 'Volgens een bericht mag Atlas ziekmeldingen binnen 48 uur doorgeven.',
+    quote: 'Atlas zei dat 48 uur ook goed is voor ziekmeldingen.',
+    validFrom: '2026-09-01',
+    status: 'unconfirmed',
+  },
+];
+
 
 export interface SeedResult {
   seeded: boolean;
   users: number;
   projects: number;
-  tasks: number;
+  sources: number;
 }
 
 /**
- * Inserts the demo users, three projects with memberships and a spread of tasks.
- * Demo users are always upserted; projects/tasks are only inserted when the
- * database has no projects yet (or when `reset` is set, which wipes them first).
+ * Inserts the demo users, two teams and the sources. Demo users are always upserted; teams and
+ * sources only when the database has no teams yet (or when `reset` wipes them first).
  */
 export async function seedDatabase(db: Database, options: { reset?: boolean } = {}): Promise<SeedResult> {
-  const random = prng(2026);
-
   await db
     .insert(users)
     .values(DEMO_USERS.map((u) => ({ id: u.id, name: u.name, email: u.email, color: u.color })))
@@ -268,79 +206,38 @@ export async function seedDatabase(db: Database, options: { reset?: boolean } = 
     });
 
   if (options.reset) {
-    await db.delete(knowledgeSources);
-    await db.delete(tasks);
+    await db.delete(sources);
     await db.delete(projectMembers);
     await db.delete(projects);
   }
 
   const [existing] = await db.select({ n: count() }).from(projects);
-  if ((existing?.n ?? 0) > 0) {
-    return { seeded: false, users: DEMO_USERS.length, projects: 0, tasks: 0 };
-  }
+  if ((existing?.n ?? 0) > 0) return { seeded: false, users: DEMO_USERS.length, projects: 0, sources: 0 };
 
-  let taskTotal = 0;
-  const base = Date.parse('2026-09-01T09:00:00Z');
-  for (const [projectIndex, seed] of SEED_PROJECTS.entries()) {
-    const createdAt = new Date(base + projectIndex * 3_600_000);
-    const [project] = await db
-      .insert(projects)
-      .values({
-        name: seed.name,
-        description: seed.description,
-        color: seed.color,
-        ownerId: seed.ownerId,
-        createdAt,
-        updatedAt: createdAt,
-      })
-      .returning();
-    if (!project) throw new Error('Failed to insert seed project');
-
+  const teamIds = new Map<string, string>();
+  for (const team of TEAMS) {
+    const [row] = await db.insert(projects).values({ name: team.name, description: team.description, color: team.color, ownerId: team.ownerId }).returning();
+    if (!row) throw new Error('Failed to insert seed team');
+    teamIds.set(team.key, row.id);
     await db.insert(projectMembers).values([
-      { projectId: project.id, userId: seed.ownerId, role: 'owner' },
-      ...seed.members.map((m) => ({ projectId: project.id, userId: m.userId, role: m.role })),
+      { projectId: row.id, userId: team.ownerId, role: 'owner' },
+      ...team.members.map((m) => ({ projectId: row.id, userId: m.userId, role: m.role })),
     ]);
-
-    const memberIds = [seed.ownerId, ...seed.members.map((m) => m.userId)];
-    const rows = seed.tasks.map((t, i) => {
-      const assignee = random() < 0.75 ? memberIds[Math.floor(random() * memberIds.length)]! : null;
-      const priority = PRIORITIES[Math.floor(random() * PRIORITIES.length)]!;
-      const when = new Date(createdAt.getTime() + (i + 1) * 900_000);
-      return {
-        projectId: project.id,
-        title: t.title,
-        description: t.description ?? '',
-        status: t.status,
-        priority,
-        assigneeId: assignee,
-        position: (i + 1) * 1000,
-        createdById: seed.ownerId,
-        createdAt: when,
-        updatedAt: when,
-      };
-    });
-    await db.insert(tasks).values(rows);
-    taskTotal += rows.length;
   }
 
-  // Created before the demo projects so it is the one people land on.
-  const { members: portfolioMembers, ...portfolioRow } = SEED_PORTFOLIO;
-  const portfolioAt = new Date(base - 3_600_000);
-  const [portfolio] = await db.insert(projects).values({ ...portfolioRow, createdAt: portfolioAt, updatedAt: portfolioAt }).returning();
-  if (!portfolio) throw new Error('Failed to insert seed portfolio');
-  await db.insert(projectMembers).values([
-    { projectId: portfolio.id, userId: SEED_PORTFOLIO.ownerId, role: 'owner' },
-    ...portfolioMembers.map((m) => ({ projectId: portfolio.id, userId: m.userId, role: m.role })),
-  ]);
-  const now = Date.now();
-  await db.insert(knowledgeSources).values(
-    SEED_SOURCES.map(({ reviewedDaysAgo, ...s }) => ({
+  await db.insert(sources).values(
+    SOURCES.map(({ team, ...s }) => ({
       ...s,
-      projectId: portfolio.id,
-      verifiedById: s.verifiedById ?? null,
-      reviewedAt: new Date(now - reviewedDaysAgo * 86_400_000),
+      projectId: teamIds.get(team)!,
+      client: s.client ?? null,
+      validTo: s.validTo ?? null,
+      version: s.version ?? null,
+      ownerId: s.ownerId ?? null,
+      approvedById: s.approvedById ?? null,
+      supersededBy: s.supersededBy ?? null,
+      traceable: s.traceable ?? true,
     })),
   );
 
-  return { seeded: true, users: DEMO_USERS.length, projects: SEED_PROJECTS.length, tasks: taskTotal };
+  return { seeded: true, users: DEMO_USERS.length, projects: TEAMS.length, sources: SOURCES.length };
 }

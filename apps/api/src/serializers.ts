@@ -1,5 +1,5 @@
-import type { ProjectMemberRow, ProjectRow, TaskRow, UserRow } from '@tectonic/db';
-import type { Project, ProjectMember, Task, User } from '@tectonic/shared';
+import type { SourceRow, UserRow } from '@tectonic/db';
+import type { Source, User } from '@tectonic/shared';
 
 const iso = (d: Date) => d.toISOString();
 
@@ -7,35 +7,28 @@ export function serializeUser(row: UserRow): User {
   return { id: row.id, name: row.name, email: row.email, color: row.color, createdAt: iso(row.createdAt) };
 }
 
-export function serializeProject(row: ProjectRow): Project {
+export function serializeSource(row: SourceRow): Source {
   return {
     id: row.id,
-    name: row.name,
-    description: row.description,
-    color: row.color,
-    ownerId: row.ownerId,
-    createdAt: iso(row.createdAt),
-    updatedAt: iso(row.updatedAt),
-  };
-}
-
-export function serializeMember(row: ProjectMemberRow, user: UserRow): ProjectMember {
-  return { projectId: row.projectId, userId: row.userId, role: row.role, user: serializeUser(user) };
-}
-
-export function serializeTask(row: TaskRow): Task {
-  return {
-    id: row.id,
+    code: row.code,
     projectId: row.projectId,
     title: row.title,
-    description: row.description,
-    status: row.status,
-    priority: row.priority,
-    assigneeId: row.assigneeId,
-    position: row.position,
+    kind: row.kind,
     version: row.version,
-    createdById: row.createdById,
+    topic: row.topic,
+    keywords: row.keywords,
+    country: row.country as Source['country'],
+    client: row.client,
+    value: row.value,
+    claim: row.claim,
+    quote: row.quote,
+    validFrom: row.validFrom,
+    validTo: row.validTo,
+    status: row.status,
+    ownerId: row.ownerId,
+    approvedById: row.approvedById,
+    traceable: row.traceable,
+    supersededBy: row.supersededBy,
     createdAt: iso(row.createdAt),
-    updatedAt: iso(row.updatedAt),
   };
 }

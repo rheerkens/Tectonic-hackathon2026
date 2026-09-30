@@ -1,6 +1,6 @@
 /**
- * Deterministic demo identities used by the local auth bypass, the seed data,
- * the automated tests and the video walkthrough. They never exist in Clerk.
+ * Deterministic demo identities used by the local auth bypass and the seed data.
+ * They never exist in Clerk.
  */
 export interface DemoUser {
   id: string;
@@ -11,13 +11,12 @@ export interface DemoUser {
 }
 
 export const DEMO_USERS: readonly DemoUser[] = [
-  { id: 'demo_ada', name: 'Ada Lovelace', email: 'ada@demo.tectonic.local', color: '#6366f1', handle: 'ada' },
-  { id: 'demo_grace', name: 'Grace Hopper', email: 'grace@demo.tectonic.local', color: '#0ea5e9', handle: 'grace' },
-  { id: 'demo_margaret', name: 'Margaret Hamilton', email: 'margaret@demo.tectonic.local', color: '#f59e0b', handle: 'margaret' },
-  { id: 'demo_alan', name: 'Alan Turing', email: 'alan@demo.tectonic.local', color: '#10b981', handle: 'alan' },
+  { id: 'demo_wanne', name: 'Wanne Van Camp', email: 'wanne@demo.tectonic.local', color: '#4f46e5', handle: 'wanne' },
+  { id: 'demo_roy', name: 'Roy Heerkens', email: 'roy@demo.tectonic.local', color: '#0ea5e9', handle: 'roy' },
+  { id: 'demo_sebastien', name: 'Sebastien De Couvreur', email: 'sebastien@demo.tectonic.local', color: '#10b981', handle: 'sebastien' },
 ];
 
-export const DEFAULT_DEMO_USER_ID = 'demo_ada';
+export const DEFAULT_DEMO_USER_ID = 'demo_wanne';
 
 /** Header (HTTP) carrying the chosen demo identity when the dev bypass is active. */
 export const DEV_USER_HEADER = 'x-dev-user';

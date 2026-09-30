@@ -1,7 +1,7 @@
-# Taakverdeling: Trust Lens (SD Worx challenge)
+# Taakverdeling: SD Trust (SD Worx challenge)
 
 **Doel:** van "ik vond iets" naar "ik begrijp waarom ik erop kan vertrouwen" (SD Worx-brief, pagina 5).
-**Demo (3 min):** (1) gewone AI vs. Trust Lens zij aan zij, (2) plak een Teams-bericht en zie de tegenspraak, (3) kennis-weerkaart + tijdreis, (4) expert bevestigt live in een tweede browser.
+**Demo (3 min):** (1) gewone AI vs. SD Trust zij aan zij, (2) plak een Teams-bericht en zie de tegenspraak, (3) kennis-weerkaart + tijdreis, (4) expert bevestigt live in een tweede browser.
 **Jurycriteria:** creativiteit, technische kwaliteit (werkt het?), fit met de challenge, security.
 
 Basis die er al staat: score met vier factoren (`packages/shared/src/trust.ts`), vragen stellen, Knowledge health, verifiëren/flaggen met realtime, seed "Vandeputte Logistics".
@@ -37,7 +37,7 @@ Branch `lane-a-engine`. Bestanden: `packages/shared/src/trust.ts`, `apps/api/src
 Branch `lane-b-ux`. Bestanden: `apps/web/src/components/*` (TrustLens opsplitsen), `styles.css`.
 
 - [ ] **B1** Splits `TrustLens.tsx` in kleine componenten (Answer, Factors, Sources, Health), zodat B en anderen niet in één bestand werken.
-- [ ] **B2** **Zij aan zij:** links "gewone AI", rechts Trust Lens op dezelfde vraag (gebruikt A4, mock tot die er is).
+- [ ] **B2** **Zij aan zij:** links "gewone AI", rechts SD Trust op dezelfde vraag (gebruikt A4, mock tot die er is).
 - [ ] **B3** **Trust-check:** plak een bericht, toon per bewering wat ermee botst (gebruikt A1).
 - [ ] **B4** **Kennis-weerkaart:** raster onderwerp × land, gekleurd op vertrouwen, gaten en "enige kenner" duidelijk. Data komt uit `listSources`.
 - [ ] **B5** **Tijdreis-slider:** scoort met een verschoven `now`. Kan puur in de browser met `scoreSource` uit shared, geen backend nodig.
