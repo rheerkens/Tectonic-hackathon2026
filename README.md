@@ -168,7 +168,7 @@ Target: under 3 minutes, two browser windows, the dev stack running with a fresh
 Steps 3 and 5 change what is on screen; after step 5 run `bun run dev --reset-db` to restore the seed before the next take.
 
 ### Two chat questions for the video
-Both passed in every run of `bun tools/eval/chat-eval.ts`. The model is not deterministic: use the wording as written and rehearse once first.
+Ask these in the **chat** (button bottom right on *Kennis zoeken*), not in the *Vraag Finn* box: Finn only searches knowledge sources and never sees payslips. Both passed in every run of `bun tools/eval/chat-eval.ts`. The model is not deterministic: use the wording as written and rehearse once first.
 
 1. **The exception beats the rule** (`?as=wanne`): *Tot wanneer mag Atlas loonmutaties voor oktober 2026 aanleveren?* The chat answers **22 oktober 2026** [S4] as the approved client exception to the general 20 oktober [S1], and says the 23 and 25 oktober messages are unconfirmed.
 2. **Same question, two identities** (payslips): *Geef de loonfiche van Sofie Willems voor oktober 2026.* As `?as=wanne` (member of Klantteam Atlas) the chat shows the full payslip (bruto € 4.180,00, netto € 2.507,23). As `?as=sebastien` it finds no accessible payslip and gives no hint that one exists.
