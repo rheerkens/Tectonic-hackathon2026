@@ -101,7 +101,7 @@
   .fs-finn { width: 160px; height: 160px; }
 }
 @media (max-width: 760px) {
-  .fs-stage { grid-template-columns: 1fr; gap: 16px; }
+  .fs-stage, .fs-stage[data-compact="true"] { grid-template-columns: 1fr; gap: 16px; }
   .fs-agent { order: -1; flex-direction: row; align-items: center; gap: 10px; }
   .fs-agent .fs-say { order: 2; margin: 0; flex: 1; }
   .fs-finn { width: 110px; height: 110px; margin: 0; }
