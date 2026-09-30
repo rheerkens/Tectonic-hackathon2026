@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AccessSchema, AskInputSchema, AskResultSchema, CheckInputSchema, CheckResultSchema, HealthSchema, MeSchema, OkSchema, UserSchema } from './schemas.ts';
+import { AccessSchema, AskInputSchema, AskResultSchema, CheckInputSchema, CheckResultSchema, HealthSchema, MeSchema, NaiveAnswerSchema, OkSchema, UserSchema } from './schemas.ts';
 
 export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
@@ -45,6 +45,8 @@ export const api = {
   ask: route('POST', '/api/ask', { body: AskInputSchema, response: AskResultSchema }),
   /** Checks a pasted message (e.g. from Teams) against the sources: which claims hold, and what contradicts them. */
   check: route('POST', '/api/check', { body: CheckInputSchema, response: CheckResultSchema }),
+  /** A plain assistant's answer: ignores country, client, period and status, shows no confidence. For the side-by-side demo. */
+  naiveAnswer: route('POST', '/api/naive-answer', { body: AskInputSchema, response: NaiveAnswerSchema }),
   /** The source owner (or the team owner, for an ownerless source) confirms a source is approved. */
   approveSource: route('POST', '/api/sources/:sourceId/approve', { response: OkSchema }),
 } as const;

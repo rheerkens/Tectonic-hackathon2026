@@ -4,6 +4,7 @@ import type { Server } from 'bun';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { HTTPException } from 'hono/http-exception';
+import { secureHeaders } from 'hono/secure-headers';
 import { createAuthenticator, type Authenticator, type Principal } from './auth.ts';
 import type { AppConfig } from './config.ts';
 import { ApiError } from './errors.ts';
@@ -46,6 +47,9 @@ export function createApp(deps: { config: AppConfig; db: Database; log?: Logger;
   const ctx: AppContext = { config, db, authenticator, realtime, log, startedAt: Date.now() };
 
   const app = new Hono<AppEnv>();
+
+  // nosniff, frame and referrer protection on API and static responses. Popups stay allowed for Clerk sign-in flows.
+  app.use('*', secureHeaders({ crossOriginOpenerPolicy: 'same-origin-allow-popups', referrerPolicy: 'strict-origin-when-cross-origin' }));
 
   app.use(
     '/api/*',

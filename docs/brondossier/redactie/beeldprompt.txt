@@ -1,0 +1,10 @@
+Use case: photorealistic-natural. Create one realistic smartphone photograph of a meeting room whiteboard after a payroll planning meeting. This is a fictional source document for a Dutch language document reasoning corpus called SD trust. The photograph itself is the source, not a polished slide. Landscape 4:3, very high text legibility, board almost fills the frame, slight natural perspective, soft window reflection away from the writing, a blue and black marker on the tray, no people, no personal data, no logos. Natural Dutch handwriting with uneven but clear lines. EXACT text on the whiteboard, with no extra words:
+"Atlas • België"
+"Overleg 25 september 2026"
+"Oktober: aanlevering loonmutaties"
+"20 okt: algemene planning"
+"22 okt: verzoek van klant"
+"23 okt? Capaciteit nog bekijken"
+"Actie Grace: akkoord Noor vragen"
+"Geen nieuwe datum bevestigd"
+At the bottom right put a small legible printed paper label taped to the board: "Fictieve casus • SD trust". Do not add approval check marks or signatures. Every date and the uncertainty of 23 October must stay exactly as specified. This is a credible photo of provisional notes, not evidence of an approved agreement.

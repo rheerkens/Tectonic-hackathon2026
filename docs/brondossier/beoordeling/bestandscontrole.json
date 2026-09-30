@@ -1,0 +1,21 @@
+{
+  "logical_sources": 15,
+  "pdf_files": 14,
+  "pdf_pages": 24,
+  "docx_files": 9,
+  "eml_messages": 7,
+  "images": 3,
+  "words_in_pdfs": 6324,
+  "files": 45,
+  "checked_on": "2026-09-30",
+  "checks": [
+    "Alle pdf pagina’s bevatten uitleesbare tekst",
+    "Alle Wordbestanden opnieuw geopend",
+    "Zeven EML berichten geparseerd en bijlage vergeleken met S4",
+    "Lokale documentlinks en bronbestanden gecontroleerd",
+    "Datums, uur, bevoegdheid en novemberbeperking in kernstukken gecontroleerd",
+    "Pdf overzichten, herstelde pagina’s, screenshots en overlegfoto visueel bekeken"
+  ],
+  "agent_scenarios_executed": false,
+  "repository_check": "Niet geslaagd: ontbrekende Bun types en overige typefouten in de ontwikkelomgeving. Geen applicatiecode gewijzigd."
+}
