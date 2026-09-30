@@ -50,17 +50,21 @@ export function understand(text: string, ref: { clients: readonly string[]; peri
     return true;
   };
 
-  // A later mention wins, like a person correcting themselves mid-sentence.
-  for (const client of ref.clients) for (const m of text.matchAll(edge(escapeRe(client)))) if (claim(m.index!, m.index! + m[0].length, 'client')) out.client = client;
-  for (const m of text.matchAll(edge('alle klanten|elke klant|iedere klant'))) if (claim(m.index!, m.index! + m[0].length, 'client')) out.client = null;
+  // A later mention wins, like a person correcting themselves mid-sentence: by position in the text, not by pattern order.
+  const last = { client: -1, country: -1, period: -1 };
+  const pick = <F extends keyof typeof last>(m: RegExpMatchArray, field: F, set: () => void) => {
+    if (claim(m.index!, m.index! + m[0].length, field) && m.index! > last[field]) { last[field] = m.index!; set(); }
+  };
+  for (const client of ref.clients) for (const m of text.matchAll(edge(escapeRe(client)))) pick(m, 'client', () => { out.client = client; });
+  for (const m of text.matchAll(edge('alle klanten|elke klant|iedere klant'))) pick(m, 'client', () => { out.client = null; });
 
-  for (const m of text.matchAll(edge('belgi[eë]|belgisch\\p{L}*'))) if (claim(m.index!, m.index! + m[0].length, 'country')) out.country = 'BE';
-  for (const m of text.matchAll(edge('nederland\\p{L}*'))) if (claim(m.index!, m.index! + m[0].length, 'country')) out.country = 'NL';
+  for (const m of text.matchAll(edge('belgi[eë]|belgisch\\p{L}*'))) pick(m, 'country', () => { out.country = 'BE'; });
+  for (const m of text.matchAll(edge('nederland\\p{L}*'))) pick(m, 'country', () => { out.country = 'NL'; });
 
   for (const m of text.matchAll(edge(`(${MONTH_WORD})(?:\\s+(20\\d\\d))?`))) {
     const month = MONTH_PREFIX.indexOf(m[1]!.toLowerCase().slice(0, 3)) + 1;
     const period = `${m[2] ?? '2026'}-${String(month).padStart(2, '0')}`;
-    if (ref.periods.includes(period) && claim(m.index!, m.index! + m[0].length, 'period')) out.period = period;
+    if (ref.periods.includes(period)) pick(m, 'period', () => { out.period = period; });
   }
 
   // The topic with the most keyword hits wins; only its words are marked.
