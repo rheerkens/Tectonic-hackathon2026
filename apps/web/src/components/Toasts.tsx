@@ -40,14 +40,14 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={api}>
       {children}
-      <div className="toast-stack" role="status" aria-live="polite" data-testid="toasts">
+      <div className="toast-stack" role="region" aria-label="Meldingen" aria-live="polite" data-testid="toasts">
         {toasts.map((toast) => (
           <div key={toast.id} className={`toast toast--${toast.kind}`} data-testid="toast">
             <div className="toast-body">
               <strong>{toast.title}</strong>
               {toast.message && <span>{toast.message}</span>}
             </div>
-            <button type="button" className="toast-close" onClick={() => dismiss(toast.id)} aria-label="Dismiss">
+            <button type="button" className="toast-close" onClick={() => dismiss(toast.id)} aria-label="Sluiten">
               ×
             </button>
           </div>

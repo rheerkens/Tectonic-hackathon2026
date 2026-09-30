@@ -1,11 +1,12 @@
 import { COUNTRIES, COUNTRY_LABELS, scoreSource, type AskInput, type AssessedSource, type Country, type Verdict } from '@tectonic/shared';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useSession } from '../auth/context.ts';
+import { Avatar } from '../components/Avatar.tsx';
 import { ConnectionStatus } from '../components/ConnectionStatus.tsx';
 import { ErrorState } from '../components/States.tsx';
 import { useToasts } from '../components/Toasts.tsx';
 import { useAccess, useApproveSource, useAsk, useNaiveAnswer, useUsers } from '../lib/queries.ts';
-import { useTeamSubscriptions } from '../realtime/RealtimeProvider.tsx';
+import { useRealtime, useTeamSubscriptions } from '../realtime/RealtimeProvider.tsx';
 import { KennisKaart } from './KennisKaart.tsx';
 import { CheckPanel } from './CheckPanel.tsx';
 import { DisputeControls } from './DisputeControls.tsx';
@@ -30,6 +31,46 @@ function Icon({ name, size = 20 }: { name: string; size?: number }) {
     <svg className="kn-icon" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       {ICONS[name]}
     </svg>
+  );
+}
+
+/** Counts up to `target` when it changes (skipped for reduced motion). */
+function useCountUp(target: number, ms = 600): number {
+  const [value, setValue] = useState(0);
+  const from = useRef(0);
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      from.current = target;
+      setValue(target);
+      return;
+    }
+    const start = performance.now();
+    const origin = from.current;
+    let raf = requestAnimationFrame(function tick(now) {
+      const t = Math.min(1, (now - start) / ms);
+      const v = Math.round(origin + (target - origin) * (1 - (1 - t) ** 3));
+      from.current = v;
+      setValue(v);
+      if (t < 1) raf = requestAnimationFrame(tick);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [target, ms]);
+  return value;
+}
+
+function Presence() {
+  const { presence } = useRealtime();
+  const session = useSession();
+  const others = presence.filter((u) => u.userId !== session.user.id);
+  return (
+    <div className="kn-presence" aria-label="Wie is er online" data-testid="presence">
+      <span className="presence-avatars">
+        {presence.map((u) => (
+          <Avatar key={u.userId} name={u.name} color={u.color} size={30} title={u.userId === session.user.id ? `${u.name} (jij)` : u.name} />
+        ))}
+      </span>
+      <span className="kn-muted">{others.length > 0 ? `${others.map((u) => u.name).join(', ')} ${others.length > 1 ? 'zijn' : 'is'} online` : 'Alleen jij'}</span>
+    </div>
   );
 }
 
@@ -82,9 +123,9 @@ const STATUS_TONE = { onderbouwd: 'good', deels: 'warn', onvoldoende: 'warn', ge
 
 function Sidebar({ teams }: { teams: Array<{ id: string; name: string }> }) {
   return (
-    <aside className="kn-sidebar">
+    <aside className="kn-sidebar" aria-label="Werkruimte">
       <div className="kn-section">Werkruimte</div>
-      <a href="#/" className="kn-nav is-active">
+      <a href="#/" className="kn-nav is-active" aria-current="page">
         <Icon name="search" /> Kennis zoeken
       </a>
       <hr />
@@ -109,13 +150,14 @@ function TimeTravel({ source, country, client }: { source: AssessedSource; count
   const [i, setI] = useState(TRAVEL.indexOf('2026-10'));
   const period = TRAVEL[i]!;
   const { score, checks } = scoreSource(source, { country, client, period });
+  const shown = useCountUp(score, 350);
   const valid = checks.find((c) => c.key === 'valid')!;
   return (
     <>
       <h3 className="kn-h3">Tijdreis</h3>
       <input type="range" min={0} max={TRAVEL.length - 1} value={i} onChange={(e) => setI(Number(e.target.value))} aria-label="Periode" style={{ width: '100%' }} />
       <p className="kn-line">
-        <Icon name="calendar" /> {monthLabel(period)}: <b>{score}</b> / 100 · {valid.label} {valid.points}/{valid.max}
+        <Icon name="calendar" /> {monthLabel(period)}: <b>{shown}</b> / 100 · {valid.label} {valid.points}/{valid.max}
       </p>
       <hr />
     </>
@@ -124,10 +166,11 @@ function TimeTravel({ source, country, client }: { source: AssessedSource; count
 
 function Panel({ source, users, canApprove, canDispute, canResolve, country, client }: { source: AssessedSource; users: Map<string, { name: string; email: string | null }>; canApprove: boolean; canDispute: boolean; canResolve: boolean; country: Country; client: string | null }) {
   const approve = useApproveSource();
+  const score = useCountUp(source.onderbouwing.score);
   const toasts = useToasts();
   const owner = source.ownerId ? users.get(source.ownerId) : undefined;
   return (
-    <aside className="kn-panel" data-testid="kn-panel">
+    <aside className="kn-panel" data-testid="kn-panel" aria-label="Geselecteerde bron">
       <div className="kn-section">Geselecteerde bron</div>
       <h2>{source.title}</h2>
       <p className="kn-panel-sub">
@@ -137,10 +180,10 @@ function Panel({ source, users, canApprove, canDispute, canResolve, country, cli
       <div className="kn-score-head">
         <strong>Onderbouwing</strong>
         <span>
-          <b>{source.onderbouwing.score}</b> / 100
+          <b data-testid="kn-score">{score}</b> / 100
         </span>
       </div>
-      <div className="kn-bar" role="progressbar" aria-valuenow={source.onderbouwing.score} aria-valuemin={0} aria-valuemax={100}>
+      <div className="kn-bar" role="progressbar" aria-label="Onderbouwing" aria-valuenow={source.onderbouwing.score} aria-valuemin={0} aria-valuemax={100}>
         <span style={{ width: `${source.onderbouwing.score}%` }} />
       </div>
       <ul className="kn-checks">
@@ -241,6 +284,7 @@ export function KennisPage() {
       <header className="kn-top">
         <Logo />
         <div className="kn-user">
+          <Presence />
           <ConnectionStatus />
           <span className="kn-avatar kn-avatar--lg">{session.user.name[0]}</span>
           <div>
@@ -252,8 +296,11 @@ export function KennisPage() {
           </button>
         </div>
       </header>
+      <a className="kn-skip" href="#kn-main" onClick={(e) => { e.preventDefault(); document.getElementById('kn-main')?.focus(); }}>
+        Naar hoofdinhoud
+      </a>
       <Sidebar teams={access.data?.teams ?? []} />
-      <main className="kn-main">
+      <main className="kn-main" id="kn-main" tabIndex={-1}>
         <nav className="kn-crumbs" aria-label="Kruimelpad">
           {[client ?? 'Alle klanten', 'Payroll', monthLabel(period)].map((c, i) => (
             <span key={c}>
@@ -265,6 +312,7 @@ export function KennisPage() {
         <h1>Welke afspraak geldt?</h1>
         <form
           className="kn-ask"
+          role="search"
           onSubmit={(e) => {
             e.preventDefault();
             run();
@@ -306,6 +354,14 @@ export function KennisPage() {
         {access.isError && <ErrorState title="Kon je toegang niet laden" message={access.error.message} onRetry={() => void access.refetch()} />}
         {ask.isError && <ErrorState title="Kon geen antwoord geven" message={ask.error.message} onRetry={() => void ask.refetch()} />}
 
+        {(access.isPending || ask.isFetching) && !result && (
+          <section className="kn-answer kn-answer--muted" aria-busy="true" aria-label="Antwoord laden" data-testid="kn-loading">
+            <span className="skeleton skeleton-text" style={{ width: 140 }} />
+            <span className="skeleton skeleton-text" style={{ width: '50%', height: 40, marginTop: 14 }} />
+            <span className="skeleton skeleton-text" style={{ width: '90%', marginTop: 14 }} />
+          </section>
+        )}
+
         {compare && result && (
           <section className="kn-compare" data-testid="kn-compare">
             <div className="kn-compare-col kn-compare-col--naive">
@@ -333,7 +389,7 @@ export function KennisPage() {
 
         {result && (
           <>
-            <section className={`kn-answer kn-answer--${STATUS_TONE[result.status]}`} data-testid="kn-answer" data-status={result.status}>
+            <section key={`${result.status}-${result.best?.id ?? ''}`} className={`kn-answer kn-answer--${STATUS_TONE[result.status]}`} data-testid="kn-answer" data-status={result.status} role="status" aria-live="polite" aria-busy={ask.isFetching}>
               <span className="kn-badge">
                 <Tick tone={STATUS_TONE[result.status]} /> {result.statusLabel}
               </span>
@@ -373,7 +429,7 @@ export function KennisPage() {
             {result.sources.length > 0 && (
               <section>
                 <h3 className="kn-h3">Waarom deze bron?</h3>
-                <table className="kn-table">
+                <table className="kn-table" aria-label="Bronnen en beoordeling">
                   <thead>
                     <tr>
                       <th>Bron</th>
@@ -384,7 +440,7 @@ export function KennisPage() {
                     {result.sources.map((s) => {
                       const tone = VERDICT_TONE[s.verdict.kind];
                       return (
-                        <tr key={s.id} className={s.id === selected?.id ? 'is-selected' : ''} onClick={() => setSelectedId(s.id)} tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && setSelectedId(s.id)}>
+                        <tr key={s.id} className={s.id === selected?.id ? 'is-selected' : ''} onClick={() => setSelectedId(s.id)} tabIndex={0} aria-current={s.id === selected?.id} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedId(s.id); } }}>
                           <td>
                             <span className="kn-src">
                               <Icon name={s.kind === 'chat' ? 'chat' : 'file'} size={18} />
@@ -412,7 +468,7 @@ export function KennisPage() {
         <KennisKaart users={userMap} onSelect={setSelectedId} />
         <CheckPanel country={country} />
       </main>
-      {selected ? <Panel source={selected} users={userMap} canApprove={canApprove} canDispute={canDispute} canResolve={isOwner} country={country} client={client} /> : <aside className="kn-panel" />}
+      {selected ? <Panel source={selected} users={userMap} canApprove={canApprove} canDispute={canDispute} canResolve={isOwner} country={country} client={client} /> : <aside className="kn-panel" aria-label="Geselecteerde bron"><p className="kn-muted">Selecteer een bron om de onderbouwing te zien.</p></aside>}
     </div>
   );
 }
