@@ -14,7 +14,7 @@ import { jsonBody } from '../validate.ts';
 const EXAMPLES = ['Tot wanneer mag Atlas loonmutaties aanleveren?', 'Binnen welke termijn moet een ziekmelding doorgegeven worden?'];
 
 export function knowledgeRoutes(ctx: AppContext) {
-  const { db, realtime } = ctx;
+  const { db, realtime, config } = ctx;
   const router = new Hono<AppEnv>();
 
   const visibleSources = (userId: string) => loadVisibleSources(db, userId);
@@ -52,7 +52,7 @@ export function knowledgeRoutes(ctx: AppContext) {
     const period = new Date().toISOString().slice(0, 7);
     const claims: CheckResult['claims'] = [];
     const contradictions: CheckResult['contradictions'] = [];
-    for (const { claim, country: found } of await extractClaims(text)) {
+    for (const { claim, country: found } of await extractClaims(text, config.llm)) {
       const r = assess(claim, rows.map(serializeSource), names, { country: found ?? country, client: null, period });
       claims.push({ text: claim, topic: r.topic, status: r.status, statusLabel: r.statusLabel });
       for (const source of r.sources) {
