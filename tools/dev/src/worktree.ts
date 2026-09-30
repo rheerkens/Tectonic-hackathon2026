@@ -57,5 +57,21 @@ export async function listWorktreeRoots(cwd: string): Promise<string[]> {
 
 /** Runtime state lives under `<worktree>/.local/<profile>/` which is git-ignored. */
 export function localDir(root: string, profile: string): string {
-  return path.join(root, '.local', profile);
+  return assertInside(path.join(root, '.local'), path.join(root, '.local', assertProfile(profile)));
+}
+
+const PROFILE_PATTERN = /^[a-z0-9][a-z0-9_-]{0,31}$/;
+
+/** Profile names become directory names: only short lowercase slugs, never paths. */
+export function assertProfile(profile: string): string {
+  if (!PROFILE_PATTERN.test(profile)) throw new Error(`Invalid profile "${profile}": use ${PROFILE_PATTERN}`);
+  return profile;
+}
+
+/** Resolves `p` and throws unless it is `root` itself or below it (blocks `..` and absolute-path escapes). */
+export function assertInside(root: string, p: string): string {
+  const resolved = path.resolve(p);
+  const rel = path.relative(path.resolve(root), resolved);
+  if (rel.startsWith('..') || path.isAbsolute(rel)) throw new Error(`Path escapes ${root}: ${p}`);
+  return resolved;
 }

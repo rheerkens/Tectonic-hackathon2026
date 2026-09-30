@@ -1,5 +1,6 @@
 import EmbeddedPostgres from 'embedded-postgres';
-import { existsSync, readFileSync } from 'node:fs';
+import { randomBytes } from 'node:crypto';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { isProcessAlive } from './lock.ts';
 
@@ -7,13 +8,16 @@ export interface PostgresOptions {
   dataDir: string;
   port: number;
   user?: string;
-  password?: string;
+  /** File (mode 0600) holding the generated password; created on first start. */
+  passwordFile: string;
   database?: string;
   log?: (line: string) => void;
 }
 
 export interface PostgresHandle {
+  /** Full connection URL including the password: pass to child processes only, never print or persist. */
   url: string;
+  maskedUrl: string;
   pid: number | null;
   stop(): Promise<void>;
 }
@@ -34,9 +38,23 @@ export async function stopStalePostgres(dataDir: string, log: (line: string) => 
   if (isProcessAlive(pid)) throw new Error(`Stale postgres pid ${pid} did not stop; stop it manually`);
 }
 
+/** Password for this profile's database: random per profile, kept in a 0600 file next to the data. */
+export function loadPassword(passwordFile: string, dataDir: string): string {
+  if (existsSync(passwordFile)) return readFileSync(passwordFile, 'utf8').trim();
+  // A data directory from before this file existed was initialised with the old fixed password.
+  const password = existsSync(path.join(dataDir, 'PG_VERSION')) ? 'tectonic' : randomBytes(18).toString('base64url');
+  mkdirSync(path.dirname(passwordFile), { recursive: true });
+  writeFileSync(passwordFile, password, { mode: 0o600 });
+  return password;
+}
+
+export function databaseUrl(port: number, password: string, user = 'tectonic', database = 'tectonic'): string {
+  return `postgres://${user}:${password}@127.0.0.1:${port}/${database}`;
+}
+
 export async function startPostgres(options: PostgresOptions): Promise<PostgresHandle> {
   const user = options.user ?? 'tectonic';
-  const password = options.password ?? 'tectonic';
+  const password = loadPassword(options.passwordFile, options.dataDir);
   const database = options.database ?? 'tectonic';
   const log = options.log ?? (() => {});
 
@@ -71,7 +89,8 @@ export async function startPostgres(options: PostgresOptions): Promise<PostgresH
   const pid = existsSync(pidFile) ? Number(readFileSync(pidFile, 'utf8').split('\n')[0]) : null;
 
   return {
-    url: `postgres://${user}:${password}@127.0.0.1:${options.port}/${database}`,
+    url: databaseUrl(options.port, password, user, database),
+    maskedUrl: databaseUrl(options.port, '***', user, database),
     pid: Number.isFinite(pid) ? pid : null,
     stop: () => pg.stop(),
   };

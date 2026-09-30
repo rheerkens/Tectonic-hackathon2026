@@ -8,7 +8,8 @@ import { readFileSync } from 'node:fs';
 const PROFILE = process.env.EVAL_PROFILE ?? 'dev';
 const runtime = JSON.parse(readFileSync(new URL(`../../.local/${PROFILE}/runtime.json`, import.meta.url), 'utf8'));
 const API: string = runtime.urls.api;
-const sql = postgres(runtime.env.DATABASE_URL, { onnotice: () => {} });
+const password = readFileSync(new URL(`../../.local/${PROFILE}/pg-password`, import.meta.url), 'utf8').trim();
+const sql = postgres(`postgres://tectonic:${password}@127.0.0.1:${runtime.ports.postgres}/tectonic`, { onnotice: () => {} });
 
 type Case = {
   id: string;

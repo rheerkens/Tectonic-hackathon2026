@@ -107,6 +107,12 @@ export function createApp(deps: { config: AppConfig; db: Database; log?: Logger;
     }),
   );
 
+  // Responses are per identity: keep them out of shared and browser caches.
+  app.use('/api/*', async (c, next) => {
+    await next();
+    c.res.headers.set('Cache-Control', 'no-store');
+  });
+
   app.use('/api/*', async (c, next) => {
     const started = performance.now();
     await next();

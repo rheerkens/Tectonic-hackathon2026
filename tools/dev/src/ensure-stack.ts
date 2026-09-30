@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { localDir } from './worktree.ts';
 
 export interface StackHandle {
   baseUrl: string;
@@ -76,7 +77,7 @@ interface RuntimeFile {
 }
 
 export function readRuntime(profile: string): RuntimeFile | null {
-  const file = path.join(REPO_ROOT, '.local', profile, 'runtime.json');
+  const file = path.join(localDir(REPO_ROOT, profile), 'runtime.json');
   if (!existsSync(file)) return null;
   try {
     return JSON.parse(readFileSync(file, 'utf8')) as RuntimeFile;
