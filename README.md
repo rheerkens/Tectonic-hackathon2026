@@ -71,7 +71,7 @@ What the seeded data answers (Wanne, *Tot wanneer mag Atlas loonmutaties aanleve
 |---|---|---|
 | België, Atlas, oktober 2026 | **22 oktober 2026**, onderbouwd (100) | S4 Klantafspraak Atlas is an approved exception. S1 (20 oktober) is the general rule, S3 is an unconfirmed Teams chat, S2 is superseded, S5 is for Nederland |
 | Nederland, Atlas, oktober 2026 | **18 oktober**, onderbouwd | S5 is the Dutch procedure; the Belgian sources show as *Ander land* |
-| België, Atlas, november 2026 | *Geen onderbouwd antwoord* | The Atlas agreement is only valid in October and the general rule is about October as well, so nothing backs November (issue #48, fixed in #63) |
+| België, Atlas, november 2026 | *Geen onderbouwd antwoord* | The Atlas agreement is only valid in October and the general rule is about October as well, so nothing backs November (fixed in #63) |
 | *Binnen welke termijn moet een ziekmelding doorgegeven worden?* (BE) | **Binnen 24 uur**, onderbouwd | S6 is approved; S7 (48 uur, Teams) is *Niet bevestigd* |
 | A question about anything else | *Geen onderbouwd antwoord* | No topic matches |
 
@@ -169,8 +169,8 @@ Steps 3 and 5 change what is on screen; after step 5 run `bun run dev --reset-db
 The team plan is in [`docs/TASKS.md`](docs/TASKS.md); open work is tracked in the GitHub issues.
 
 **Not built**
-- **AI module and chat** (issues #20 AI module with tool calling, #21 chat component, #22 connecting chat and demo flows). There is **no LLM and no chat in the code**, no LLM key is read, and there is no `apps/api/src/llm.ts`. "Gewone AI" in *Vergelijk* is a deterministic keyword match, not a model.
-- **LLM claim extraction** (#4) and **semantic conflict detection** (#5). `claim` and `value` are entered by hand in the seed; the check endpoint and the question matching use keyword overlap only (prefix match, no embeddings, no stemming).
+- **Chat in the UI** (#21 chat component, #22 connecting chat and the demo flows). The backend exists (#20): `POST /api/chat` runs a tool-calling loop with Claude (`apps/api/src/llm.ts`, `apps/api/src/chat/`) and has a deterministic fallback when no `ANTHROPIC_API_KEY` is set. No web component calls it yet. "Gewone AI" in *Vergelijk* is still a deterministic keyword match, not a model.
+- **Semantic conflict detection** (#5). Claim extraction (#4) uses Claude when `ANTHROPIC_API_KEY` is set and splits sentences otherwise; `claim` and `value` in the seed are entered by hand, and the check endpoint and question matching use keyword overlap only (prefix match, no embeddings, no stemming).
 - **Seed corpus of 30+ messy sources** (#13). The seed has seven sources on two topics. The `docs/brondossier` texts are not imported.
 - **Capture** ("Add what you know", creating new sources from the UI) and any importer for real documents, Teams or e-mail. The app only reads the seed.
 - **Aikido scan and screenshots** (#12), the Builderbase checklist (#16, see [`docs/submission-checklist.md`](docs/submission-checklist.md)) and the **demo video** (#15, to be recorded by a human after the feature freeze).
