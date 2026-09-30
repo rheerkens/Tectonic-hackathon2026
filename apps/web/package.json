@@ -10,7 +10,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@clerk/clerk-react": "5.61.10",
+    "@clerk/react": "6.17.3",
     "@tanstack/react-query": "5.104.0",
     "@tectonic/shared": "workspace:*",
     "react": "19.3.0",

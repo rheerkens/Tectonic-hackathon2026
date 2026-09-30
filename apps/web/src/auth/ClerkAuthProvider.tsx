@@ -1,4 +1,4 @@
-import { ClerkProvider, SignIn, SignedIn, SignedOut, useAuth, useUser } from '@clerk/clerk-react';
+import { ClerkProvider, Show, SignIn, useAuth, useUser } from '@clerk/react';
 import { useMemo, type ReactNode } from 'react';
 import { Brand } from '../components/Brand.tsx';
 import { CLERK_PUBLISHABLE_KEY } from '../lib/config.ts';
@@ -23,17 +23,17 @@ function colorForId(id: string): string {
 export function ClerkAuthProvider({ children }: { children: ReactNode }) {
   return (
     <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY} afterSignOutUrl="/">
-      <SignedOut>
+      <Show when="signed-out">
         <main className="identity-screen">
           <div className="identity-card identity-card--clerk">
             <Brand />
             <SignIn routing="hash" />
           </div>
         </main>
-      </SignedOut>
-      <SignedIn>
+      </Show>
+      <Show when="signed-in">
         <ClerkSession>{children}</ClerkSession>
-      </SignedIn>
+      </Show>
     </ClerkProvider>
   );
 }
