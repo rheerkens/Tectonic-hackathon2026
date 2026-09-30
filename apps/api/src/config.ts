@@ -27,7 +27,7 @@ export interface AppConfig {
   port: number;
   databaseUrl: string;
   authMode: AuthMode;
-  clerk: { secretKey: string; publishableKey: string | null } | null;
+  clerk: { secretKey: string; publishableKey: string | null; authorizedParties: string[] } | null;
   /** True when running in production or on Railway: the dev auth bypass is rejected. */
   productionLike: boolean;
   corsOrigins: string[];
@@ -119,6 +119,10 @@ export function resolveConfig(env: EnvLike = process.env): AppConfig {
   if (!databaseUrl) {
     throw new ConfigError('DATABASE_URL is required. Locally, `bun run dev` provides it automatically.');
   }
+  const corsOrigins = (env.CORS_ORIGINS ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
   const defaultStaticDir = fileURLToPath(new URL('../../web/dist', import.meta.url));
   return {
     host: env.HOST?.trim() || '0.0.0.0',
@@ -127,13 +131,14 @@ export function resolveConfig(env: EnvLike = process.env): AppConfig {
     authMode,
     clerk:
       authMode === 'clerk'
-        ? { secretKey: env.CLERK_SECRET_KEY!.trim(), publishableKey: env.CLERK_PUBLISHABLE_KEY?.trim() || null }
+        ? {
+            secretKey: env.CLERK_SECRET_KEY!.trim(),
+            publishableKey: env.CLERK_PUBLISHABLE_KEY?.trim() || null,
+            authorizedParties: [...corsOrigins, ...(env.RAILWAY_PUBLIC_DOMAIN?.trim() ? [`https://${env.RAILWAY_PUBLIC_DOMAIN.trim()}`] : [])],
+          }
         : null,
     productionLike,
-    corsOrigins: (env.CORS_ORIGINS ?? '')
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean),
+    corsOrigins,
     serveStatic: env.SERVE_STATIC !== undefined ? env.SERVE_STATIC === '1' || env.SERVE_STATIC === 'true' : productionLike,
     staticDir: env.STATIC_DIR?.trim() || defaultStaticDir,
     autoMigrate: env.AUTO_MIGRATE === '1' || env.AUTO_MIGRATE === 'true',

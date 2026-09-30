@@ -163,6 +163,10 @@ export const CheckInputSchema = z.object({
 });
 export type CheckInput = z.input<typeof CheckInputSchema>;
 
+/** One checkable statement pulled out of free text. `country` is null when the text does not say. */
+export const ExtractedClaimSchema = z.object({ topic: z.string().nullable(), country: CountrySchema.nullable(), claim: z.string() });
+export type ExtractedClaim = z.infer<typeof ExtractedClaimSchema>;
+
 export const CheckResultSchema = z.object({
   /** The claims found in the text (one per sentence) and how well the sources back each. */
   claims: z.object({ text: z.string(), topic: z.string().nullable(), status: AnswerStatusSchema, statusLabel: z.string() }).array(),

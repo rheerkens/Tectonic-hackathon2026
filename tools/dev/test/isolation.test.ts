@@ -5,7 +5,7 @@
  * (it creates a temporary `git worktree` from HEAD); skips otherwise.
  */
 import { describe, expect, test } from 'bun:test';
-import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, realpathSync, readFileSync, rmSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -80,7 +80,7 @@ describe('worktree isolation (integration)', () => {
   test(
     'two worktrees run independent stacks and stop independently',
     async () => {
-      const tmp = mkdtempSync(path.join(os.tmpdir(), 'tectonic-wt-iso-'));
+      const tmp = realpathSync(mkdtempSync(path.join(os.tmpdir(), 'tectonic-wt-iso-')));
       const worktree = path.join(tmp, 'feature');
       const added = await sh(['git', 'worktree', 'add', '--detach', worktree, 'HEAD'], REPO_ROOT);
       if (added.code !== 0 || !existsSync(path.join(worktree, CLI))) {

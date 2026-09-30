@@ -2,6 +2,9 @@ import { COUNTRIES, COUNTRY_LABELS, scoreSource, type AskInput, type AssessedSou
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useSession } from '../auth/context.ts';
 import { Avatar } from '../components/Avatar.tsx';
+import { Brand } from '../components/Brand.tsx';
+import { UserMenu } from '../components/UserMenu.tsx';
+import { ChatPlaceholder } from '../components/ChatPlaceholder.tsx';
 import { ConnectionStatus } from '../components/ConnectionStatus.tsx';
 import { ErrorState } from '../components/States.tsx';
 import { useToasts } from '../components/Toasts.tsx';
@@ -62,14 +65,14 @@ function Presence() {
   const { presence } = useRealtime();
   const session = useSession();
   const others = presence.filter((u) => u.userId !== session.user.id);
+  if (others.length === 0) return null;
   return (
     <div className="kn-presence" aria-label="Wie is er online" data-testid="presence">
       <span className="presence-avatars">
-        {presence.map((u) => (
-          <Avatar key={u.userId} name={u.name} color={u.color} size={30} title={u.userId === session.user.id ? `${u.name} (jij)` : u.name} />
+        {others.map((u) => (
+          <Avatar key={u.userId} name={u.name} color={u.color} size={30} title={`${u.name} is online`} />
         ))}
       </span>
-      <span className="kn-muted">{others.length > 0 ? `${others.map((u) => u.name).join(', ')} ${others.length > 1 ? 'zijn' : 'is'} online` : 'Alleen jij'}</span>
     </div>
   );
 }
@@ -87,15 +90,8 @@ function Tick({ tone }: { tone: keyof typeof VERDICT_GLYPH }) {
 function Logo() {
   return (
     <div className="kn-logo">
-      <svg width="30" height="40" viewBox="205 205 215 290" aria-hidden="true">
-        <polygon points="212,350 247,350 262,425 227,425" fill="#797e9b" />
-        <polygon points="290,290 326,290 304,487 268,487" fill="#e80137" />
-        <polygon points="375,213 412,213 366,425 330,425" fill="#f7a901" />
-      </svg>
-      <div>
-        <div className="kn-logo-name">SD Trust</div>
-        <div className="kn-logo-tag">Kennis met onderbouwing</div>
-      </div>
+      <Brand />
+      <div className="kn-logo-tag">Van kennis naar vertrouwen.</div>
     </div>
   );
 }
@@ -184,7 +180,7 @@ function Panel({ source, users, canApprove, canDispute, canResolve, country, cli
         </span>
       </div>
       <div className="kn-bar" role="progressbar" aria-label="Onderbouwing" aria-valuenow={source.onderbouwing.score} aria-valuemin={0} aria-valuemax={100}>
-        <span style={{ width: `${source.onderbouwing.score}%` }} />
+        <span style={{ transform: `scaleX(${source.onderbouwing.score / 100})` }} />
       </div>
       <ul className="kn-checks">
         {source.onderbouwing.checks.map((c) => (
@@ -286,14 +282,7 @@ export function KennisPage() {
         <div className="kn-user">
           <Presence />
           <ConnectionStatus />
-          <span className="kn-avatar kn-avatar--lg">{session.user.name[0]}</span>
-          <div>
-            <strong>{session.user.name}</strong>
-            <div className="kn-muted">Payrollconsultant</div>
-          </div>
-          <button type="button" className="kn-link" onClick={session.signOut}>
-            Wissel
-          </button>
+          <UserMenu />
         </div>
       </header>
       <a className="kn-skip" href="#kn-main" onClick={(e) => { e.preventDefault(); document.getElementById('kn-main')?.focus(); }}>
@@ -313,6 +302,8 @@ export function KennisPage() {
         <form
           className="kn-ask"
           role="search"
+          data-loading={ask.isFetching}
+          aria-busy={ask.isFetching}
           onSubmit={(e) => {
             e.preventDefault();
             run();
@@ -323,6 +314,7 @@ export function KennisPage() {
             <Icon name="arrow" />
           </button>
         </form>
+        <span className="sr-only" role="status">{ask.isFetching ? 'Bronnen worden gecontroleerd.' : ''}</span>
         <div className="kn-chips">
           <select className="kn-chip" value={country} aria-label="Land" onChange={(e) => { setCountry(e.target.value as Country); run({ country: e.target.value as Country }); }}>
             {COUNTRIES.map((c) => (
@@ -370,7 +362,7 @@ export function KennisPage() {
               <p className="kn-muted">Stellig, zonder score en zonder uitleg.</p>
             </div>
             <div className="kn-compare-col kn-compare-col--lens">
-              <h3 className="kn-h3">Trust Lens</h3>
+              <h3 className="kn-h3">SDtrust</h3>
               <span className="kn-badge">
                 <Tick tone={STATUS_TONE[result.status]} /> {result.statusLabel}
                 {result.best ? ` · onderbouwing ${result.best.onderbouwing.score}/100` : ''}
@@ -469,6 +461,7 @@ export function KennisPage() {
         <CheckPanel country={country} />
       </main>
       {selected ? <Panel source={selected} users={userMap} canApprove={canApprove} canDispute={canDispute} canResolve={isOwner} country={country} client={client} /> : <aside className="kn-panel" aria-label="Geselecteerde bron"><p className="kn-muted">Selecteer een bron om de onderbouwing te zien.</p></aside>}
+      <ChatPlaceholder />
     </div>
   );
 }

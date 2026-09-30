@@ -23,6 +23,8 @@
     "typecheck": "bun run --filter '*' typecheck",
     "test": "bun test tools/dev",
     "check": "bun run typecheck && bun run build",
+    "video:snippets": "bun run --cwd tools/video snippets",
+    "video:gallery": "bun run --cwd tools/video gallery",
     "db:generate": "bun run --cwd packages/db generate",
     "db:migrate": "bun run --cwd packages/db migrate",
     "db:seed": "bun run --cwd packages/db seed",
