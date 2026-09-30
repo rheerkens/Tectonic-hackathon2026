@@ -4,7 +4,7 @@ import { useSession } from '../auth/context.ts';
 import { ConnectionStatus } from '../components/ConnectionStatus.tsx';
 import { ErrorState } from '../components/States.tsx';
 import { useToasts } from '../components/Toasts.tsx';
-import { useAccess, useApproveSource, useAsk, useUsers } from '../lib/queries.ts';
+import { useAccess, useApproveSource, useAsk, useNaiveAnswer, useUsers } from '../lib/queries.ts';
 import { useTeamSubscriptions } from '../realtime/RealtimeProvider.tsx';
 import './kennis.css';
 
@@ -192,7 +192,9 @@ export function KennisPage() {
     if (q) setAsked({ question: q, country, client: c, period });
   }, [access.data]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const [compare, setCompare] = useState(false);
   const ask = useAsk(asked);
+  const naive = useNaiveAnswer(asked, compare);
   const userMap = useMemo(() => new Map((users.data ?? []).map((u) => [u.id, u])), [users.data]);
   const result = ask.data;
   const selected = result?.sources.find((s) => s.id === selectedId) ?? result?.best ?? result?.sources[0] ?? null;
@@ -266,10 +268,38 @@ export function KennisPage() {
               </option>
             ))}
           </select>
+          <button type="button" className={`kn-chip kn-chip--toggle${compare ? ' is-on' : ''}`} aria-pressed={compare} onClick={() => setCompare(!compare)}>
+            Vergelijk
+          </button>
         </div>
 
         {access.isError && <ErrorState title="Kon je toegang niet laden" message={access.error.message} onRetry={() => void access.refetch()} />}
         {ask.isError && <ErrorState title="Kon geen antwoord geven" message={ask.error.message} onRetry={() => void ask.refetch()} />}
+
+        {compare && result && (
+          <section className="kn-compare" data-testid="kn-compare">
+            <div className="kn-compare-col kn-compare-col--naive">
+              <h3 className="kn-h3">Gewone AI</h3>
+              {naive.isError ? <p>Kon geen antwoord ophalen.</p> : naive.data ? <p className="kn-answer-text">{naive.data.answer ?? 'Geen antwoord gevonden.'}</p> : <p className="kn-muted">Laden…</p>}
+              <p className="kn-muted">Stellig, zonder score en zonder uitleg.</p>
+            </div>
+            <div className="kn-compare-col kn-compare-col--lens">
+              <h3 className="kn-h3">Trust Lens</h3>
+              <span className="kn-badge">
+                <Tick tone={STATUS_TONE[result.status]} /> {result.statusLabel}
+                {result.best ? ` · onderbouwing ${result.best.onderbouwing.score}/100` : ''}
+              </span>
+              <p className="kn-answer-text">{result.best ? result.best.claim : 'Geen onderbouwd antwoord.'}</p>
+              <ul className="kn-reasons">
+                {result.sources.map((s) => (
+                  <li key={s.id}>
+                    <strong>{s.code}</strong> {s.verdict.label}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        )}
 
         {result && (
           <>

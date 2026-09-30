@@ -65,6 +65,7 @@ export function createApiClient(getAuthHeaders: AuthHeaders) {
     listUsers: () => request('listUsers', {}),
     access: () => request('access', {}),
     ask: (body: Body<'ask'>) => request('ask', {}, body),
+    naiveAnswer: (body: Body<'naiveAnswer'>) => request('naiveAnswer', {}, body),
     approveSource: (sourceId: string) => request('approveSource', { sourceId }),
   };
 }
