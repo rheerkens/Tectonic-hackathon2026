@@ -61,6 +61,9 @@ export const HealthSchema = z.object({
 export type Health = z.infer<typeof HealthSchema>;
 
 export const DisputeInputSchema = z.object({ disputed: z.boolean() });
+/** Postgres-shaped uuid (any version): anything else cannot match a row, so routes treat it as not found. */
+export const SourceIdSchema = z.guid();
+
 export const OkSchema = z.object({ ok: z.literal(true) });
 
 // ---- knowledge sources -----------------------------------------------------

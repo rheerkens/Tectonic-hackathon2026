@@ -1,5 +1,5 @@
 import { projectMembers, projects, sources, type Database } from '@tectonic/db';
-import { AskInputSchema, CheckInputSchema, DisputeInputSchema, assess, naiveAnswer, scoreSource, verdictFor, roleAtLeast, type Access, type CheckResult } from '@tectonic/shared';
+import { AskInputSchema, CheckInputSchema, DisputeInputSchema, SourceIdSchema, assess, naiveAnswer, scoreSource, verdictFor, roleAtLeast, type Access, type CheckResult } from '@tectonic/shared';
 import { and, eq, inArray } from 'drizzle-orm';
 import { Hono } from 'hono';
 import type { AppContext, AppEnv } from '../app.ts';
@@ -7,6 +7,13 @@ import { conflict, forbidden, notFound } from '../errors.ts';
 import { getProjectRole } from '../permissions.ts';
 import { serializeSource } from '../serializers.ts';
 import { jsonBody } from '../validate.ts';
+
+/** Malformed ids are "no such source" (404), not a Postgres cast error (500). */
+function sourceIdParam(raw: string) {
+  const id = SourceIdSchema.safeParse(raw);
+  if (!id.success) throw notFound('Source');
+  return id.data;
+}
 
 const EXAMPLES = ['Tot wanneer mag Atlas loonmutaties aanleveren?', 'Binnen welke termijn moet een ziekmelding doorgegeven worden?'];
 
@@ -81,7 +88,7 @@ export function knowledgeRoutes(ctx: AppContext) {
 
   router.post('/api/sources/:sourceId/approve', async (c) => {
     const principal = c.get('principal');
-    const [source] = await db.select().from(sources).where(eq(sources.id, c.req.param('sourceId'))).limit(1);
+    const [source] = await db.select().from(sources).where(eq(sources.id, sourceIdParam(c.req.param('sourceId')))).limit(1);
     const role = source ? await getProjectRole(db, source.projectId, principal.userId) : null;
     // Not a member means "no such source": the existence of a source in a team you cannot see is not revealed.
     if (!source || !role) throw notFound('Source');
@@ -104,7 +111,7 @@ export function knowledgeRoutes(ctx: AppContext) {
   router.post('/api/sources/:sourceId/dispute', jsonBody(DisputeInputSchema), async (c) => {
     const principal = c.get('principal');
     const { disputed } = c.req.valid('json');
-    const [source] = await db.select().from(sources).where(eq(sources.id, c.req.param('sourceId'))).limit(1);
+    const [source] = await db.select().from(sources).where(eq(sources.id, sourceIdParam(c.req.param('sourceId')))).limit(1);
     const role = source ? await getProjectRole(db, source.projectId, principal.userId) : null;
     if (!source || !role) throw notFound('Source');
     if (!roleAtLeast(role, 'editor')) throw forbidden('Your role cannot dispute sources');

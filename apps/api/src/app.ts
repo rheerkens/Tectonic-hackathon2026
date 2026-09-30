@@ -49,7 +49,25 @@ export function createApp(deps: { config: AppConfig; db: Database; log?: Logger;
   const app = new Hono<AppEnv>();
 
   // nosniff, frame and referrer protection on API and static responses. Popups stay allowed for Clerk sign-in flows.
-  app.use('*', secureHeaders({ crossOriginOpenerPolicy: 'same-origin-allow-popups', referrerPolicy: 'strict-origin-when-cross-origin' }));
+  const clerk = ['https://*.clerk.accounts.dev', 'https://*.clerk.com']; // ponytail: custom Clerk domains must be added here
+  const dev = !config.productionLike;
+  const csp = {
+    defaultSrc: ["'self'"],
+    // Vite's dev server injects inline scripts (React refresh preamble); production bundles are external files only.
+    scriptSrc: ["'self'", ...clerk, 'https://challenges.cloudflare.com', ...(dev ? ["'unsafe-inline'"] : [])],
+    // React `style={...}` props render inline style attributes.
+    styleSrc: ["'self'", "'unsafe-inline'"],
+    imgSrc: ["'self'", 'data:', 'blob:', 'https://img.clerk.com'],
+    fontSrc: ["'self'", 'data:'],
+    connectSrc: ["'self'", 'wss:', ...(dev ? ['ws:'] : []), ...config.corsOrigins, ...clerk],
+    frameSrc: ['https://challenges.cloudflare.com', ...clerk],
+    workerSrc: ["'self'", 'blob:'],
+    objectSrc: ["'none'"],
+    baseUri: ["'self'"],
+    formAction: ["'self'"],
+    frameAncestors: ["'none'"],
+  };
+  app.use('*', secureHeaders({ contentSecurityPolicy: csp, crossOriginOpenerPolicy: 'same-origin-allow-popups', referrerPolicy: 'strict-origin-when-cross-origin' }));
 
   app.use(
     '/api/*',
