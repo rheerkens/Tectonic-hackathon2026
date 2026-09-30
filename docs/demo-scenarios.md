@@ -19,7 +19,7 @@ Expectations are **verdicts, statuses and ranges, never exact scores** (the seed
 
 ## How to run a scenario
 
-`bun run dev --reset-db` (URLs in `.local/dev/runtime.json`). Without `ANTHROPIC_API_KEY` the chat runs its deterministic fallback (`mode: "fallback"`, UI badge "Zonder AI-model (regels)"); with a key it runs the model loop (`mode: "llm"`). The tool sequence below is the **fallback** sequence; in llm mode the model chooses, but must call `assess_trust` and cite only sources the user may see. The API allows 20 chat requests per user per minute.
+`bun run dev --reset-db` (URLs in `.local/dev/runtime.json`). The chat is deterministic (`mode: "fallback"`, UI badge "Zonder AI-model (regels)"); it runs the tool sequence below and uses no model. The API allows 20 chat requests per user per minute.
 
 ```sh
 curl -s -X POST $API/api/chat -H 'x-dev-user: demo_wanne' -H 'content-type: application/json' -d '{
@@ -89,7 +89,7 @@ No source exists on: dertiende maand, bedrijfswagen, pensioen, kerstpakket.
 - **"En voor Nederland?"** has no subject of its own, so the tools get the previous question too (`find_knowledge` query "Tot wanneer ... aanleveren? En voor Nederland?"), `assess_trust` runs for Nederland: **18 oktober [S5]**, answer starts "Ik beoordeel dit voor Nederland in plaats van België, omdat je dat in je vraag noemt. Ik lees dit als vervolg op je vorige vraag." Footer "Antwoord voor Nederland".
 - **"En de ziekmelding?"** has its own subject: answered alone, D2 (S6).
 - **"En maaltijdcheques?"** is answered alone (S23). **"En de dertiende maand?"** stays a gap and never inherits the previous topic.
-- Country and month named in the message override the selects; one country, one month or "volgende/vorige maand", an optional year; never the client. In llm mode the model does this through `assess_trust` arguments (system prompt rule 7).
+- Country and month named in the message override the selects; one country, one month or "volgende/vorige maand", an optional year; never the client.
 
 ### D7. Period sensitivity (#63)
 - wanne; België, Atlas. **Oktober:** D1. **November** (Periode select, or turn 2 "En voor november?" / "En voor volgende maand?"): *Geen onderbouwd antwoord*; S1, S4, S9, S10, S11 "Niet geldig in deze periode", S3 not confirmed, S2 superseded, S5 other country. Tools: `find_knowledge`, `assess_trust`.
@@ -121,7 +121,7 @@ After inserting S33 (23 oktober, also approved, same scope) into a throwaway dat
 - Per topic, words found in any title, topic or keywords count 1, words that only occur in a claim or value count 0.5.
 - A topic matches only when its evidence is at least 1 (one curated word) and more than a third of the remaining question words are backed.
 
-Measured on 34 questions against the 32-source seed: old engine 9 wrong, new engine 2 wrong (one related-topic collision "vakantiedagen", one paraphrase "Wie keurt een klantuitzondering goed?" that now abstains). The llm path rewrites the question before `assess_trust`.
+Measured on 34 questions against the 32-source seed: old engine 9 wrong, new engine 2 wrong (one related-topic collision "vakantiedagen", one paraphrase "Wie keurt een klantuitzondering goed?" that now abstains).
 
 ## Gaps and inputs for #13 and #18
 - **Chat panel not mounted on main.** #79 replaced the Lumi panel by the project chat in `KennisPage`; `/api/chat` and these scenarios are only reachable through the API or by mounting `ChatPanel`. Product decision needed.
@@ -129,4 +129,3 @@ Measured on 34 questions against the 32-source seed: old engine 9 wrong, new eng
 - **Access nuance:** for a user without the client agreement the badge says *Onderbouwd* for the general rule; draaiboek scenario 4 wants "kan niet bevestigen welke afspraak voor Atlas geldt". Text only today.
 - **Stem collisions** (`vakantiedagen` ~ `vakantiegeld`, 6-letter prefix) and English questions are not handled; a semantic matcher (#5) is the real fix.
 - **S34 (72 uur)** is *Niet geldig in deze periode*, not *Vervangen*; the demo step "Markeer als vervangen door S6" changes that live.
-- **llm mode** was not run against these scenarios (no API key available); see the PR.

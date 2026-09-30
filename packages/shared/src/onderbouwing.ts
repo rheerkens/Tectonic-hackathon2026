@@ -141,7 +141,7 @@ export function assess(question: string, sources: Source[], projectNames: Map<st
 }
 
 // ---- naive answer (demo contrast) ------------------------------------------
-/** The claim of the source with the most keyword overlap, blind to country, client, period and status. ponytail: no LLM; add one if a key is configured. */
+/** The claim of the source with the most keyword overlap, blind to country, client, period and status. ponytail: keyword overlap only, no LLM. */
 export function naiveAnswer(question: string, sources: Source[]): NaiveAnswer {
   const q = tokens(question);
   let best: Source | null = null;

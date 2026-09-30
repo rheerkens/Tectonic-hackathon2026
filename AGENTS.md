@@ -12,7 +12,7 @@
 
 ## Verify before you finish
 
-- **Do not write new tests** (hackathon: speed over coverage). Applies to every agent (Claude, OpenAI/Codex, others) and humans. Do not add or extend test files; only fix existing tests that your change breaks.
+- **Do not write new tests** (hackathon: speed over coverage). Applies to every agent (OpenAI/Codex, others) and humans. Do not add or extend test files; only fix existing tests that your change breaks.
 
 - `bun run check` = typecheck every workspace + `bun run test` + web build. Must pass.
 - UI or realtime changes: also `bun run test:e2e` (Playwright in Chromium, two browser sessions, reconnect) and look at the real app.

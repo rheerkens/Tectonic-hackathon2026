@@ -9,7 +9,6 @@ import { getProjectRole, isSourceOwner, userCanSeeSource } from '../permissions.
 import { serializeSource } from '../serializers.ts';
 import { visibleSources as loadVisibleSources } from '../sources.ts';
 import { extractClaims } from '../claims.ts';
-import { takeLlmBudget } from '../llm-budget.ts';
 import { jsonBody } from '../validate.ts';
 
 /**
@@ -24,7 +23,7 @@ const EXAMPLES = [
 ];
 
 export function knowledgeRoutes(ctx: AppContext) {
-  const { db, realtime, config } = ctx;
+  const { db, realtime } = ctx;
   const router = new Hono<AppEnv>();
 
   const visibleSources = (userId: string) => loadVisibleSources(db, userId);
@@ -66,7 +65,7 @@ export function knowledgeRoutes(ctx: AppContext) {
     return best?.value && digits && !digits.every((d) => best.value!.includes(d)) ? { code: best.code, value: best.value } : null;
   };
 
-  // Claims come from the LLM when a key is set, else sentence split (see claims.ts); matching stays keyword overlap via assess.
+  // Claims are one per sentence (see claims.ts); matching is keyword overlap via assess.
   router.post('/api/check', jsonBody(CheckInputSchema), async (c) => {
     const { text, country, client = null, period = new Date().toISOString().slice(0, 7) } = c.req.valid('json');
     const { userId } = c.get('principal');
@@ -74,8 +73,7 @@ export function knowledgeRoutes(ctx: AppContext) {
     const names = new Map(teams.map((t) => [t.id, t.name]));
     const claims: CheckResult['claims'] = [];
     const contradictions: CheckResult['contradictions'] = [];
-    const llm = config.llm && rows.length > 0 && takeLlmBudget(userId) ? config.llm : null;
-    for (const { claim, country: found } of await extractClaims(text, llm)) {
+    for (const { claim, country: found } of await extractClaims(text)) {
       const r = assess(claim, serializeVisible(rows), names, { country: found ?? country, client, period });
       claims.push({ text: claim, topic: r.topic, status: r.status, statusLabel: r.statusLabel, conflict: statesOtherValue(claim, r.best) });
       for (const source of r.sources) {

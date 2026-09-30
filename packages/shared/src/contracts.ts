@@ -53,7 +53,7 @@ export const api = {
   check: route('POST', '/api/check', { body: CheckInputSchema, response: CheckResultSchema }),
   /** A plain assistant's answer: ignores country, client, period and status, shows no confidence. For the side-by-side demo. */
   naiveAnswer: route('POST', '/api/naive-answer', { body: AskInputSchema, response: NaiveAnswerSchema }),
-  /** Chat with tool calling: the model looks up, rates and cites sources the caller may see. Deterministic without an LLM key. */
+  /** Chat with tool calling: looks up, rates and cites sources the caller may see. Deterministic, no model. */
   chat: route('POST', '/api/chat', { body: ChatInputSchema, response: ChatResultSchema }),
   /** The source owner (or the team owner, for an ownerless source) confirms a source is approved. */
   approveSource: route('POST', '/api/sources/:sourceId/approve', { response: OkSchema }),

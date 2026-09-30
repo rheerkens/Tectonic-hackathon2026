@@ -7,7 +7,6 @@ import { HTTPException } from 'hono/http-exception';
 import { secureHeaders } from 'hono/secure-headers';
 import { createAuthenticator, type Authenticator, type Principal } from './auth.ts';
 import type { AppConfig } from './config.ts';
-import { createLlmClient, type LlmClient } from './llm.ts';
 import { ApiError } from './errors.ts';
 import { createLogger, type Logger } from './log.ts';
 import { createRealtime, type Realtime, type SocketData } from './realtime.ts';
@@ -29,8 +28,6 @@ export interface AppContext {
   authenticator: Authenticator;
   realtime: Realtime;
   log: Logger;
-  /** null without ANTHROPIC_API_KEY: chat then uses its deterministic fallback. */
-  llm: LlmClient | null;
   startedAt: number;
 }
 
@@ -76,13 +73,12 @@ function buildCsp(publishableKey: string | null, extraOrigins: string[]) {
   };
 }
 
-export function createApp(deps: { config: AppConfig; db: Database; log?: Logger; authenticator?: Authenticator; llm?: LlmClient | null; chatRunner?: ChatRunner; chatStatus?: ChatStatusReader }): CreatedApp {
+export function createApp(deps: { config: AppConfig; db: Database; log?: Logger; authenticator?: Authenticator; chatRunner?: ChatRunner; chatStatus?: ChatStatusReader }): CreatedApp {
   const { config, db } = deps;
   const log = deps.log ?? createLogger(config.productionLike ? 'info' : 'debug');
   const authenticator = deps.authenticator ?? createAuthenticator(config, db);
   const realtime = createRealtime({ db, authenticator, log });
-  const llm = deps.llm === undefined ? createLlmClient(config.llm) : deps.llm;
-  const ctx: AppContext = { config, db, authenticator, realtime, log, llm, startedAt: Date.now() };
+  const ctx: AppContext = { config, db, authenticator, realtime, log, startedAt: Date.now() };
 
   const app = new Hono<AppEnv>();
 

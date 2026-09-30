@@ -3,7 +3,6 @@ import { Hono } from 'hono';
 import type { AppContext, AppEnv } from '../app.ts';
 import { createChatEnv } from '../chat/tools.ts';
 import { runChat } from '../chat/run.ts';
-import { DEFAULT_LLM_TIMEOUT_MS } from '../config.ts';
 import { rateLimited } from '../errors.ts';
 import { visibleSources } from '../sources.ts';
 import { jsonBody } from '../validate.ts';
@@ -28,7 +27,7 @@ function createRateLimiter(now: () => number = Date.now) {
 }
 
 export function chatRoutes(ctx: AppContext) {
-  const { db, llm, log, config } = ctx;
+  const { db } = ctx;
   const router = new Hono<AppEnv>();
   const retryAfter = createRateLimiter();
 
@@ -39,10 +38,10 @@ export function chatRoutes(ctx: AppContext) {
       return c.json(rateLimited(`Te veel vragen. Probeer het over ${wait} seconden opnieuw.`).toBody(), 429, { 'Retry-After': String(wait) });
     }
     const input = c.req.valid('json');
-    // Scoped to the caller's teams before any tool can run: the model never sees what the user may not.
+    // Scoped to the caller's teams before any tool can run.
     const { teams, rows } = await visibleSources(db, userId);
     const env = createChatEnv(teams, rows, input.context);
-    const result: ChatResult = await runChat({ llm, log, timeoutMs: config.llm?.timeoutMs ?? DEFAULT_LLM_TIMEOUT_MS }, env, input);
+    const result: ChatResult = runChat(env, input);
     return c.json(result);
   });
 

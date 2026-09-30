@@ -1,4 +1,3 @@
-import type Anthropic from '@anthropic-ai/sdk';
 import type { SourceRow } from '@tectonic/db';
 import {
   CHAT_TOOL_ARGS,
@@ -46,21 +45,7 @@ export function assessOne(env: ChatEnv, source: Source, ctx = env.context): Asse
   return { ...source, projectName: env.names.get(source.projectId) ?? '', onderbouwing: scoreSource(source, ctx), verdict: verdictFor(source, ctx) };
 }
 
-// ---- definitions for the model ---------------------------------------------
-const DESCRIPTIONS: Record<ChatToolName, string> = {
-  find_knowledge:
-    'Zoekt welke bronnen over het onderwerp van de zoekvraag gaan. Geeft het gevonden onderwerp en de bronnen erop (code, titel, land, klant, status). Beoordeelt de bronnen niet: gebruik assess_trust om het antwoord te bepalen.',
-  assess_trust:
-    'Beoordeelt alle bronnen over het onderwerp van de vraag voor een land, klant en periode: het beste antwoord, per bron of ze van toepassing is (klantuitzondering, algemene regel, vervangen, verlopen, niet bevestigd, ander land, andere klant) en de onderbouwingscontroles met score. Laat country, client en period weg om de context van het gesprek te gebruiken. Dit is de enige bron voor het antwoord en de betrouwbaarheid.',
-  get_source: 'Leest één bron volledig (citaat, eigenaar, geldigheid, status) aan de hand van haar code, bv. "S4". Alleen bronnen die de gebruiker mag zien.',
-};
-
-export const TOOL_DEFINITIONS: Anthropic.Tool[] = CHAT_TOOL_NAMES.map((name) => {
-  const { $schema: _omit, ...schema } = z.toJSONSchema(CHAT_TOOL_ARGS[name], { io: 'input' }) as Record<string, unknown>;
-  return { name, description: DESCRIPTIONS[name], input_schema: schema as unknown as Anthropic.Tool.InputSchema };
-});
-
-// ---- compact results for the model -----------------------------------------
+// ---- compact results -----------------------------------------
 /** Enough to explain trust (verdict, checks, validity, owner, dispute) without dumping rows. */
 function compact(s: AssessedSource) {
   return {
@@ -92,7 +77,7 @@ const issues = (error: z.ZodError) => error.issues.map((i) => `${i.path.join('.'
 export interface ToolOutcome {
   /** null only for a tool name we do not have: there is nothing to put in the trace. */
   call: ChatToolCall | null;
-  /** JSON (or a plain error sentence) handed back to the model as the tool_result. */
+  /** JSON (or a plain error sentence) describing the result. */
   content: string;
   isError: boolean;
   /** Set by a successful assess_trust; the route reports the last one as the answer's trust. */

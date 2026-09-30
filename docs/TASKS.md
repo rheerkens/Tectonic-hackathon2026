@@ -25,10 +25,10 @@ Basis die er al staat: score met vier factoren (`packages/shared/src/trust.ts`),
 ---
 
 ## Lane A: Engine en AI (dev 1)
-Branch `lane-a-engine`. Bestanden: `packages/shared/src/trust.ts`, `apps/api/src/routes/knowledge.ts`, nieuw `apps/api/src/llm.ts`.
+Branch `lane-a-engine`. Bestanden: `packages/shared/src/trust.ts`, `apps/api/src/routes/knowledge.ts`.
 
 - [ ] **A1 (M1, eerst!)** Contract `POST /api/projects/:projectId/check` in `contracts.ts`: body `{ text, country }` (een geplakt Teams-bericht/mail), response `{ claims[], matches[], contradictions[] }` met per claim het oordeel per bron en de trust-uitleg. Stub-implementatie zodat B kan bouwen.
-- [ ] **A2** LLM-claim-extractie: vrije tekst → `{ topic, country, claim }` (Gemini via Google Cloud-credits, of Claude). Fallback: keyword-overlap zoals nu.
+- [ ] **A2** LLM-claim-extractie: vrije tekst → `{ topic, country, claim }` (via OpenAI). Fallback: keyword-overlap zoals nu.
 - [ ] **A3** Semantische conflictdetectie in `assess`/`findIssues` (nu: tekstgelijkheid van `claim`). "Paid in December" vs "December payroll" mag geen conflict zijn.
 - [ ] **A4 (M1)** Contract en endpoint `POST .../naive-answer`: een gewone AI-antwoord zonder vertrouwen (voor de zij-aan-zij-demo). Zelfde vraag als `/ask`.
 - [ ] **A5** Unit-tests voor alles wat scoort (zoals `trust.test.ts`). Limieten op invoerlengte en rate limiting op LLM-endpoints.

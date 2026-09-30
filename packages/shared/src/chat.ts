@@ -2,9 +2,9 @@ import { z } from 'zod';
 import { AnswerStatusSchema, AskResultSchema, AssessedSourceSchema, CountrySchema } from './schemas.ts';
 
 /**
- * Chat with tool calling (U1 #20 / U2 #21 / U3 #22). The server runs the model loop, executes every
- * tool against the caller's visible sources only, and returns the answer plus a trace of each tool
- * call. Without an LLM key it runs the same tools deterministically (`mode: 'fallback'`).
+ * Chat with tool calling (U1 #20 / U2 #21 / U3 #22). The server runs the tools deterministically
+ * against the caller's visible sources only, and returns a templated answer plus a trace of each
+ * tool call (`mode: 'fallback'`).
  */
 
 // ---- tools -----------------------------------------------------------------
@@ -86,7 +86,7 @@ export const ChatResultSchema = z.object({
   statusLabel: z.string(),
   /** The context the answer was rated for: the chat context, unless the question itself asked for another country, client or period. */
   context: ChatContextSchema,
-  /** 'llm' = model with tool calling; 'fallback' = no key or model failure, deterministic tools only. */
+  /** Always 'fallback': deterministic tools and a templated answer, no model. 'llm' is kept for contract compatibility and is never returned. */
   mode: z.enum(['llm', 'fallback']),
   toolCalls: ChatToolCallSchema.array(),
   /** Sources cited in the answer, in citation order. */

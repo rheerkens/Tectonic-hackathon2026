@@ -10,7 +10,6 @@
     "test": "bun test"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "0.129.0",
     "@clerk/backend": "3.20.1",
     "@earendil-works/pi-agent-core": "0.99.1",
     "@earendil-works/pi-ai": "0.99.1",
