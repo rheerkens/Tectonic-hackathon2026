@@ -39,6 +39,38 @@ export interface CreatedApp {
 /** Native shells load the web bundle from these origins. Extra origins come from CORS_ORIGINS. */
 const NATIVE_ORIGINS = ['capacitor://localhost', 'ionic://localhost', 'http://localhost', 'tauri://localhost', 'https://tauri.localhost'];
 
+/** Clerk's frontend API host is base64-encoded in the publishable key (`pk_test_<base64(host$)>`). */
+function clerkHost(publishableKey: string | null): string | null {
+  const encoded = publishableKey?.split('_')[2];
+  if (!encoded) return null;
+  try {
+    const host = atob(encoded).replace(/\$$/, '');
+    return /^[a-z0-9.-]+$/i.test(host) ? `https://${host}` : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Limits scripts/connections to self plus Clerk (+ Cloudflare challenge). `wss:` covers /ws; ponytail: any wss host, narrow if a split API origin is used. */
+function buildCsp(publishableKey: string | null, extraOrigins: string[]) {
+  const host = clerkHost(publishableKey);
+  const clerk = ['https://*.clerk.accounts.dev', 'https://*.clerk.com', ...(host ? [host] : [])];
+  const cf = 'https://challenges.cloudflare.com';
+  return {
+    defaultSrc: ["'self'"],
+    scriptSrc: ["'self'", ...clerk, cf],
+    connectSrc: ["'self'", 'wss:', ...clerk, ...extraOrigins],
+    frameSrc: ["'self'", ...clerk, cf],
+    imgSrc: ["'self'", 'data:', 'blob:', 'https://img.clerk.com', ...clerk],
+    styleSrc: ["'self'", "'unsafe-inline'"],
+    workerSrc: ["'self'", 'blob:'],
+    objectSrc: ["'none'"],
+    baseUri: ["'self'"],
+    frameAncestors: ["'self'"],
+    formAction: ["'self'"],
+  };
+}
+
 export function createApp(deps: { config: AppConfig; db: Database; log?: Logger; authenticator?: Authenticator }): CreatedApp {
   const { config, db } = deps;
   const log = deps.log ?? createLogger(config.productionLike ? 'info' : 'debug');
@@ -49,7 +81,14 @@ export function createApp(deps: { config: AppConfig; db: Database; log?: Logger;
   const app = new Hono<AppEnv>();
 
   // nosniff, frame and referrer protection on API and static responses. Popups stay allowed for Clerk sign-in flows.
-  app.use('*', secureHeaders({ crossOriginOpenerPolicy: 'same-origin-allow-popups', referrerPolicy: 'strict-origin-when-cross-origin' }));
+  app.use(
+    '*',
+    secureHeaders({
+      crossOriginOpenerPolicy: 'same-origin-allow-popups',
+      referrerPolicy: 'strict-origin-when-cross-origin',
+      contentSecurityPolicy: buildCsp(config.clerk?.publishableKey ?? null, config.corsOrigins),
+    }),
+  );
 
   app.use(
     '/api/*',

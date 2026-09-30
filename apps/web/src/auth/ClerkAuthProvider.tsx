@@ -1,5 +1,6 @@
 import { ClerkProvider, SignIn, SignedIn, SignedOut, useAuth, useUser } from '@clerk/clerk-react';
 import { useMemo, type ReactNode } from 'react';
+import { Brand } from '../components/Brand.tsx';
 import { CLERK_PUBLISHABLE_KEY } from '../lib/config.ts';
 import { AuthContext } from './context.ts';
 import type { AuthSession } from './types.ts';
@@ -25,10 +26,7 @@ export function ClerkAuthProvider({ children }: { children: ReactNode }) {
       <SignedOut>
         <main className="identity-screen">
           <div className="identity-card identity-card--clerk">
-            <div className="brand">
-              <span className="brand-mark" aria-hidden="true" />
-              <span>SD Trust</span>
-            </div>
+            <Brand />
             <SignIn routing="hash" />
           </div>
         </main>
