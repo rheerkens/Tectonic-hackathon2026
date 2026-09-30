@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { Avatar } from '../components/Avatar.tsx';
 import { Finn, type FinnMood } from '../components/Finn.tsx';
-import { ContextSelects, Icon, type AskContext } from './ui.tsx';
+import { COUNTRY_LABELS } from '@tectonic/shared';
+import { Icon, monthLabel, type AskContext } from './ui.tsx';
 import type { Span, Understood } from './understand.ts';
 import './finn.css';
 
@@ -34,7 +35,6 @@ export interface FinnStageProps {
   context: AskContext;
   clients: string[];
   touched: Touched;
-  onContext: (patch: Partial<AskContext>) => void;
   busy: boolean;
   mood: FinnMood;
   run: number;
@@ -42,7 +42,19 @@ export interface FinnStageProps {
   line: string;
 }
 
+/** What Finn has recognised or been told so far, plus a ghost pill for each thing still open. */
+function contextPills(p: FinnStageProps) {
+  const { context, touched, understood } = p;
+  return [
+    { field: 'topic', label: 'Onderwerp', value: understood.topic ?? null },
+    { field: 'country', label: 'Land', value: touched.country ? COUNTRY_LABELS[context.country] : null },
+    ...(p.clients.length > 0 ? [{ field: 'client', label: 'Klant', value: touched.client ? (context.client ?? 'Alle klanten') : null }] : []),
+    { field: 'period', label: 'Periode', value: touched.period ? monthLabel(context.period) : null },
+  ];
+}
+
 export function FinnStage(p: FinnStageProps) {
+  const pills = contextPills(p);
   return (
     <div className="fs-stage" data-mood={p.mood}>
       <form
@@ -60,11 +72,6 @@ export function FinnStage(p: FinnStageProps) {
             <Avatar name={p.userName} color={p.userColor} size={22} title={p.userName} />
             Jouw vraag
           </label>
-          {p.understood.topic && (
-            <span className="fs-tag" data-field="topic">
-              <em>Onderwerp</em> {p.understood.topic}
-            </span>
-          )}
         </div>
         <div className="fs-editor">
           <div className="fs-mirror" aria-hidden="true">
@@ -88,9 +95,13 @@ export function FinnStage(p: FinnStageProps) {
           />
         </div>
         <div className="fs-foot">
-          <div className="fs-ctx" role="group" aria-label="Context van je vraag">
-            <ContextSelects value={p.context} clients={p.clients} touched={p.touched} onChange={p.onContext} />
-          </div>
+          <ul className="fs-ctx" aria-label="Wat Finn herkent in je vraag">
+            {pills.map((pill) => (
+              <li key={pill.field} className="fs-pill" data-field={pill.field} data-set={pill.value !== null}>
+                <em>{pill.label}</em> {pill.value}
+              </li>
+            ))}
+          </ul>
           <button type="submit" className="fs-send" disabled={p.busy || p.question.trim().length < 3}>
             Vraag Finn <Icon name="arrow" size={18} />
           </button>

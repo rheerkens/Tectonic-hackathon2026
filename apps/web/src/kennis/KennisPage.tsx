@@ -288,14 +288,6 @@ export function KennisPage() {
     typingTimer.current = window.setTimeout(() => setTyping(false), 700);
   };
 
-  // One context for the page and the chat: changing it in either re-asks the page's question, so the two never disagree.
-  const changeContext = (patch: Partial<AskContext>) => {
-    if (patch.country) setCountry(patch.country);
-    if (patch.client !== undefined) setClient(patch.client);
-    if (patch.period) setPeriod(patch.period);
-    run(patch);
-  };
-
   const firstName = session.user.name.split(' ')[0] ?? session.user.name;
   const dirty = question.trim() !== (asked?.question.trim() ?? '');
   /** One question at a time, for the first thing the question still leaves open. */
@@ -368,7 +360,6 @@ export function KennisPage() {
           context={{ country, client, period }}
           clients={clients}
           touched={touched}
-          onContext={changeContext}
           busy={ask.isFetching}
           mood={finn.mood}
           run={runs}

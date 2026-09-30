@@ -7,7 +7,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) 330px;
   gap: 24px;
-  align-items: end;
+  align-items: stretch;
   padding: 26px 24px 18px;
   border-radius: 24px;
   background: var(--surface);
@@ -16,7 +16,9 @@
 /* the question bubble: a soft shadow instead of a border, the tail points at Finn */
 .fs-composer {
   position: relative;
-  padding: 18px 20px 14px;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 22px 16px;
   border-radius: 22px 22px 8px 22px;
   background: var(--surface-2);
   filter: drop-shadow(0 1px 1px rgb(25 45 70 / .07)) drop-shadow(0 10px 24px rgb(25 45 70 / .09));
@@ -32,11 +34,11 @@
   clip-path: polygon(0 0, 100% 50%, 0 100%);
 }
 .fs-composer:focus-within { outline: 2px solid var(--kn-primary); outline-offset: 3px; }
-.fs-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.fs-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
 .fs-who { display: flex; align-items: center; gap: 8px; color: var(--kn-muted); font-size: 12px; font-weight: 700; }
 
 /* the textarea is transparent and sits over a mirror that paints the highlights, so both must share their metrics */
-.fs-editor { position: relative; min-height: 64px; }
+.fs-editor { position: relative; flex: 1; min-height: 150px; }
 .fs-mirror, .fs-editor textarea {
   display: block;
   width: 100%;
@@ -44,35 +46,34 @@
   padding: 0;
   border: 0;
   font: inherit;
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 500;
   line-height: 1.5;
   letter-spacing: 0;
   white-space: pre-wrap;
   overflow-wrap: break-word;
 }
-.fs-mirror { min-height: 64px; color: var(--kn-ink); pointer-events: none; }
+.fs-mirror { min-height: 100px; color: var(--kn-ink); pointer-events: none; }
 .fs-editor textarea { position: absolute; inset: 0; height: 100%; background: transparent; color: transparent; caret-color: var(--brand-coral); resize: none; overflow: hidden; }
 .fs-editor textarea:focus-visible { outline: none; }
 .fs-editor textarea::placeholder { color: var(--kn-muted); }
 .fs-hl { border-radius: 5px; transition: background-color 250ms; }
-.fs-hl[data-field="topic"], .fs-tag[data-field="topic"]::before { --c: var(--fs-topic); }
+.fs-hl[data-field="topic"] { --c: var(--fs-topic); }
 .fs-hl[data-field="client"] { --c: var(--fs-client); }
 .fs-hl[data-field="country"] { --c: var(--fs-country); }
 .fs-hl[data-field="period"] { --c: var(--fs-period); }
 .fs-hl { background: color-mix(in srgb, var(--c) 22%, transparent); box-shadow: inset 0 -2px 0 var(--c); }
 
 .fs-foot { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
-.fs-ctx { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; flex: 1; min-width: 0; }
-.fs-ctx select { width: auto; max-width: 170px; padding: 6px 10px; font-size: 13px; }
-.fs-tag { display: inline-flex; align-items: center; gap: 7px; padding: 4px 10px; border-radius: 999px; background: var(--accent-soft); font-size: 13px; font-weight: 700; }
-.fs-tag::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--c, var(--fs-topic)); }
-.fs-tag em { font-style: normal; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--kn-muted); }
-/* a context chip the user has answered, by typing it or picking it, carries the colour of its highlight */
-.kn-chip.is-set { box-shadow: inset 0 0 0 1.5px var(--c); }
-.kn-chip[data-field="country"] { --c: var(--fs-country); }
-.kn-chip[data-field="client"] { --c: var(--fs-client); }
-.kn-chip[data-field="period"] { --c: var(--fs-period); }
+.fs-ctx { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; flex: 1; min-width: 0; margin: 0; padding: 0; list-style: none; }
+/* a recognised value is filled in the colour of its highlight; an open one is a dashed ghost */
+.fs-pill { --c: var(--fs-topic); display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; font-size: 14px; font-weight: 700; background: color-mix(in srgb, var(--c) 20%, transparent); box-shadow: inset 0 0 0 1.5px var(--c); transition: background-color 250ms, opacity 250ms; }
+.fs-pill[data-set="false"] { background: transparent; box-shadow: none; border: 1.5px dashed color-mix(in srgb, var(--kn-muted) 55%, transparent); color: var(--kn-muted); font-weight: 600; }
+.fs-pill[data-set="false"] em { color: inherit; }
+.fs-pill[data-field="client"] { --c: var(--fs-client); }
+.fs-pill[data-field="country"] { --c: var(--fs-country); }
+.fs-pill[data-field="period"] { --c: var(--fs-period); }
+.fs-pill em { font-style: normal; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--kn-muted); }
 
 .fs-send { display: inline-flex; align-items: center; gap: 8px; flex: none; min-height: 44px; padding: 10px 14px; border: 0; border-radius: 14px; background: var(--brand-coral); color: var(--brand-navy); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; transition: transform 180ms cubic-bezier(.16,1,.3,1), filter 180ms; }
 .fs-send:hover { filter: brightness(1.05); }
@@ -109,6 +110,7 @@
   .fs-composer::after { display: none; }
   .fs-composer { border-radius: 22px; }
   .fs-mirror, .fs-editor textarea { font-size: 18px; }
+  .fs-editor { min-height: 110px; }
   .fs-foot { flex-direction: column; align-items: stretch; }
   .fs-send { justify-content: center; }
 }
