@@ -209,11 +209,13 @@ function Panel({ source, all, users, canApprove, canDispute, canResolve, country
   );
 }
 
-const SEARCH_KEY = 'kennis-search';
-function readSavedSearch(): AskInput | null {
+// Scoped per user: a search is private input and must never reach another identity in the same tab.
+const searchKey = (userId: string) => `kennis-search:${userId}`;
+function readSavedSearch(userId: string, clients: string[]): AskInput | null {
   try {
-    const parsed = AskInputSchema.safeParse(JSON.parse(sessionStorage.getItem(SEARCH_KEY) ?? 'null'));
-    return parsed.success ? parsed.data : null;
+    sessionStorage.removeItem('kennis-search'); // legacy unscoped key: owner unknown, so discard
+    const parsed = AskInputSchema.safeParse(JSON.parse(sessionStorage.getItem(searchKey(userId)) ?? 'null'));
+    return parsed.success && (!parsed.data.client || clients.includes(parsed.data.client)) ? parsed.data : null;
   } catch {
     return null;
   }
@@ -247,7 +249,7 @@ export function KennisPage() {
   // First load: restore this tab's last search; only when there is none, prefill the first example (and the first client: the demo scenario) and ask once.
   useEffect(() => {
     if (!access.data || asked) return;
-    const saved = readSavedSearch();
+    const saved = readSavedSearch(session.user.id, access.data.clients);
     const q = saved?.question ?? access.data.examples[0] ?? '';
     const c = saved ? saved.client : access.data.clients[0] ?? null;
     if (saved) {
@@ -263,7 +265,7 @@ export function KennisPage() {
   }, [access.data]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (asked) try { sessionStorage.setItem(SEARCH_KEY, JSON.stringify(asked)); } catch { /* storage blocked: the search just is not remembered */ }
+    if (asked) try { sessionStorage.setItem(searchKey(session.user.id), JSON.stringify(asked)); } catch { /* storage blocked: the search just is not remembered */ }
   }, [asked]);
 
   const [compare, setCompare] = useState(false);
