@@ -23,3 +23,4 @@ export const forbidden = (message = 'You do not have access to this resource') =
 export const notFound = (what = 'Resource') => new ApiError('not_found', `${what} not found`);
 export const badRequest = (message: string, details?: unknown) => new ApiError('bad_request', message, details);
 export const conflict = (message: string) => new ApiError('conflict', message);
+export const rateLimited = (message = 'Too many requests, try again shortly') => new ApiError('rate_limited', message);

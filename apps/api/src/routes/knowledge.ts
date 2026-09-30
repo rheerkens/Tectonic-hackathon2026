@@ -1,36 +1,23 @@
-import { projectMembers, projects, sources, type Database } from '@tectonic/db';
+import { sources } from '@tectonic/db';
 import { AskInputSchema, CheckInputSchema, DisputeInputSchema, assess, naiveAnswer, scoreSource, verdictFor, roleAtLeast, type Access, type CheckResult } from '@tectonic/shared';
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AppContext, AppEnv } from '../app.ts';
 import { conflict, forbidden, notFound } from '../errors.ts';
 import { getProjectRole } from '../permissions.ts';
 import { serializeSource } from '../serializers.ts';
-import { extractClaims } from '../llm.ts';
+import { visibleSources as loadVisibleSources } from '../sources.ts';
+import { extractClaims } from '../claims.ts';
 import { jsonBody } from '../validate.ts';
 
 const EXAMPLES = ['Tot wanneer mag Atlas loonmutaties aanleveren?', 'Binnen welke termijn moet een ziekmelding doorgegeven worden?'];
-
-/** The teams a user belongs to. Everything the API shows is scoped to these: access is part of trust. */
-async function myTeams(db: Database, userId: string) {
-  return db
-    .select({ id: projects.id, name: projects.name, color: projects.color, role: projectMembers.role })
-    .from(projectMembers)
-    .innerJoin(projects, eq(projects.id, projectMembers.projectId))
-    .where(eq(projectMembers.userId, userId));
-}
 
 export function knowledgeRoutes(ctx: AppContext) {
   const { db, realtime } = ctx;
   const router = new Hono<AppEnv>();
 
-  async function visibleSources(userId: string) {
-    const teams = await myTeams(db, userId);
-    if (teams.length === 0) return { teams, rows: [] };
-    const rows = await db.select().from(sources).where(inArray(sources.projectId, teams.map((t) => t.id)));
-    return { teams, rows };
-  }
+  const visibleSources = (userId: string) => loadVisibleSources(db, userId);
 
   router.get('/api/access', async (c) => {
     const { teams, rows } = await visibleSources(c.get('principal').userId);
@@ -57,7 +44,7 @@ export function knowledgeRoutes(ctx: AppContext) {
     return c.json(assess(question, rows.map(serializeSource), names, { country, client, period }));
   });
 
-  // Claims come from the LLM when a key is set, else sentence split (see llm.ts); matching stays keyword overlap via assess.
+  // Claims come from the LLM when a key is set, else sentence split (see claims.ts); matching stays keyword overlap via assess.
   router.post('/api/check', jsonBody(CheckInputSchema), async (c) => {
     const { text, country } = c.req.valid('json');
     const { teams, rows } = await visibleSources(c.get('principal').userId);
