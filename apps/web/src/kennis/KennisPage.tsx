@@ -73,21 +73,30 @@ function Logo() {
 function Sidebar({ teams }: { teams: Array<{ id: string; name: string }> }) {
   return (
     <aside className="kn-sidebar" aria-label="Werkruimte">
-      <div className="kn-section">Werkruimte</div>
-      <a href="#/" className="kn-nav is-active" aria-current="page" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); document.querySelector<HTMLTextAreaElement>('#fs-q')?.select(); }}>
-        <Icon name="search" /> Kennis zoeken
-      </a>
-      <hr />
-      <div className="kn-section">Mijn toegang</div>
-      {teams.map((t) => (
-        <div key={t.id} className="kn-nav kn-nav--static">
-          <Icon name="users" /> {t.name}
+      <nav aria-label="Hoofdnavigatie">
+        <div className="kn-section" id="nav-use">Kennis gebruiken</div>
+        <div className="kn-nav-group" role="group" aria-labelledby="nav-use">
+          <a href="#kn-main" className="kn-nav is-active" aria-current="page" onClick={(e) => { e.preventDefault(); document.querySelector<HTMLTextAreaElement>('#fs-q')?.focus(); }}>
+            <Icon name="search" /> Kennis zoeken
+          </a>
+          <button type="button" className="kn-nav" disabled><Icon name="file" /> Kennisbank</button>
+          <button type="button" className="kn-nav" disabled><Icon name="users" /> Experts</button>
         </div>
-      ))}
-      <div className="kn-nav kn-nav--static kn-nav--muted">
-        <Icon name="lock" /> Toegang gecontroleerd
+        <div className="kn-section kn-section--next" id="nav-monitor">Kennis bewaken</div>
+        <div className="kn-nav-group" role="group" aria-labelledby="nav-monitor">
+          <button type="button" className="kn-nav" disabled><Icon name="chat" /> Bericht controleren</button>
+          <button type="button" className="kn-nav" disabled><Icon name="signal" /> Signalen</button>
+          <button type="button" className="kn-nav" disabled><Icon name="coverage" /> Kennisdekking</button>
+        </div>
+      </nav>
+      <div className="kn-sidebar-footer">
+        <div className="kn-section">Jouw teams</div>
+        <ul className="kn-teams">
+          {teams.map((t) => <li key={t.id}><Icon name="users" size={16} /> {t.name}</li>)}
+        </ul>
+        <p className="kn-team-note">Je ziet kennis uit deze teams.</p>
+        <div className="kn-demo-note">Demo met fictieve gegevens</div>
       </div>
-      <div className="kn-demo-note">Demo met fictieve gegevens</div>
     </aside>
   );
 }
@@ -119,9 +128,8 @@ function Panel({ source, all, users, canApprove, canDispute, canResolve, country
   const toasts = useToasts();
   const owner = source.ownerId ? users.get(source.ownerId) : undefined;
   return (
-    <aside className="kn-panel" data-testid="kn-panel" aria-label="Geselecteerde bron">
-      <div className="kn-section">Geselecteerde bron</div>
-      <h2>{source.title}</h2>
+    <div className="kn-panel" data-testid="kn-panel">
+      <h2 id="source-title">{source.title}</h2>
       <p className="kn-panel-sub">
         {source.code}
         {source.version ? ` · versie ${source.version}` : ''}
@@ -186,7 +194,7 @@ function Panel({ source, all, users, canApprove, canDispute, canResolve, country
           Vraag verduidelijking
         </a>
       )}
-    </aside>
+    </div>
   );
 }
 
@@ -194,6 +202,7 @@ export function KennisPage() {
   const session = useSession();
   const access = useAccess();
   const users = useUsers();
+  const sourceDialog = useRef<HTMLDialogElement>(null);
   const [question, setQuestion] = useState('');
   const [country, setCountry] = useState<Country>('BE');
   const [client, setClient] = useState<string | null>(null);
@@ -233,12 +242,17 @@ export function KennisPage() {
   // `useAsk` keeps the previous result while a new question loads; that result must not pass as the answer to the new one.
   const result = ask.isPlaceholderData ? undefined : ask.data;
   const searching = asked !== null && !result && ask.isFetching;
-  const selected = result?.sources.find((s) => s.id === selectedId) ?? result?.best ?? result?.sources[0] ?? null;
+  const selected = result?.sources.find((s) => s.id === selectedId) ?? sources.data?.find((s) => s.id === selectedId) ?? result?.best ?? result?.sources[0] ?? null;
   const roleOf = (projectId: string) => access.data?.teams.find((t) => t.id === projectId)?.role;
   const canApprove = !!selected && selected.status === 'unconfirmed' && roleOf(selected.projectId) !== 'viewer' && (selected.ownerId === session.user.id || (selected.ownerId === null && roleOf(selected.projectId) === 'owner'));
 
   const isOwner = !!selected && roleOf(selected.projectId) !== 'viewer' && (selected.ownerId === session.user.id || (selected.ownerId === null && roleOf(selected.projectId) === 'owner'));
   const canDispute = !!selected && roleOf(selected.projectId) !== 'viewer';
+
+  const openSource = (id: string) => {
+    setSelectedId(id);
+    sourceDialog.current?.showModal();
+  };
 
   const run = (next?: Partial<AskInput>) => {
     const input: AskInput = { question, country, client, period, ...next };
@@ -411,11 +425,11 @@ export function KennisPage() {
                     </blockquote>
                   )}
                   <div className="kn-answer-foot">
-                    <a className="kn-source-link" href="#/" onClick={(e) => { e.preventDefault(); setSelectedId(result.best!.id); }}>
+                    <a className="kn-source-link" href="#source-title" onClick={(e) => { e.preventDefault(); openSource(result.best!.id); }}>
                       <Icon name="file" /> {result.best.code} · {result.best.title}
                       {result.best.version ? ` · versie ${result.best.version}` : ''}
                     </a>
-                    <button type="button" className="kn-btn" onClick={() => setSelectedId(result.best!.id)}>
+                    <button type="button" className="kn-btn" onClick={() => openSource(result.best!.id)}>
                       Bekijk bron
                     </button>
                   </div>
@@ -444,7 +458,7 @@ export function KennisPage() {
                     {result.sources.map((s) => {
                       const tone = VERDICT_TONE[s.verdict.kind];
                       return (
-                        <tr key={s.id} className={s.id === selected?.id ? 'is-selected' : ''} onClick={() => setSelectedId(s.id)} tabIndex={0} aria-current={s.id === selected?.id} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedId(s.id); } }}>
+                        <tr key={s.id} className={s.id === selected?.id ? 'is-selected' : ''} onClick={() => openSource(s.id)} tabIndex={0} aria-current={s.id === selected?.id} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSource(s.id); } }}>
                           <td>
                             <span className="kn-src">
                               <Icon name={s.kind === 'chat' ? 'chat' : 'file'} size={18} />
@@ -469,10 +483,15 @@ export function KennisPage() {
             )}
           </>
         )}
-        <KennisKaart users={userMap} onSelect={setSelectedId} />
+        <KennisKaart users={userMap} onSelect={openSource} />
         <CheckPanel country={country} client={client} period={period} />
       </main>
-      {selected ? <Panel source={selected} all={result?.sources ?? []} users={userMap} canApprove={canApprove} canDispute={canDispute} canResolve={isOwner} country={country} client={client} /> : <aside className="kn-panel" aria-label="Geselecteerde bron"><p className="kn-muted">Selecteer een bron om de onderbouwing te zien.</p></aside>}
+      <dialog ref={sourceDialog} className="kn-source-dialog" aria-labelledby="source-title">
+        <form method="dialog" className="kn-source-close">
+          <button type="submit" className="kn-btn" aria-label="Bron sluiten"><Icon name="close" /></button>
+        </form>
+        {selected && <Panel source={selected} all={sources.data ?? result?.sources ?? []} users={userMap} canApprove={canApprove} canDispute={canDispute} canResolve={isOwner} country={country} client={client} />}
+      </dialog>
       <ProjectChat teams={access.data?.teams ?? []} />
     </div>
   );
