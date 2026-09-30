@@ -128,6 +128,13 @@ export const AskResultSchema = z.object({
 });
 export type AskResult = z.infer<typeof AskResultSchema>;
 
+export const NaiveAnswerSchema = z.object({
+  /** Confident answer with no score or doubt; null when nothing matches. */
+  answer: z.string().nullable(),
+  source: z.object({ code: z.string(), title: z.string() }).nullable(),
+});
+export type NaiveAnswer = z.infer<typeof NaiveAnswerSchema>;
+
 export const AccessSchema = z.object({
   teams: z.object({ id: z.uuid(), name: z.string(), color: z.string(), role: MemberRoleSchema }).array(),
   clients: z.string().array(),
