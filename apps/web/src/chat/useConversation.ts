@@ -75,6 +75,10 @@ export function describeError(error: unknown): ChatErrorInfo {
     if (error.code === 'validation_failed' || error.code === 'bad_request') {
       return { title: 'Deze vraag kan niet verwerkt worden', message: error.message, issues: validationIssues(error.details), technical: null };
     }
+    if (error.code === 'unexpected') {
+      // The client's own message ("Request failed with status 502") is English and says nothing to the user.
+      return { title: 'Er ging iets mis', message: 'De server gaf een onverwacht antwoord. Probeer het zo opnieuw.', issues: [], technical: error.message };
+    }
     if (error.status === 401 || error.status === 403) {
       return { title: 'Geen toegang', message: error.message, issues: [], technical: null };
     }
