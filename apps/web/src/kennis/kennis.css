@@ -71,7 +71,6 @@
 .kn-main { grid-area: main; padding: 30px 30px 40px; min-width: 0; }
 .kn-crumbs { color: var(--kn-muted); font-size: 14px; }
 .kn-sep { margin: 0 10px; }
-.kn-main h1 { margin: 18px 0 24px; font-size: clamp(28px, 2.7vw, 40px); line-height: 1.15; letter-spacing: -0.02em; }
 .kn-chips { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0 28px; }
 .kn-chip { padding: 8px 14px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-ink); font-size: 14px; }
 
@@ -173,7 +172,6 @@
   .kn-teams { display: flex; flex-wrap: wrap; }
   .kn-demo-note { margin-top: 12px; padding-top: 12px; }
   .kn-main { padding: 18px 16px; }
-  .kn-main h1 { font-size: 30px; }
   .kn-top { padding: 8px 12px; gap: 8px; flex-wrap: wrap; }
   .kn { grid-template-rows: auto; }
   .kn-logo { padding: 6px 0; }
