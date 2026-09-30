@@ -4,6 +4,9 @@ import { DEMO_USERS, DEV_USER_HEADER, findDemoUser, type AuthSource } from '@tec
 import { eq, sql } from 'drizzle-orm';
 import type { AppConfig } from './config.ts';
 import { unauthorized } from './errors.ts';
+import { createLogger } from './log.ts';
+
+const log = createLogger();
 
 export interface Principal {
   userId: string;
@@ -98,10 +101,15 @@ export function createClerkAuthenticator(db: Database, config: NonNullable<AppCo
 
       let subject: string;
       try {
-        const payload = await verifyToken(token, { secretKey: config.secretKey });
+        const payload = await verifyToken(token, {
+          secretKey: config.secretKey,
+          // ponytail: empty list = azp not checked (avoids lockout when no origin is configured)
+          ...(config.authorizedParties.length > 0 && { authorizedParties: config.authorizedParties }),
+        });
         subject = payload.sub;
       } catch (error) {
-        throw unauthorized(`Invalid session token: ${error instanceof Error ? error.message : String(error)}`);
+        log.warn('clerk token rejected', { message: error instanceof Error ? error.message : String(error) });
+        throw unauthorized('Invalid session token');
       }
 
       let profile = profiles.get(subject);

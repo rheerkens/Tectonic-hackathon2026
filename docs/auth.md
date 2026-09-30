@@ -49,4 +49,6 @@ What is not yet exercised with real keys: the Clerk code paths compile and are w
 
 ## Native shells
 
+In Clerk mode the API only accepts session tokens whose `azp` is in `CORS_ORIGINS` or equals `https://$RAILWAY_PUBLIC_DOMAIN` (if both are empty the check is skipped). Add every origin that signs in (including native-shell origins) to `CORS_ORIGINS`, or sign-in fails. Rejected tokens get a generic 401; the reason is logged server-side.
+
 Bearer tokens (not cookies) are used everywhere, so Capacitor and Tauri web views work with the hosted API as long as the API's CORS allowlist contains their origins (`capacitor://localhost`, `http://localhost`, `tauri://localhost` are allowed by default; add others via `CORS_ORIGINS`). Clerk OAuth providers need the app's custom URL scheme registered as an allowed redirect in the Clerk dashboard. Details in [mobile-desktop.md](mobile-desktop.md).
