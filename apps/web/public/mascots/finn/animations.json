@@ -7,8 +7,8 @@
       "name": "Calm idle",
       "src": "/mascots/finn/finn-idle.gif",
       "poster": "/mascots/finn/finn-idle.png",
-      "width": 256,
-      "height": 256,
+      "width": 384,
+      "height": 384,
       "loop": true,
       "durationMs": 7080,
       "sourceSequence": [
@@ -576,8 +576,8 @@
       "name": "Verified result",
       "src": "/mascots/finn/finn-verified.gif",
       "poster": "/mascots/finn/finn-verified.png",
-      "width": 256,
-      "height": 256,
+      "width": 384,
+      "height": 384,
       "loop": false,
       "durationMs": 1420,
       "sourceSequence": [
@@ -615,8 +615,8 @@
       "name": "Let\u2019s check",
       "src": "/mascots/finn/finn-uncertain.gif",
       "poster": "/mascots/finn/finn-uncertain.png",
-      "width": 256,
-      "height": 256,
+      "width": 384,
+      "height": 384,
       "loop": false,
       "durationMs": 1040,
       "sourceSequence": [
@@ -646,8 +646,8 @@
       "name": "Something went wrong",
       "src": "/mascots/finn/finn-retry.gif",
       "poster": "/mascots/finn/finn-retry.png",
-      "width": 256,
-      "height": 256,
+      "width": 384,
+      "height": 384,
       "loop": false,
       "durationMs": 1080,
       "sourceSequence": [

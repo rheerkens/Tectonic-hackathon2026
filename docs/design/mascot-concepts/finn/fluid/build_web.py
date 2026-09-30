@@ -45,6 +45,9 @@ def main():
     for entry in manifest['animations']:
         name = entry['id']
         if name not in STATES:
+            # Publish the small GIF poses under hashed URLs too, so they get the immutable cache policy.
+            for key, extension in (('src', 'gif'), ('poster', 'png')):
+                entry[key] = publish(name if key == 'src' else name+'-poster', extension, (PUBLIC / entry[key].lstrip('/')).read_bytes())
             continue
         source = PUBLIC / f'mascots/finn-fluid/{name}.webp'
         frames, durations = [], []
@@ -65,9 +68,9 @@ def main():
             subprocess.run(['ffmpeg', '-hide_banner', '-loglevel', 'error', '-y',
                             '-f', 'concat', '-safe', '0', '-i', str(work / 'frames.txt'),
                             '-vf', 'fps=30', '-t', str(sum(durations)/1000),
-                            '-c:v', 'libvpx-vp9', '-pix_fmt', 'yuva420p', '-crf', '32',
+                            '-c:v', 'libvpx-vp9', '-pix_fmt', 'yuva420p', '-crf', '12',
                             '-b:v', '0', '-auto-alt-ref', '0', '-row-mt', '1', '-an',
-                            '-deadline', 'good', '-cpu-used', '4', str(work / 'animation.webm')], check=True)
+                            '-deadline', 'good', '-cpu-used', '2', str(work / 'animation.webm')], check=True)
             video = (work / 'animation.webm').read_bytes()
         buffer = io.BytesIO()
         frames[0].save(buffer, format='WEBP', save_all=True, append_images=frames[1:],
@@ -75,7 +78,7 @@ def main():
         review = buffer.getvalue()
         playback = review if entry['loop'] else webp_loop(review, 1)
         poster = io.BytesIO()
-        frames[0].save(poster, format='WEBP', quality=85, method=6)
+        frames[0].save(poster, format='WEBP', quality=95, method=6)
         entry.update({
             'gif': entry['src'],
             'src': publish(name, 'webp', playback),

@@ -5,10 +5,10 @@
     {
       "id": "idle",
       "name": "Calm idle",
-      "src": "/mascots/finn/finn-idle.gif",
-      "poster": "/mascots/finn/finn-idle.png",
-      "width": 256,
-      "height": 256,
+      "src": "/assets/finn/idle-4a4481dfa5600a6c.gif",
+      "poster": "/assets/finn/idle-poster-823a0737767a0242.png",
+      "width": 384,
+      "height": 384,
       "loop": true,
       "durationMs": 7080,
       "sourceSequence": [
@@ -45,7 +45,7 @@
       "id": "welcome",
       "name": "Welcome wave",
       "src": "/assets/finn/welcome-5c86099bb09bde10.webp",
-      "poster": "/assets/finn/welcome-poster-35630b5d7926132a.webp",
+      "poster": "/assets/finn/welcome-poster-c3206aaecad8f2aa.webp",
       "width": 384,
       "height": 384,
       "loop": false,
@@ -167,9 +167,9 @@
       "nextState": "idle",
       "gif": "/mascots/finn/finn-welcome.gif",
       "reviewSrc": "/assets/finn/welcome-review-2ce5c0e5d7997160.webp",
-      "videoSrc": "/assets/finn/welcome-14ef4bc050d6172e.webm",
+      "videoSrc": "/assets/finn/welcome-651ac9aabb0f7801.webm",
       "bytes": {
-        "video": 333206,
+        "video": 978087,
         "webp": 2236098,
         "originalWebp": 2831174
       }
@@ -178,7 +178,7 @@
       "id": "listening",
       "name": "Listening",
       "src": "/assets/finn/listening-6af2f2f1b441ac87.webp",
-      "poster": "/assets/finn/listening-poster-f3aacf5813fa5df7.webp",
+      "poster": "/assets/finn/listening-poster-77125b446b6bc942.webp",
       "width": 384,
       "height": 384,
       "loop": false,
@@ -300,9 +300,9 @@
       "nextState": null,
       "gif": "/mascots/finn/finn-listening.gif",
       "reviewSrc": "/assets/finn/listening-review-a13e7ec28c7c1e53.webp",
-      "videoSrc": "/assets/finn/listening-409575d1bd9e0be5.webm",
+      "videoSrc": "/assets/finn/listening-2864eb0ddb411758.webm",
       "bytes": {
-        "video": 278183,
+        "video": 859504,
         "webp": 2259544,
         "originalWebp": 2903004
       }
@@ -311,7 +311,7 @@
       "id": "thinking",
       "name": "Checking sources",
       "src": "/assets/finn/thinking-7449a9a182d32e8a.webp",
-      "poster": "/assets/finn/thinking-poster-ecb4c82c42536ac1.webp",
+      "poster": "/assets/finn/thinking-poster-f9246be48fbdac92.webp",
       "width": 384,
       "height": 384,
       "loop": true,
@@ -463,9 +463,9 @@
       "nextState": null,
       "gif": "/mascots/finn/finn-thinking.gif",
       "reviewSrc": "/assets/finn/thinking-7449a9a182d32e8a.webp",
-      "videoSrc": "/assets/finn/thinking-bfa1e8139affb308.webm",
+      "videoSrc": "/assets/finn/thinking-ebcf737b1f2c5bc7.webm",
       "bytes": {
-        "video": 309605,
+        "video": 964849,
         "webp": 2708132,
         "originalWebp": 3485960
       }
@@ -474,7 +474,7 @@
       "id": "answer",
       "name": "Here is the answer",
       "src": "/assets/finn/answer-aa3650800fd4be3b.webp",
-      "poster": "/assets/finn/answer-poster-1245361f1d4654b2.webp",
+      "poster": "/assets/finn/answer-poster-d7be96bea2d16d9f.webp",
       "width": 384,
       "height": 384,
       "loop": false,
@@ -596,9 +596,9 @@
       "nextState": "idle",
       "gif": "/mascots/finn/finn-answer.gif",
       "reviewSrc": "/assets/finn/answer-review-638d3c7210e1967a.webp",
-      "videoSrc": "/assets/finn/answer-10878fd88aedb24c.webm",
+      "videoSrc": "/assets/finn/answer-c70475790e44bf27.webm",
       "bytes": {
-        "video": 317055,
+        "video": 941938,
         "webp": 2208380,
         "originalWebp": 2815622
       }
@@ -606,10 +606,10 @@
     {
       "id": "verified",
       "name": "Verified result",
-      "src": "/mascots/finn/finn-verified.gif",
-      "poster": "/mascots/finn/finn-verified.png",
-      "width": 256,
-      "height": 256,
+      "src": "/assets/finn/verified-2469bb65db3f8e2b.gif",
+      "poster": "/assets/finn/verified-poster-858c91928d3308ce.png",
+      "width": 384,
+      "height": 384,
       "loop": false,
       "durationMs": 1420,
       "sourceSequence": [
@@ -645,10 +645,10 @@
     {
       "id": "uncertain",
       "name": "Let\u2019s check",
-      "src": "/mascots/finn/finn-uncertain.gif",
-      "poster": "/mascots/finn/finn-uncertain.png",
-      "width": 256,
-      "height": 256,
+      "src": "/assets/finn/uncertain-e15dba471fdd3c98.gif",
+      "poster": "/assets/finn/uncertain-poster-e31007e14bd37f74.png",
+      "width": 384,
+      "height": 384,
       "loop": false,
       "durationMs": 1040,
       "sourceSequence": [
@@ -676,10 +676,10 @@
     {
       "id": "retry",
       "name": "Something went wrong",
-      "src": "/mascots/finn/finn-retry.gif",
-      "poster": "/mascots/finn/finn-retry.png",
-      "width": 256,
-      "height": 256,
+      "src": "/assets/finn/retry-efbbedf6acc058b6.gif",
+      "poster": "/assets/finn/retry-poster-63aaf4de5bb6cd74.png",
+      "width": 384,
+      "height": 384,
       "loop": false,
       "durationMs": 1080,
       "sourceSequence": [

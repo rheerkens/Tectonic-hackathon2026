@@ -14,7 +14,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parent
 PUBLIC = ROOT.parents[3] / 'apps/web/public/mascots/finn'
-SIZE = 256
+SIZE = 384
 
 
 def render(sheet, frame, settings):
