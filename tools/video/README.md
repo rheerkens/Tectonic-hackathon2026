@@ -88,7 +88,7 @@ If changing duration, update all related timeline constants, the reduced-motion 
 Keep `bun run dev` running in another terminal. FFmpeg must be on `PATH`, and Playwright must have a matching Chromium install:
 
 ```sh
-bunx --bun playwright-core install chromium
+bunx --bun playwright-core@1.63.0 install chromium
 bun run video:snippets
 bun run video:gallery
 ```
