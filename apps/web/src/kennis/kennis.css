@@ -132,3 +132,13 @@
 a.kn-btn--outline { display: block; text-align: center; text-decoration: none; }
 .kn-link { border: 0; background: none; color: var(--kn-primary); font: inherit; font-size: 13px; cursor: pointer; text-decoration: underline; }
 .kn-user .conn { margin-right: 6px; }
+
+/* compare (Vergelijk) */
+.kn-chip--toggle { border: 1px solid transparent; cursor: pointer; font: inherit; font-size: 14px; }
+.kn-chip--toggle.is-on { background: var(--kn-primary-soft); color: var(--kn-primary); border-color: var(--kn-primary); }
+.kn-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.kn-compare-col { padding: 14px 18px; border-radius: 10px; border: 1px solid var(--kn-line); }
+.kn-compare-col--naive { background: #f3f4f8; }
+.kn-compare-col--lens { background: var(--kn-good-bg); border-color: #cfeadb; }
+.kn-compare .kn-h3 { margin: 0 0 8px; }
+.kn-reasons { margin: 0; padding-left: 18px; font-size: 14px; }

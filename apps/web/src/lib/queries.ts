@@ -46,6 +46,11 @@ export function useAsk(input: AskInput | null) {
   });
 }
 
+export function useNaiveAnswer(input: AskInput | null, enabled: boolean) {
+  const api = useApiClient();
+  return useQuery({ queryKey: [...keys.asks, 'naive', input], queryFn: () => api.naiveAnswer(input!), enabled: enabled && input !== null });
+}
+
 export function useApproveSource() {
   const api = useApiClient();
   const qc = useQueryClient();
