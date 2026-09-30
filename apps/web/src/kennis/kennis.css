@@ -129,6 +129,10 @@
 .kn-answer--muted { border-color: var(--kn-line); background: #f6f7fa; }
 .kn-answer--warn .kn-badge { background: #fdeac0; color: #6b4500; }
 .kn-answer--muted .kn-badge { background: #eceef5; color: var(--kn-muted); }
+/* the same pill outside an answer card (chat) */
+.kn-badge--warn { background: #fdeac0; color: #6b4500; }
+.kn-badge--muted { background: #eceef5; color: var(--kn-muted); }
+.kn-tick--bad { background: #b00029; }
 .kn-btn--full { width: 100%; margin-top: 20px; }
 a.kn-btn--outline { display: block; text-align: center; text-decoration: none; }
 .kn-link { border: 0; background: none; color: var(--kn-primary); font: inherit; font-size: 13px; cursor: pointer; text-decoration: underline; }

@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { AskInput } from '@tectonic/shared';
+import type { AskInput, ChatInput } from '@tectonic/shared';
 import { createContext, useContext, useMemo } from 'react';
 import { useSession } from '../auth/context.ts';
-import { createApiClient, type ApiClient } from './api.ts';
+import { ApiError, createApiClient, type ApiClient } from './api.ts';
 
 export const ApiContext = createContext<ApiClient | null>(null);
 
@@ -74,6 +74,29 @@ export function useApproveSource() {
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: keys.asks });
       void qc.invalidateQueries({ queryKey: keys.access });
+    },
+  });
+}
+
+/**
+ * One chat turn: the server runs the tools and the model and returns the answer with its trace.
+ * Nothing is cached or invalidated: a conversation is client state and every answer is a fresh run.
+ */
+export function useChat() {
+  const api = useApiClient();
+  return useMutation({
+    mutationFn: async (body: ChatInput) => {
+      try {
+        return await api.chat(body);
+      } catch (error) {
+        // DEV ONLY: while POST /api/chat does not exist yet (U1 #20) the dev server answers 404 and we wrap /api/ask instead.
+        // `import.meta.env.DEV` is a build-time constant, so this branch (and the dynamic import) is removed from production builds.
+        if (import.meta.env.DEV && error instanceof ApiError && error.status === 404) {
+          const { mockChat } = await import('../chat/mock.ts');
+          return mockChat(api, body);
+        }
+        throw error;
+      }
     },
   });
 }
