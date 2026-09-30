@@ -113,7 +113,7 @@ apps/web         kennis/ (KennisPage, KennisKaart, CheckPanel, DisputeControls),
 
 `sources`: `code` (S1, S2, ...), `project_id`, `title`, `kind` (agreement / procedure / manual / chat), `version`, `topic`, `keywords`, `country` (BE / NL), `client` (null = every client), `value` (the headline answer), `claim`, `quote`, `valid_from`, `valid_to`, `status` (approved / unconfirmed / superseded), `owner_id`, `approved_by_id`, `traceable`, `disputed`, `disputed_by_id`, `superseded_by`.
 
-**Seed** (`packages/db/src/seed.ts`): two teams and **seven sources** (S1 to S7) on two topics, *loonmutaties* and *ziekmelding*, for the fictional client Atlas. Three demo users: Wanne (asks the questions), Roy (owner of both teams) and Sebastien (not in the Atlas team). A larger corpus is not built; the source documents written for it are in [`docs/brondossier`](docs/brondossier/README.md) but are **not loaded into the app**.
+**Seed** (`packages/db/src/seed.ts`): two teams and **33 sources across 16 topics**, with general Belgian and Dutch material and client-specific Atlas sources. Three demo users: Wanne (asks the questions), Roy (owner of both teams) and Sebastien (not in the Atlas team). Selected [`docs/brondossier`](docs/brondossier/README.md) texts are adapted into seeded quotes; original document files are not loaded into the app. See [§11](#11-roadmap-and-what-is-unfinished) for corpus coverage and demo limitations.
 
 The API writes to the database first and only then publishes `sources.changed` to the team's subscribers.
 
@@ -178,19 +178,25 @@ Avoid follow-up questions ("En voor Nederland?") and conflicting approved source
 ## 11. Roadmap and what is unfinished
 The team plan is in [`docs/TASKS.md`](docs/TASKS.md); open work is tracked in the GitHub issues.
 
+**Seed corpus (#13)**
+The [seed](packages/db/src/seed.ts) contains **33 sources across 16 topics**, including leave, wage indexation, overtime, holiday pay, meal vouchers and sick pay. It includes ten conversations, eight ownerless sources, two untraceable notes, replaced procedures and five Dutch sources alongside Belgian material. Contradictory Teams messages remain unconfirmed; they do not become approved rules. Selected brondossier material is adapted into source quotes; original files are not imported or read by the tools. See the [corpus register and scenario limitations](docs/scenarios.md).
+
+The original ticket's 13th-month, meal-voucher and sick-pay examples now map to S8 (Atlas year-end premium), S23/S24 and S25/S26. Approved process sources can all be *Onderbouwd*; they are not a low/medium/high demonstration. The current product uses applicability verdicts and the four substantiation checks. Document validity and conversation dates remain fixed around the October/November 2026 case so the expired-agreement scenario stays reproducible; database insertion timestamps are relative to seeding. A future demo with moving dates or three different confidence levels requires a separate product decision.
+
+Reset this worktree with `bun run dev --reset-db` to load the corpus; an existing database is retained without reset.
+
 **Not built**
 - **Hosted chat:** the floating chat panel streams OpenAI replies and Pi tool calls through `POST /api/projects/:projectId/chat`. It reads the installation's Codex login locally and defaults to `PROJECT_CHAT_MODEL=gpt-6-luna`. Credential reuse is disabled in production and Railway. See [project chat](docs/project-chat.md). The separate `POST /api/chat` backend stays deterministic: it runs the find, assess and read tools in a fixed order and returns a templated answer, without a model. Its agreed question-to-answer flows and expected outcomes are in [`docs/demo-scenarios.md`](docs/demo-scenarios.md). "Gewone AI" in *Vergelijk* is still a deterministic keyword match.
 - **Semantic conflict detection** (#5). Claim extraction (#4) splits the text into sentences; `claim` and `value` in the seed are entered by hand, and the check endpoint and question matching use keyword overlap only (prefix match, no embeddings, no stemming).
-- **Seed corpus of 30+ messy sources** (#13). The seed has seven sources on two topics. The `docs/brondossier` texts are not imported.
 - **Capture** ("Add what you know", creating new sources from the UI) and any importer for real documents, Teams or e-mail. The app only reads the seed.
 - **Aikido scan and screenshots** (#12), the Builderbase checklist (#16, see [`docs/submission-checklist.md`](docs/submission-checklist.md)) and the **demo video** (#15, to be recorded by a human after the feature freeze).
-- **Access per source** (#32) and **version history** (#28): access is per team, not per source; `version` is a label and `superseded_by` is data, with no history view.
+- **Full version history** (#28): access per source is built (#32: a source can require extra teams, and hidden sources never appear in lists, answers, checks or chat), and a replaced source shows what replaced it (#72, owner only), but `version` is still a label and there is no complete history view.
 - Tests for scoring and the routes (#23), and an end-to-end suite.
 
 **Known limits and bugs**
 - `/api/check` matches a sentence to a topic but reports a contradiction when the value in the sentence differs from a source ("25 oktober" against S1's 20 oktober gives a contradiction with S1, status *Geen onderbouwd antwoord*). The match is still keyword and topic based, so a paraphrase may be missed. It also checks with no client, so Atlas-only sources show as *Andere klant*. The period is the current month.
 - Any editor can dispute, and a dispute alone takes a source out of the answer until the owner resolves it (conservative by design; there is no review or expiry).
-- Only two markets (BE, NL), two topics, three demo users. The period chip re-scores through `/api/ask`, but `GET /api/sources` (the map) always uses the current month.
+- Only two markets (BE, NL), 16 seeded topics, three demo users. The period chip re-scores through `/api/ask`, but `GET /api/sources` (the map) always uses the current month.
 - Two `tools/dev` worktree-launcher tests fail on macOS (`/private` path); they fail without our changes too.
 
 ## 12. Design prototype
@@ -220,8 +226,9 @@ The target look and flow of the product. It is a prototype (Dutch UI, branded "K
 |---|---|
 | Left navigation *Kennis zoeken*, *Bronnen*, *Experts* | Only *Kennis zoeken*; there are no *Bronnen* or *Experts* pages |
 | Answer card, verdict table, four-check panel, context chips, exception beats general rule, versions, validity, "Vraag verduidelijking" | Built as in the mock |
-| Access shown and checked per source | Checked per team only; the panel shows the team name |
+| Access shown and checked per source | Built (#32): the panel shows *Wie mag dit zien* (owning team plus any extra teams); a source is hidden everywhere unless the viewer is in every one of them |
 | Exception handling when it has expired | Fixed in #63: a period outside the agreement returns *Geen onderbouwd antwoord* instead of a stale date |
+| Candidate corpus | The mock shows S1–S5; the seed has 33 sources. The October Atlas loonmutatie question assesses eight candidates, including the later mail and Teams adaptations S9–S11 |
 | Extras in the build, not in the mock | *Vergelijk*, *Kennis-weerkaart*, *Controleer een bericht*, *Betwist*, presence and live toasts |
 
 ---
