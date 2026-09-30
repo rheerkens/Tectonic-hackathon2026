@@ -47,7 +47,7 @@
 
 ## Troubleshooting
 
-- *"Bun >=1.4.2 is required"* or *"socket.destroySoon is not a function"*: install the pinned runtime with `curl -fsSL https://bun.sh/install | bash -s -- bun-v1.4.2` and check `bun --version`. Older runtimes can fail to proxy WebSockets; the launcher rejects them before changing locks, ports or database files.
+- *"Bun >=1.4.2 is required"* or *"socket.destroySoon is not a function"*: install the pinned runtime with `curl -fsSL https://bun.sh/install | bash -s -- bun-v1.4.2` and check `bun --version`. Older runtimes cannot read `bun.lock` and can fail to proxy WebSockets; `bun install` fails (and restores `bun.lock`), and the launcher rejects them before changing locks, ports or database files.
 - *"A dev stack for this worktree is already running"*: another terminal owns it; use `bun run dev:stop` or press `Ctrl+C` there.
 - *"previous port 49000 is busy; using 49010 instead"*: something else took the port; the launcher moved on. URLs are in the banner and `runtime.json`.
 - *Postgres refuses to start / "lock file exists"*: the launcher stops stale servers from its own data directory automatically; if the pid file points at a foreign process, remove `.local/<profile>/postgres/postmaster.pid` manually.

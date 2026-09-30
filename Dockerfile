@@ -10,6 +10,7 @@ COPY apps/web/package.json apps/web/
 COPY packages/shared/package.json packages/shared/
 COPY packages/db/package.json packages/db/
 COPY tools/dev/package.json tools/dev/
+COPY scripts/require-bun.ts scripts/
 RUN bun install --frozen-lockfile
 
 COPY . .

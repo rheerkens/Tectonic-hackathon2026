@@ -226,7 +226,7 @@ bun run dev
 
 No Node.js is required: Vite, the API, tests and Playwright all run under Bun. Postgres is embedded (downloaded with `bun install`, no Docker or system Postgres needed).
 
-Run `bun --version` before starting. The launcher requires Bun 1.4.2 or newer and rejects an older runtime before changing stack state. Bun 1.3.x can crash Vite's WebSocket proxy with `socket.destroySoon is not a function`.
+Run `bun --version` before starting. `bun install` and the launcher require Bun 1.4.2 or newer. An older Bun cannot read `bun.lock` (it silently re-resolves every dependency and rewrites the lockfile), so the install fails and restores the committed lockfile. The launcher rejects an older runtime before changing stack state; Bun 1.3.x can also crash Vite's WebSocket proxy with `socket.destroySoon is not a function`.
 
 ## Quick start
 

@@ -2,7 +2,7 @@
 
 ## Run and inspect
 
-- Use Bun 1.4.2 or newer (`.bun-version` pins 1.4.2). The launcher rejects older versions before touching stack state; Bun 1.3.x can crash Vite's WebSocket proxy. Install the pinned runtime with `curl -fsSL https://bun.sh/install | bash -s -- bun-v1.4.2`.
+- Use Bun 1.4.2 or newer (`.bun-version` pins 1.4.2). `bun install` and the launcher reject older versions: Bun 1.3.x cannot read `bun.lock` (it silently re-resolves and rewrites it) and can crash Vite's WebSocket proxy. Install the pinned runtime with `curl -fsSL https://bun.sh/install | bash -s -- bun-v1.4.2`.
 - `bun install` once, then `bun run dev` starts everything for **this worktree**: embedded Postgres, migrations, seed, API (`bun --watch`), Vite. It prints the URLs and writes them to `.local/dev/runtime.json` (git-ignored). Read that file or run `bun run dev:status` instead of guessing ports.
 - Running `bun run dev` twice in the same worktree is rejected on purpose. Stop with `Ctrl+C` or `bun run dev:stop`. Never `pkill` by process name: other worktrees run their own stacks.
 - Need a separate stack for tests or demos? Use a profile: `bun run dev --profile e2e --reset-db`. Profiles have their own database, ports and lock under `.local/<profile>/`.

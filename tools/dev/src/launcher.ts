@@ -175,7 +175,8 @@ export async function launch(options: LaunchOptions = {}): Promise<void> {
     };
     const api = spawnManaged({
       name: 'api',
-      cmd: ['bun', '--watch', '--no-clear-screen', 'src/index.ts'],
+      // process.execPath, not `bun` from PATH: children run on the runtime checked above.
+      cmd: [process.execPath, '--watch', '--no-clear-screen', 'src/index.ts'],
       cwd: path.join(worktree.root, 'apps/api'),
       env: { ...childEnv, PORT: String(ports.api), HOST: '0.0.0.0', SERVE_STATIC: '0' },
       onLine: (line) => log('api', line.replace(/^\[api\]\s*/, '')),
@@ -192,7 +193,7 @@ export async function launch(options: LaunchOptions = {}): Promise<void> {
       const viteBin = path.join(worktree.root, 'apps/web/node_modules/vite/bin/vite.js');
       const web = spawnManaged({
         name: 'web',
-        cmd: ['bun', viteBin, '--host', '0.0.0.0', '--port', String(ports.web), '--strictPort', '--clearScreen', 'false'],
+        cmd: [process.execPath, viteBin, '--host', '0.0.0.0', '--port', String(ports.web), '--strictPort', '--clearScreen', 'false'],
         cwd: path.join(worktree.root, 'apps/web'),
         env: childEnv,
         onLine: (line) => {
