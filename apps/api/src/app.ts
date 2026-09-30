@@ -12,6 +12,7 @@ import { ApiError } from './errors.ts';
 import { createLogger, type Logger } from './log.ts';
 import { createRealtime, type Realtime, type SocketData } from './realtime.ts';
 import { chatRoutes } from './routes/chat.ts';
+import { projectChatRoutes, type ChatRunner, type ChatStatusReader } from './routes/project-chat.ts';
 import { knowledgeRoutes } from './routes/knowledge.ts';
 import { healthRoutes } from './routes/health.ts';
 import { userRoutes } from './routes/users.ts';
@@ -75,7 +76,7 @@ function buildCsp(publishableKey: string | null, extraOrigins: string[]) {
   };
 }
 
-export function createApp(deps: { config: AppConfig; db: Database; log?: Logger; authenticator?: Authenticator; llm?: LlmClient | null }): CreatedApp {
+export function createApp(deps: { config: AppConfig; db: Database; log?: Logger; authenticator?: Authenticator; llm?: LlmClient | null; chatRunner?: ChatRunner; chatStatus?: ChatStatusReader }): CreatedApp {
   const { config, db } = deps;
   const log = deps.log ?? createLogger(config.productionLike ? 'info' : 'debug');
   const authenticator = deps.authenticator ?? createAuthenticator(config, db);
@@ -131,6 +132,7 @@ export function createApp(deps: { config: AppConfig; db: Database; log?: Logger;
   app.route('/', userRoutes(ctx));
   app.route('/', knowledgeRoutes(ctx));
   app.route('/', chatRoutes(ctx));
+  app.route('/', projectChatRoutes(ctx, deps.chatRunner, deps.chatStatus));
 
   app.get(WS_PATH, (c) => realtime.upgrade(c.req.raw, c.env));
 

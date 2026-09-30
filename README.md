@@ -171,7 +171,7 @@ Steps 3 and 5 change what is on screen; after step 5 run `bun run dev --reset-db
 The team plan is in [`docs/TASKS.md`](docs/TASKS.md); open work is tracked in the GitHub issues.
 
 **Not built**
-- **Chat in the UI** (#21 chat component, #22 connecting chat and the demo flows). The backend exists (#20): `POST /api/chat` runs a tool-calling loop with Claude (`apps/api/src/llm.ts`, `apps/api/src/chat/`) and has a deterministic fallback when no `ANTHROPIC_API_KEY` is set. No web component calls it yet. "Gewone AI" in *Vergelijk* is still a deterministic keyword match, not a model.
+- **Hosted chat:** the floating chat panel streams OpenAI replies and Pi tool calls through `POST /api/projects/:projectId/chat`. It reads the installation's Codex login locally and defaults to `PROJECT_CHAT_MODEL=gpt-6-luna`. Credential reuse is disabled in production and Railway. See [project chat](docs/project-chat.md). The separate `POST /api/chat` Claude backend and deterministic fallback remain available. "Gewone AI" in *Vergelijk* is still a deterministic keyword match.
 - **Semantic conflict detection** (#5). Claim extraction (#4) uses Claude when `ANTHROPIC_API_KEY` is set and splits sentences otherwise; `claim` and `value` in the seed are entered by hand, and the check endpoint and question matching use keyword overlap only (prefix match, no embeddings, no stemming).
 - **Seed corpus of 30+ messy sources** (#13). The seed has seven sources on two topics. The `docs/brondossier` texts are not imported.
 - **Capture** ("Add what you know", creating new sources from the UI) and any importer for real documents, Teams or e-mail. The app only reads the seed.

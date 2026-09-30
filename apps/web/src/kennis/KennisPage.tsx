@@ -16,7 +16,7 @@ import { SourceAudience } from './SourceAudience.tsx';
 import { DisputeControls } from './DisputeControls.tsx';
 import { ContextSelects, Icon, STATUS_TONE, Tick, VERDICT_TONE, dateLabel, monthLabel, type AskContext } from './ui.tsx';
 import './kennis.css';
-import { ChatPanel } from '../chat/ChatPanel.tsx'; // after kennis.css: the chat styles extend the launcher/panel rules defined there
+import { ProjectChat } from '../components/ProjectChat.tsx';
 
 /** Counts up to `target` when it changes (skipped for reduced motion). */
 function useCountUp(target: number, ms = 600): number {
@@ -401,7 +401,7 @@ export function KennisPage() {
         <CheckPanel country={country} />
       </main>
       {selected ? <Panel source={selected} all={result?.sources ?? []} users={userMap} canApprove={canApprove} canDispute={canDispute} canResolve={isOwner} country={country} client={client} /> : <aside className="kn-panel" aria-label="Geselecteerde bron"><p className="kn-muted">Selecteer een bron om de onderbouwing te zien.</p></aside>}
-      <ChatPanel context={{ country, client, period }} onContextChange={changeContext} />
+      <ProjectChat teams={access.data?.teams ?? []} />
     </div>
   );
 }

@@ -72,6 +72,8 @@ export function createApiClient(getAuthHeaders: AuthHeaders) {
     disputeSource: (sourceId: string, body: Body<'disputeSource'>) => request('disputeSource', { sourceId }, body),
     supersedeSource: (sourceId: string, body: Body<'supersedeSource'>) => request('supersedeSource', { sourceId }, body),
     approveSource: (sourceId: string) => request('approveSource', { sourceId }),
+    chatStatus: () => request('chatStatus', {}),
+    chatHistory: (projectId: string) => request('chatHistory', { projectId }),
   };
 }
 
