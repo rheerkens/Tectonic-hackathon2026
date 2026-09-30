@@ -1,6 +1,7 @@
 import { createDb, runMigrations, seedDatabase, waitForDatabase } from '@tectonic/db';
 import { existsSync, mkdirSync, rmSync } from 'node:fs';
 import path from 'node:path';
+import rootPackage from '../../../package.json' with { type: 'json' };
 import { acquireLock, AlreadyRunningError } from './lock.ts';
 import { allocatePorts, isPortFree } from './ports.ts';
 import { startPostgres, type PostgresHandle } from './postgres.ts';
@@ -61,6 +62,14 @@ function listProfiles(base: string): string[] {
 }
 
 export async function launch(options: LaunchOptions = {}): Promise<void> {
+  // Older Bun HTTP upgrade sockets crash Vite's WebSocket proxy. Reject the
+  // unsupported runtime before allocating ports, acquiring locks or resetting data.
+  if (!Bun.semver.satisfies(Bun.version, rootPackage.engines.bun)) {
+    const pinnedVersion = rootPackage.packageManager.replace(/^bun@/, '');
+    throw new Error(
+      `Bun ${rootPackage.engines.bun} is required (running ${Bun.version}). Install the pinned version: curl -fsSL https://bun.sh/install | bash -s -- bun-v${pinnedVersion}`,
+    );
+  }
   const profile = options.profile ?? 'dev';
   const worktree = await resolveWorktree(options.cwd ?? process.cwd());
   const local = localDir(worktree.root, profile);

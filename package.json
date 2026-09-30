@@ -5,7 +5,7 @@
   "description": "SD Trust: explainable, substantiated answers from organisational knowledge. Bun + Hono + React/Vite + Postgres/Drizzle.",
   "packageManager": "bun@1.4.2",
   "engines": {
-    "bun": ">=1.4.0"
+    "bun": ">=1.4.2"
   },
   "workspaces": [
     "apps/*",

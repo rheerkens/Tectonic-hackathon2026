@@ -217,7 +217,7 @@ bun run dev
 
 | Tool | Needed for | Notes |
 |---|---|---|
-| **Bun 1.4.2** | everything | `curl -fsSL https://bun.sh/install \| bash`. Version pinned in `.bun-version` / `packageManager`. |
+| **Bun 1.4.2+** | everything | Install the pinned version: `curl -fsSL https://bun.sh/install \| bash -s -- bun-v1.4.2`. Version pinned in `.bun-version` / `packageManager`. |
 | **git** | worktree detection | The launcher derives ports, data directories and locks from the worktree root. |
 | Chromium for Playwright | `bun run test:e2e`, `bun run video` | `bun run --cwd tools/e2e install-browsers` (one-time download). |
 | ffmpeg + ffprobe | video MP4 export, review frames, decode check | optional; WebM recordings work without it. |
@@ -225,6 +225,8 @@ bun run dev
 | Rust toolchain / Xcode / Android Studio | desktop and mobile shells | optional; see [docs/mobile-desktop.md](docs/mobile-desktop.md). |
 
 No Node.js is required: Vite, the API, tests and Playwright all run under Bun. Postgres is embedded (downloaded with `bun install`, no Docker or system Postgres needed).
+
+Run `bun --version` before starting. The launcher requires Bun 1.4.2 or newer and rejects an older runtime before changing stack state. Bun 1.3.x can crash Vite's WebSocket proxy with `socket.destroySoon is not a function`.
 
 ## Quick start
 
