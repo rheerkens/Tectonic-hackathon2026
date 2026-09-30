@@ -113,7 +113,7 @@ apps/web         kennis/ (KennisPage, KennisKaart, CheckPanel, DisputeControls),
 
 `sources`: `code` (S1, S2, ...), `project_id`, `title`, `kind` (agreement / procedure / manual / chat), `version`, `topic`, `keywords`, `country` (BE / NL), `client` (null = every client), `value` (the headline answer), `claim`, `quote`, `valid_from`, `valid_to`, `status` (approved / unconfirmed / superseded), `owner_id`, `approved_by_id`, `traceable`, `disputed`, `disputed_by_id`, `superseded_by`.
 
-**Seed** (`packages/db/src/seed.ts`): two teams and **seven sources** (S1 to S7) on two topics, *loonmutaties* and *ziekmelding*, for the fictional client Atlas. Three demo users: Wanne (asks the questions), Roy (owner of both teams) and Sebastien (not in the Atlas team). A larger corpus is not built; the source documents written for it are in [`docs/brondossier`](docs/brondossier/README.md) but are **not loaded into the app**.
+**Seed** (`packages/db/src/seed.ts`): two teams and **33 sources across 16 topics**, with general Belgian and Dutch material and client-specific Atlas sources. Three demo users: Wanne (asks the questions), Roy (owner of both teams) and Sebastien (not in the Atlas team). Selected [`docs/brondossier`](docs/brondossier/README.md) texts are adapted into seeded quotes; original document files are not loaded into the app. See [§11](#11-roadmap-and-what-is-unfinished) for corpus coverage and demo limitations.
 
 The API writes to the database first and only then publishes `sources.changed` to the team's subscribers.
 
