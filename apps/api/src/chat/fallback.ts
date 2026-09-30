@@ -114,11 +114,23 @@ export function fallbackAnswer(a: AskResult, ctx: ChatContext, chat: ChatContext
     ].join('\n');
   }
 
-  const out: string[] = [...head, `**${best.value}** [${best.code}]`, '', best.claim];
-  if (best.quote) out.push('', `Bron: "${best.quote}"`);
-  out.push('', `**${a.statusLabel}**: onderbouwing ${best.onderbouwing.score}/100 voor ${contextLabel(ctx)}. ${WHY[best.verdict.kind === 'exception' ? 'exception' : 'general']}`);
+  // Other sources that apply just as much but say something else. Equal strength means the ranking only picked one of them by order.
+  const rivals = others.filter((s) => s.verdict.kind === best.verdict.kind && s.value !== best.value);
+  const tie = rivals.filter((s) => s.onderbouwing.score >= best.onderbouwing.score);
+
+  const out: string[] = [...head];
+  if (tie.length) {
+    const rows = [best, ...tie];
+    out.push(`**Tegenstrijdige bronnen**: ${rows.map((s) => `[${s.code}] ${s.value}`).join(' tegenover ')}`, '');
+    out.push(`Elke bron afzonderlijk is onderbouwd (${best.onderbouwing.score}/100 voor ${contextLabel(ctx)}), maar ze gelden allebei voor deze situatie en spreken elkaar tegen. Ik kies geen definitieve waarde: laat de verantwoordelijke bevestigen welke geldt voordat je de klant antwoordt.`);
+    out.push(...rows.map((s) => `- [${s.code}] ${s.quote ? `"${s.quote}"` : s.claim}`));
+  } else {
+    out.push(`**${best.value}** [${best.code}]`, '', best.claim);
+    if (best.quote) out.push('', `Bron: "${best.quote}"`);
+    out.push('', `**${a.statusLabel}**: onderbouwing ${best.onderbouwing.score}/100 voor ${contextLabel(ctx)}. ${WHY[best.verdict.kind === 'exception' ? 'exception' : 'general']}`);
+  }
   const failed = best.onderbouwing.checks.filter((c) => c.points < c.max);
-  out.push(failed.length ? `Niet gehaald: ${failed.map((c) => `${c.label.toLowerCase()} (0/${c.max})`).join(', ')}.` : `Alle vier de controles gehaald: ${best.onderbouwing.checks.map((c) => c.label.toLowerCase()).join(', ')}.`);
+  if (!tie.length) out.push(failed.length ? `Niet gehaald: ${failed.map((c) => `${c.label.toLowerCase()} (0/${c.max})`).join(', ')}.` : `Alle vier de controles gehaald: ${best.onderbouwing.checks.map((c) => c.label.toLowerCase()).join(', ')}.`);
   if (a.status === 'deels' || a.status === 'onvoldoende') {
     out.push('', `Let op: dit antwoord is ${a.status === 'deels' ? 'maar deels' : 'onvoldoende'} onderbouwd. Controleer de controles die niet gehaald zijn voordat je erop bouwt.`);
   }
@@ -133,9 +145,10 @@ export function fallbackAnswer(a: AskResult, ctx: ChatContext, chat: ChatContext
     );
   }
   if (best.disputed) out.push('', `Let op: bron ${best.code} wordt betwist.`);
-  // Two equally applicable sources with different values: the ranking picked one, the consultant must know about the other.
-  const rivals = others.filter((s) => s.verdict.kind === best.verdict.kind && s.value !== best.value);
-  if (rivals.length) out.push('', `Let op: ${list(rivals.map((s) => s.code))} ${rivals.length === 1 ? 'geeft' : 'geven'} een andere waarde en ${rivals.length === 1 ? 'geldt' : 'gelden'} evenzeer voor deze situatie. Laat bevestigen welke juist is voordat je de klant antwoordt.`);
-  if (others.length) out.push('', '**Andere bronnen over dit onderwerp**', ...others.map((s) => line(s, best)));
+  // A weaker source that applies as much but differs: the ranking picked the stronger one, the consultant must still know about the other.
+  const weaker = rivals.filter((s) => !tie.includes(s));
+  if (weaker.length) out.push('', `Let op: ${list(weaker.map((s) => s.code))} ${weaker.length === 1 ? 'geeft' : 'geven'} een andere waarde en ${weaker.length === 1 ? 'geldt' : 'gelden'} evenzeer voor deze situatie. Laat bevestigen welke juist is voordat je de klant antwoordt.`);
+  const rest = others.filter((s) => !tie.includes(s));
+  if (rest.length) out.push('', '**Andere bronnen over dit onderwerp**', ...rest.map((s) => line(s, best)));
   return out.join('\n');
 }
