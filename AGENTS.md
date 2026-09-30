@@ -16,6 +16,7 @@
 - UI or realtime changes: also `bun run test:e2e` (Playwright in Chromium, two browser sessions, reconnect) and look at the real app.
 - Launcher changes: `bun test tools/dev` (unit) and the isolation integration test (`tools/dev/test/isolation.test.ts`, runs when the launcher is committed).
 - Schema changes: edit `packages/db/src/schema.ts`, run `bun run db:generate`, commit the SQL in `packages/db/drizzle/`. Migrations are applied by the launcher, by `bun run db:migrate`, and by Railway's pre-deploy command.
+- Migration ownership: only lane C runs `db:generate`; others propose schema changes in their PR. Merge small and often into `main` (the integration branch), contracts in `packages/shared` and schema first, consumers after; `bun run check` must be green before every merge.
 
 ## Conventions
 
