@@ -11,7 +11,7 @@ function splitSentences(text: string): ExtractedClaim[] {
     .map((claim) => ({ topic: null, country: null, claim }));
 }
 
-/** Free text to `{topic, country, claim}[]`. Uses Claude when ANTHROPIC_API_KEY is set (`config.llm`); any failure falls back to sentence split. */
+/** Free text to `{topic, country, claim}[]`. Uses Claude when `llm` is set (`config.llm`); any failure falls back to sentence split. Callers pass null to skip the LLM (no sources, or over budget). */
 export async function extractClaims(text: string, llm: LlmConfig | null): Promise<ExtractedClaim[]> {
   if (!llm) return splitSentences(text);
   try {

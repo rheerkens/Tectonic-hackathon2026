@@ -1,5 +1,5 @@
 import { sources } from '@tectonic/db';
-import { AskInputSchema, CheckInputSchema, DisputeInputSchema, assess, naiveAnswer, scoreSource, verdictFor, roleAtLeast, type Access, type CheckResult } from '@tectonic/shared';
+import { AskInputSchema, CheckInputSchema, DisputeInputSchema, SupersedeInputSchema, assess, naiveAnswer, scoreSource, verdictFor, roleAtLeast, type Access, type CheckResult } from '@tectonic/shared';
 import { and, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
@@ -9,6 +9,7 @@ import { getProjectRole, userCanSeeSource } from '../permissions.ts';
 import { serializeSource } from '../serializers.ts';
 import { visibleSources as loadVisibleSources } from '../sources.ts';
 import { extractClaims } from '../claims.ts';
+import { takeLlmBudget } from '../llm-budget.ts';
 import { jsonBody } from '../validate.ts';
 
 const EXAMPLES = ['Tot wanneer mag Atlas loonmutaties aanleveren?', 'Binnen welke termijn moet een ziekmelding doorgegeven worden?'];
@@ -26,7 +27,8 @@ export function knowledgeRoutes(ctx: AppContext) {
   });
 
   router.get('/api/sources', async (c) => {
-    const { teams, rows } = await visibleSources(c.get('principal').userId);
+    const { userId } = c.get('principal');
+    const { teams, rows } = await visibleSources(userId);
     const names = new Map(teams.map((t) => [t.id, t.name]));
     const period = new Date().toISOString().slice(0, 7);
     return c.json(
@@ -47,12 +49,14 @@ export function knowledgeRoutes(ctx: AppContext) {
   // Claims come from the LLM when a key is set, else sentence split (see claims.ts); matching stays keyword overlap via assess.
   router.post('/api/check', jsonBody(CheckInputSchema), async (c) => {
     const { text, country } = c.req.valid('json');
-    const { teams, rows } = await visibleSources(c.get('principal').userId);
+    const { userId } = c.get('principal');
+    const { teams, rows } = await visibleSources(userId);
     const names = new Map(teams.map((t) => [t.id, t.name]));
     const period = new Date().toISOString().slice(0, 7);
     const claims: CheckResult['claims'] = [];
     const contradictions: CheckResult['contradictions'] = [];
-    for (const { claim, country: found } of await extractClaims(text, config.llm)) {
+    const llm = config.llm && rows.length > 0 && takeLlmBudget(userId) ? config.llm : null;
+    for (const { claim, country: found } of await extractClaims(text, llm)) {
       const r = assess(claim, rows.map(serializeSource), names, { country: found ?? country, client: null, period });
       claims.push({ text: claim, topic: r.topic, status: r.status, statusLabel: r.statusLabel });
       for (const source of r.sources) {
@@ -112,6 +116,30 @@ export function knowledgeRoutes(ctx: AppContext) {
       .set({ disputed, disputedById: disputed ? principal.userId : null, updatedAt: new Date() })
       .where(and(eq(sources.id, source.id), eq(sources.projectId, source.projectId)));
     realtime.publish(source.projectId, { kind: 'sources.changed' }, principal.userId, source.audienceProjectIds);
+    return c.json({ ok: true as const });
+  });
+
+  router.post('/api/sources/:sourceId/supersede', jsonBody(SupersedeInputSchema), async (c) => {
+    const principal = c.get('principal');
+    const { supersededBy } = c.req.valid('json');
+    const [source] = await db.select().from(sources).where(eq(sources.id, c.req.param('sourceId'))).limit(1);
+    const role = source ? await getProjectRole(db, source.projectId, principal.userId) : null;
+    if (!source || !role || !(await userCanSeeSource(db, source, principal.userId))) throw notFound('Source');
+    if (!roleAtLeast(role, 'editor')) throw forbidden('Your role cannot supersede sources');
+    // The newer version must be one the caller may see, on the same topic, and not itself replaced (no cycles).
+    const { rows } = await visibleSources(principal.userId);
+    const next = rows.find((r) => r.code === supersededBy);
+    if (!next) throw notFound('Newer source');
+    if (next.id === source.id) throw conflict('A source cannot replace itself');
+    if (next.topic !== source.topic) throw conflict('The newer version must be on the same topic');
+    if (next.status === 'superseded' || next.supersededBy !== null) throw conflict('The newer version is itself superseded');
+    await db
+      .update(sources)
+      .set({ status: 'superseded', supersededBy: next.code, updatedAt: new Date() })
+      .where(and(eq(sources.id, source.id), eq(sources.projectId, source.projectId)));
+    // The newer source may live in another team: tell both.
+    realtime.publish(source.projectId, { kind: 'sources.changed' }, principal.userId, source.audienceProjectIds);
+    if (next.projectId !== source.projectId) realtime.publish(next.projectId, { kind: 'sources.changed' }, principal.userId, next.audienceProjectIds);
     return c.json({ ok: true as const });
   });
 
