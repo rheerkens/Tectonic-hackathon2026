@@ -358,7 +358,6 @@ export function KennisPage() {
             </span>
           ))}
         </nav>
-        <h1>Welke afspraak geldt?</h1>
         <FinnStage
           userName={session.user.name}
           userColor={session.user.color}
