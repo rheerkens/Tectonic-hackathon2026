@@ -99,6 +99,11 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
           void qc.invalidateQueries({ queryKey: keys.project(projectId) });
           void qc.invalidateQueries({ queryKey: keys.projects });
           break;
+        case 'sources.changed':
+          void qc.invalidateQueries({ queryKey: keys.sources(projectId) });
+          void qc.invalidateQueries({ queryKey: keys.asks(projectId) });
+          if (remote) toasts.push({ kind: 'live', title: actorName(presenceRef.current[projectId], actorId), message: 'updated the knowledge base' });
+          break;
         case 'project.deleted':
           qc.removeQueries({ queryKey: keys.project(projectId) });
           void qc.invalidateQueries({ queryKey: keys.projects });

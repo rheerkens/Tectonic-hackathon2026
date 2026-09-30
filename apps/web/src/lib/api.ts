@@ -73,6 +73,11 @@ export function createApiClient(getAuthHeaders: AuthHeaders) {
     createTask: (projectId: string, body: Body<'createTask'>) => request('createTask', { projectId }, body),
     updateTask: (projectId: string, taskId: string, body: Body<'updateTask'>) => request('updateTask', { projectId, taskId }, body),
     deleteTask: (projectId: string, taskId: string) => request('deleteTask', { projectId, taskId }),
+    listSources: (projectId: string) => request('listSources', { projectId }),
+    createSource: (projectId: string, body: Body<'createSource'>) => request('createSource', { projectId }, body),
+    ask: (projectId: string, body: Body<'ask'>) => request('ask', { projectId }, body),
+    verifySource: (projectId: string, sourceId: string) => request('verifySource', { projectId, sourceId }),
+    flagSource: (projectId: string, sourceId: string, flagged: boolean) => request('flagSource', { projectId, sourceId }, { flagged }),
   };
 }
 

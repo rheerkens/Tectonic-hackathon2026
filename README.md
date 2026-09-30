@@ -1,3 +1,38 @@
+# Trust Lens: from "I found something" to "I understand why I can rely on it"
+
+Tectonic Hackathon 2026, **SD Worx challenge** ("Find it. Understand it. Trust it.").
+
+**One role, one moment of doubt.** A payroll consultant inherits a client portfolio. They find an answer, but is it reliable, current and right for *this* client and country? Trust Lens answers the question and makes the trust visible and explainable, with no black box.
+
+- **Trust:** every answer carries a 0-100 confidence made of four visible factors (up to date, accountable owner, source type, fits this market) with fixed weights. See `packages/shared/src/trust.ts`; the answer is the claim of the best source, never generated text.
+- **Detect:** contradicting, outdated and ownerless sources are surfaced per question and for the whole portfolio ("Knowledge health").
+- **Connect:** when confidence is low, it shows who owns the topic and opens a pre-filled email to them.
+- **Capture:** "Add what you know" turns an answer into an owned source. Owners can confirm a source is still correct; anyone can flag it as outdated.
+- **Live:** changes propagate over the websocket. Flag a source in one browser and the confidence moves in the other, with a ▲/▼ badge.
+
+Security choices (Aikido themes): every knowledge route goes through `requireProjectAccess`; source ids are always scoped by project (a foreign id is a 404, tested); only a source's owner (or the portfolio owner, for ownerless sources) can verify it; inputs are validated with the shared Zod schemas.
+
+## Run it
+
+```sh
+bun install
+bun run dev        # prints the URLs; open the web URL with ?as=ada
+bun run dev --reset-db   # after pulling schema/seed changes
+```
+
+Try, as Ada: "When is the 13th month paid?" (BE, medium: two sources disagree), "What are the meal voucher rules?" (low: a knowledge gap), "How does sick pay work?" (NL, high). Open `?as=grace` in a second window and flag or confirm a source. Tests: `bun run check` and `bun run test:e2e`.
+
+## Not finished / honest limits
+
+- All data is **synthetic demo data** for a fictional client, not legal advice.
+- Question matching is keyword overlap (no embeddings or LLM), and only BE and NL exist as markets. Both are one-file swaps (`overlap` in `trust.ts`, `COUNTRIES` in `schemas.ts`).
+- Sources are seeded, there is no importer for real documents, Teams or e-mail.
+- Two `tools/dev` worktree-launcher tests fail on macOS (`/private` path); they fail without our changes too.
+
+---
+
+# Starter documentation
+
 # Tectonic Hackathon 2026
 
 A web-native TypeScript starter: **Bun** runtime and package manager, **Hono** API with native WebSockets, **React + Vite** frontend, **Postgres + Drizzle** with migrations and synthetic seed data, shared Zod contracts, Clerk-ready auth with a local bypass, Capacitor and Tauri shells, Railway deployment, and scripted video walkthroughs.

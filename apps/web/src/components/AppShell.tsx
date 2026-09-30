@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useSources } from '../lib/queries.ts';
 import { useSession } from '../auth/context.ts';
 import { useMe, useProject, useProjects } from '../lib/queries.ts';
 import { useProjectSubscription } from '../realtime/RealtimeProvider.tsx';
 import { navigateToProject, useRoute } from '../router.ts';
 import { Avatar } from './Avatar.tsx';
 import { Board } from './Board.tsx';
+import { TrustLens } from './TrustLens.tsx';
 import { ConnectionStatus } from './ConnectionStatus.tsx';
 import { Presence } from './Presence.tsx';
 import { NewProjectDialog, ProjectSettingsDialog } from './ProjectDialog.tsx';
@@ -49,7 +51,7 @@ export function AppShell() {
       <header className="topbar">
         <div className="brand">
           <span className="brand-mark" aria-hidden="true" />
-          <span className="brand-name">Tectonic Board</span>
+          <span className="brand-name">Trust Lens</span>
         </div>
         <div className="topbar-project">
           {projects.data && projects.data.length > 0 && (
@@ -128,7 +130,7 @@ export function AppShell() {
                 Settings
               </button>
             </div>
-            <Board project={project.data} />
+            <Workspace project={project.data} />
             {settings && <ProjectSettingsDialog project={project.data} onClose={() => setSettings(false)} />}
           </>
         )}
@@ -136,5 +138,25 @@ export function AppShell() {
 
       {creating && <NewProjectDialog onClose={() => setCreating(false)} />}
     </div>
+  );
+}
+
+/** Portfolios with knowledge sources open on the Trust Lens; plain projects keep the task board. */
+function Workspace({ project }: { project: NonNullable<ReturnType<typeof useProject>['data']> }) {
+  const sources = useSources(project.id);
+  const hasKnowledge = (sources.data?.sources.length ?? 0) > 0;
+  const [tab, setTab] = useState<'lens' | 'board'>('lens');
+  if (!hasKnowledge) return <Board project={project} />;
+  return (
+    <>
+      <div className="tabs" role="tablist">
+        {(['lens', 'board'] as const).map((t) => (
+          <button key={t} type="button" role="tab" aria-selected={tab === t} className={tab === t ? 'is-active' : ''} onClick={() => setTab(t)} data-testid={`tab-${t}`}>
+            {t === 'lens' ? 'Trust Lens' : 'Board'}
+          </button>
+        ))}
+      </div>
+      {tab === 'lens' ? <TrustLens project={project} /> : <Board project={project} />}
+    </>
   );
 }

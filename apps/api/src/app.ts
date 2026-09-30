@@ -9,6 +9,7 @@ import type { AppConfig } from './config.ts';
 import { ApiError } from './errors.ts';
 import { createLogger, type Logger } from './log.ts';
 import { createRealtime, type Realtime, type SocketData } from './realtime.ts';
+import { knowledgeRoutes } from './routes/knowledge.ts';
 import { healthRoutes } from './routes/health.ts';
 import { projectRoutes } from './routes/projects.ts';
 import { taskRoutes } from './routes/tasks.ts';
@@ -84,6 +85,7 @@ export function createApp(deps: { config: AppConfig; db: Database; log?: Logger;
   app.route('/', userRoutes(ctx));
   app.route('/', projectRoutes(ctx));
   app.route('/', taskRoutes(ctx));
+  app.route('/', knowledgeRoutes(ctx));
 
   app.get(WS_PATH, (c) => realtime.upgrade(c.req.raw, c.env));
 

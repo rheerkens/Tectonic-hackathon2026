@@ -162,3 +162,117 @@ export function roleAtLeast(role: MemberRole | null | undefined, required: Membe
 export function sortTasks<T extends { position: number; createdAt: string }>(tasks: readonly T[]): T[] {
   return [...tasks].sort((a, b) => a.position - b.position || a.createdAt.localeCompare(b.createdAt));
 }
+
+
+// ---- trust lens: knowledge sources -----------------------------------------
+export const SOURCE_KINDS = ['policy', 'manual', 'expert_note', 'wiki', 'email', 'teams_chat'] as const;
+export const SourceKindSchema = z.enum(SOURCE_KINDS);
+export type SourceKind = z.infer<typeof SourceKindSchema>;
+export const SOURCE_KIND_LABELS: Record<SourceKind, string> = {
+  policy: 'Policy',
+  manual: 'Manual',
+  expert_note: 'Expert note',
+  wiki: 'Wiki page',
+  email: 'Email',
+  teams_chat: 'Teams chat',
+};
+
+/** Markets a question can be asked about. */
+export const COUNTRIES = ['BE', 'NL'] as const;
+export const CountrySchema = z.enum(COUNTRIES);
+export type Country = z.infer<typeof CountrySchema>;
+export const SourceCountrySchema = z.enum([...COUNTRIES, 'ALL']);
+export type SourceCountry = z.infer<typeof SourceCountrySchema>;
+
+export const SourceSchema = z.object({
+  id: z.uuid(),
+  projectId: z.uuid(),
+  title: z.string(),
+  kind: SourceKindSchema,
+  topic: z.string(),
+  country: SourceCountrySchema,
+  /** The one-sentence answer this source gives. Sources on one topic that disagree here are in conflict. */
+  claim: z.string(),
+  content: z.string(),
+  ownerId: z.string().nullable(),
+  verifiedById: z.string().nullable(),
+  flaggedOutdated: z.boolean(),
+  reviewedAt: isoDate,
+  createdAt: isoDate,
+});
+export type Source = z.infer<typeof SourceSchema>;
+
+export const TRUST_FACTOR_KEYS = ['freshness', 'ownership', 'authority', 'applicability'] as const;
+export const TrustFactorSchema = z.object({
+  key: z.enum(TRUST_FACTOR_KEYS),
+  label: z.string(),
+  /** 0..1 */
+  value: z.number(),
+  /** Share of the total score. */
+  weight: z.number(),
+  note: z.string(),
+});
+export type TrustFactor = z.infer<typeof TrustFactorSchema>;
+
+export const TrustLevelSchema = z.enum(['high', 'medium', 'low']);
+export type TrustLevel = z.infer<typeof TrustLevelSchema>;
+
+export const TrustSchema = z.object({ score: z.number().int(), level: TrustLevelSchema, factors: TrustFactorSchema.array() });
+export type Trust = z.infer<typeof TrustSchema>;
+
+export const SourceWithTrustSchema = SourceSchema.extend({ trust: TrustSchema });
+export type SourceWithTrust = z.infer<typeof SourceWithTrustSchema>;
+
+export const ReasonSchema = z.object({ tone: z.enum(['good', 'warn', 'bad']), text: z.string() });
+export type Reason = z.infer<typeof ReasonSchema>;
+
+export const ExpertSchema = z.object({ userId: z.string(), reason: z.string() });
+export type Expert = z.infer<typeof ExpertSchema>;
+
+export const AskResultSchema = z.object({
+  topic: z.string().nullable(),
+  /** The claim of the most trustworthy applicable source, or null when there is a gap. */
+  answer: z.string().nullable(),
+  confidence: z.number().int(),
+  level: TrustLevelSchema,
+  reasons: ReasonSchema.array(),
+  best: SourceWithTrustSchema.nullable(),
+  /** Applicable sources that give a different answer than `best`. */
+  conflicts: SourceWithTrustSchema.array(),
+  /** Sources on the topic written for another market. */
+  inapplicable: SourceWithTrustSchema.array(),
+  /** Every applicable source, most trusted first. */
+  sources: SourceWithTrustSchema.array(),
+  experts: ExpertSchema.array(),
+});
+export type AskResult = z.infer<typeof AskResultSchema>;
+
+export const KnowledgeIssueSchema = z.object({
+  type: z.enum(['outdated', 'ownerless', 'conflict']),
+  topic: z.string(),
+  sourceIds: z.uuid().array(),
+  text: z.string(),
+});
+export type KnowledgeIssue = z.infer<typeof KnowledgeIssueSchema>;
+
+export const SourcesOverviewSchema = z.object({ sources: SourceWithTrustSchema.array(), issues: KnowledgeIssueSchema.array() });
+export type SourcesOverview = z.infer<typeof SourcesOverviewSchema>;
+
+export const AskInputSchema = z.object({
+  question: z.string().trim().min(3, 'Ask a question').max(300),
+  country: CountrySchema,
+});
+export type AskInput = z.input<typeof AskInputSchema>;
+
+export const CreateSourceInputSchema = z.object({
+  title: z.string().trim().min(1).max(160),
+  kind: SourceKindSchema,
+  topic: z.string().trim().toLowerCase().regex(/^[a-z0-9-]{2,40}$/, 'Use a short slug like "13th-month"'),
+  country: SourceCountrySchema,
+  claim: z.string().trim().min(1).max(300),
+  content: z.string().trim().max(4000).default(''),
+});
+export type CreateSourceInput = z.input<typeof CreateSourceInputSchema>;
+
+export const FlagSourceInputSchema = z.object({ flagged: z.boolean() });
+export type FlagSourceInput = z.input<typeof FlagSourceInputSchema>;

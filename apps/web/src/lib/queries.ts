@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { CreateProjectInput, CreateTaskInput, ProjectDetail, ProjectSummary, Task, UpdateProjectInput, UpdateTaskInput } from '@tectonic/shared';
+import type { AskInput, CreateProjectInput, CreateSourceInput, CreateTaskInput, ProjectDetail, ProjectSummary, Task, UpdateProjectInput, UpdateTaskInput } from '@tectonic/shared';
 import { sortTasks } from '@tectonic/shared';
 import { createContext, useContext, useMemo } from 'react';
 import { useSession } from '../auth/context.ts';
@@ -18,6 +18,8 @@ export const keys = {
   users: ['users'] as const,
   projects: ['projects'] as const,
   project: (id: string) => ['project', id] as const,
+  sources: (id: string) => ['sources', id] as const,
+  asks: (id: string) => ['ask', id] as const,
 };
 
 export function useMe() {
@@ -170,3 +172,35 @@ export function useDeleteTask(projectId: string) {
     },
   });
 }
+
+export function useSources(projectId: string) {
+  const api = useApiClient();
+  return useQuery({ queryKey: keys.sources(projectId), queryFn: () => api.listSources(projectId) });
+}
+
+/** The answer is recomputed whenever the sources change (the server publishes `sources.changed`). */
+export function useAsk(projectId: string, asked: AskInput | null) {
+  const api = useApiClient();
+  return useQuery({
+    queryKey: [...keys.asks(projectId), asked?.question, asked?.country],
+    queryFn: () => api.ask(projectId, asked!),
+    enabled: Boolean(asked),
+  });
+}
+
+function useSourceMutation<V>(projectId: string, fn: (api: ApiClient, vars: V) => Promise<unknown>) {
+  const api = useApiClient();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (vars: V) => fn(api, vars),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: keys.sources(projectId) });
+      void qc.invalidateQueries({ queryKey: keys.asks(projectId) });
+    },
+  });
+}
+
+export const useVerifySource = (projectId: string) => useSourceMutation(projectId, (api, id: string) => api.verifySource(projectId, id));
+export const useFlagSource = (projectId: string) =>
+  useSourceMutation(projectId, (api, v: { id: string; flagged: boolean }) => api.flagSource(projectId, v.id, v.flagged));
+export const useCreateSource = (projectId: string) => useSourceMutation(projectId, (api, input: CreateSourceInput) => api.createSource(projectId, input));

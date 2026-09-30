@@ -1,6 +1,12 @@
 import { z } from 'zod';
 import {
   AddMemberInputSchema,
+  AskInputSchema,
+  AskResultSchema,
+  CreateSourceInputSchema,
+  FlagSourceInputSchema,
+  SourcesOverviewSchema,
+  SourceWithTrustSchema,
   CreateProjectInputSchema,
   CreateTaskInputSchema,
   HealthSchema,
@@ -66,6 +72,12 @@ export const api = {
   createTask: route('POST', '/api/projects/:projectId/tasks', { body: CreateTaskInputSchema, response: TaskSchema }),
   updateTask: route('PATCH', '/api/projects/:projectId/tasks/:taskId', { body: UpdateTaskInputSchema, response: TaskSchema }),
   deleteTask: route('DELETE', '/api/projects/:projectId/tasks/:taskId', { response: OkSchema }),
+
+  listSources: route('GET', '/api/projects/:projectId/sources', { response: SourcesOverviewSchema }),
+  createSource: route('POST', '/api/projects/:projectId/sources', { body: CreateSourceInputSchema, response: SourceWithTrustSchema }),
+  ask: route('POST', '/api/projects/:projectId/ask', { body: AskInputSchema, response: AskResultSchema }),
+  verifySource: route('POST', '/api/projects/:projectId/sources/:sourceId/verify', { response: SourceWithTrustSchema }),
+  flagSource: route('POST', '/api/projects/:projectId/sources/:sourceId/flag', { body: FlagSourceInputSchema, response: SourceWithTrustSchema }),
 } as const;
 
 export type ApiContracts = typeof api;

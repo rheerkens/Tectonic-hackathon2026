@@ -57,8 +57,8 @@ describe('permissions', () => {
   test('each user only lists projects they belong to', async () => {
     const adaProjects = (await ada().get<ProjectSummary[]>('/api/projects')).body;
     const alanProjects = (await alan().get<ProjectSummary[]>('/api/projects')).body;
-    expect(adaProjects.map((p) => p.name).sort()).toEqual(['Hackathon Ops', 'Launch Website', 'Mobile App']);
-    expect(alanProjects.map((p) => p.name)).toEqual(['Mobile App']);
+    expect(adaProjects.map((p) => p.name).sort()).toEqual(['Hackathon Ops', 'Launch Website', 'Mobile App', 'Vandeputte Logistics']);
+    expect(alanProjects.map((p) => p.name)).toEqual(['Vandeputte Logistics', 'Mobile App']);
     expect(adaProjects.find((p) => p.name === 'Launch Website')?.role).toBe('owner');
     expect(adaProjects.find((p) => p.name === 'Mobile App')?.role).toBe('editor');
   });

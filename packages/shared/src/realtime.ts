@@ -20,6 +20,7 @@ export const RealtimeEventSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('project.updated'), project: ProjectSchema }),
   z.object({ kind: z.literal('project.deleted') }),
   z.object({ kind: z.literal('members.changed') }),
+  z.object({ kind: z.literal('sources.changed') }),
 ]);
 export type RealtimeEvent = z.infer<typeof RealtimeEventSchema>;
 

@@ -8,6 +8,13 @@
       "when": 1790525515187,
       "tag": "0000_initial",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790785988699,
+      "tag": "0001_gifted_owl",
+      "breakpoints": true
     }
   ]
 }

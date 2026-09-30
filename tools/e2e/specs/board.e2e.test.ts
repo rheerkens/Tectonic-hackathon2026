@@ -12,7 +12,15 @@ async function open(user: string, options: { viewport?: { width: number; height:
   const page = await context.newPage();
   page.on('pageerror', (error) => console.error(`[${user}] page error:`, error));
   await page.goto(`${stack.baseUrl}/?as=${user}${options.hash ?? ''}`);
+  // The app lands on the Vandeputte knowledge portfolio; these specs exercise the task board.
+  if (!options.hash) await gotoBoardProject(page);
   return page;
+}
+
+/** The switcher's options are in the DOM on every layout, unlike the desktop sidebar links. */
+async function gotoBoardProject(page: Page) {
+  const id = await page.locator('[data-testid="project-switcher"] option', { hasText: 'Launch Website' }).getAttribute('value');
+  await page.evaluate((projectId) => (window.location.hash = `#/projects/${projectId}`), id);
 }
 
 async function projectIdByName(page: Page, name: string): Promise<string> {
@@ -45,7 +53,8 @@ describe('board', () => {
     await page.goto(stack.baseUrl);
     await page.locator('[data-testid="identity-picker"]').waitFor();
     await page.click('[data-testid="identity-ada"]');
-    await page.locator('[data-testid="project-title"]').waitFor();
+    await gotoBoardProject(page);
+    await page.locator('[data-testid="project-title"]', { hasText: 'Launch Website' }).waitFor();
     expect(await page.locator('[data-testid="project-title"]').innerText()).toBe('Launch Website');
     expect(await page.locator('[data-testid="task-card"]').count()).toBeGreaterThan(5);
     await waitOnline(page);
@@ -132,7 +141,7 @@ describe('board', () => {
     const opsId = await projectIdByName(ada, 'Hackathon Ops');
     const alan = await open('alan', { hash: `#/projects/${opsId}` });
     await alan.locator('[data-testid="error-state"]', { hasText: 'No access to this project' }).waitFor();
-    expect(await alan.locator('[data-testid="project-link"]').count()).toBe(1); // only Mobile App
+    expect(await alan.locator('[data-testid="project-link"]').count()).toBe(2); // Mobile App + Vandeputte, never Hackathon Ops
   }, 90_000);
 
   test('mobile layout: sidebar collapses into a project switcher and the board scrolls horizontally', async () => {

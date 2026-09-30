@@ -1,7 +1,7 @@
-import { DEMO_USERS, type TaskPriority, type TaskStatus } from '@tectonic/shared';
+import { DEMO_USERS, type SourceCountry, type SourceKind, type TaskPriority, type TaskStatus } from '@tectonic/shared';
 import { count, sql } from 'drizzle-orm';
 import type { Database } from './client.ts';
-import { projectMembers, projects, tasks, users } from './schema.ts';
+import { knowledgeSources, projectMembers, projects, tasks, users } from './schema.ts';
 
 /** Small deterministic PRNG (mulberry32) so seed data is identical everywhere. */
 function prng(seed: number) {
@@ -87,6 +87,161 @@ const SEED_PROJECTS: SeedProject[] = [
   },
 ];
 
+interface SeedSource {
+  title: string;
+  kind: SourceKind;
+  topic: string;
+  country: SourceCountry;
+  claim: string;
+  content: string;
+  ownerId: string | null;
+  verifiedById?: string;
+  /** Days since the source was last reviewed, relative to seeding time. */
+  reviewedDaysAgo: number;
+  flaggedOutdated?: boolean;
+}
+
+/**
+ * The persona: Ada just inherited the Vandeputte Logistics payroll portfolio. Grace is the Belgian payroll
+ * expert, Margaret covers the Netherlands, Alan is compliance. The corpus is synthetic, and deliberately
+ * messy: contradicting, outdated and ownerless sources are the point.
+ */
+const SEED_PORTFOLIO = {
+  name: 'Vandeputte Logistics',
+  description: 'Inherited payroll portfolio (BE + NL). Synthetic demo data, not legal advice.',
+  color: '#1a73e8',
+  ownerId: 'demo_ada',
+  members: [
+    { userId: 'demo_grace', role: 'editor' as const },
+    { userId: 'demo_margaret', role: 'editor' as const },
+    { userId: 'demo_alan', role: 'editor' as const },
+  ],
+};
+
+const SEED_SOURCES: SeedSource[] = [
+  // 13th month: a solid policy, an outdated wiki page and a Teams chat that disagree (Belgium)
+  {
+    title: 'BE payroll policy: year-end bonus',
+    kind: 'policy',
+    topic: '13th-month',
+    country: 'BE',
+    claim: 'Paid in December, pro rata to months worked',
+    content: 'Belgium has no statutory 13th month. Vandeputte pays a year-end bonus via the sector agreement, in the December payroll, pro rata to months worked.',
+    ownerId: 'demo_grace',
+    verifiedById: 'demo_grace',
+    reviewedDaysAgo: 30,
+  },
+  {
+    title: 'Payroll wiki: 13th month',
+    kind: 'wiki',
+    topic: '13th-month',
+    country: 'ALL',
+    claim: 'Paid in November, in full',
+    content: 'The 13th month is paid in the November payroll, in full, to all employees.',
+    ownerId: null,
+    reviewedDaysAgo: 420,
+  },
+  {
+    title: 'Teams: client call notes on the 13th month',
+    kind: 'teams_chat',
+    topic: '13th-month',
+    country: 'BE',
+    claim: 'Paid in December, only after 6 months seniority',
+    content: 'Client said the 13th month goes out with the December payroll, but only for people with more than 6 months seniority.',
+    ownerId: 'demo_alan',
+    reviewedDaysAgo: 20,
+  },
+  {
+    title: 'NL payroll policy: 13th month',
+    kind: 'policy',
+    topic: '13th-month',
+    country: 'NL',
+    claim: 'Paid in December, pro rata to months worked',
+    content: 'In the Netherlands the 13th month (dertiende maand) is contractual. It is paid in December, pro rata to months worked. Holiday allowance is separate.',
+    ownerId: 'demo_margaret',
+    verifiedById: 'demo_margaret',
+    reviewedDaysAgo: 45,
+  },
+  // Notice period: manual vs an old email
+  {
+    title: 'BE manual: notice periods',
+    kind: 'manual',
+    topic: 'notice-period',
+    country: 'BE',
+    claim: 'Notice follows the seniority table of the 2014 unified statute',
+    content: 'For dismissal in Belgium the notice period is taken from the seniority table of the unified statute (2014), for blue and white collar alike.',
+    ownerId: 'demo_alan',
+    verifiedById: 'demo_alan',
+    reviewedDaysAgo: 60,
+  },
+  {
+    title: 'Email: notice period rules (2012)',
+    kind: 'email',
+    topic: 'notice-period',
+    country: 'BE',
+    claim: 'Blue and white collar workers have separate notice rules',
+    content: 'Forwarded email from a former colleague explaining the separate notice rules for blue and white collar workers.',
+    ownerId: null,
+    reviewedDaysAgo: 900,
+  },
+  // Meal vouchers: a knowledge gap, one ownerless chat
+  {
+    title: 'Teams: meal voucher amount',
+    kind: 'teams_chat',
+    topic: 'meal-vouchers',
+    country: 'BE',
+    claim: 'Meal vouchers are 8 euro per worked day',
+    content: 'Someone mentioned in the payroll channel that Vandeputte meal vouchers are 8 euro per worked day.',
+    ownerId: null,
+    reviewedDaysAgo: 120,
+  },
+  // Sick pay: two markets, both solid
+  {
+    title: 'BE manual: guaranteed salary',
+    kind: 'manual',
+    topic: 'sick-pay',
+    country: 'BE',
+    claim: 'Employer pays guaranteed salary for the first 30 days',
+    content: 'For employees the employer continues the salary for the first 30 days of illness, after which the health insurer takes over.',
+    ownerId: 'demo_grace',
+    verifiedById: 'demo_grace',
+    reviewedDaysAgo: 90,
+  },
+  {
+    title: 'NL policy: sick pay',
+    kind: 'policy',
+    topic: 'sick-pay',
+    country: 'NL',
+    claim: 'Employer pays at least 70% of salary for up to 104 weeks',
+    content: 'In the Netherlands the employer pays at least 70% of the salary for up to 104 weeks of illness.',
+    ownerId: 'demo_margaret',
+    verifiedById: 'demo_margaret',
+    reviewedDaysAgo: 40,
+  },
+  // Handover: corroborated, high trust
+  {
+    title: 'Portfolio handover checklist',
+    kind: 'policy',
+    topic: 'handover',
+    country: 'ALL',
+    claim: 'A handover needs a signed mandate, the last 3 payroll runs and the open-issues log',
+    content: 'When a payroll portfolio changes consultant, the handover needs a signed mandate, the last 3 payroll runs and the open-issues log.',
+    ownerId: 'demo_ada',
+    verifiedById: 'demo_grace',
+    reviewedDaysAgo: 14,
+  },
+  {
+    title: 'Expert note: what a good handover looks like',
+    kind: 'expert_note',
+    topic: 'handover',
+    country: 'ALL',
+    claim: 'A handover needs a signed mandate, the last 3 payroll runs and the open-issues log',
+    content: 'Grace: never accept a portfolio without the signed mandate, the last 3 payroll runs and the open-issues log.',
+    ownerId: 'demo_grace',
+    reviewedDaysAgo: 25,
+  },
+];
+
 const PRIORITIES: TaskPriority[] = ['low', 'medium', 'medium', 'high', 'urgent'];
 
 export interface SeedResult {
@@ -113,6 +268,7 @@ export async function seedDatabase(db: Database, options: { reset?: boolean } = 
     });
 
   if (options.reset) {
+    await db.delete(knowledgeSources);
     await db.delete(tasks);
     await db.delete(projectMembers);
     await db.delete(projects);
@@ -166,6 +322,25 @@ export async function seedDatabase(db: Database, options: { reset?: boolean } = 
     await db.insert(tasks).values(rows);
     taskTotal += rows.length;
   }
+
+  // Created before the demo projects so it is the one people land on.
+  const { members: portfolioMembers, ...portfolioRow } = SEED_PORTFOLIO;
+  const portfolioAt = new Date(base - 3_600_000);
+  const [portfolio] = await db.insert(projects).values({ ...portfolioRow, createdAt: portfolioAt, updatedAt: portfolioAt }).returning();
+  if (!portfolio) throw new Error('Failed to insert seed portfolio');
+  await db.insert(projectMembers).values([
+    { projectId: portfolio.id, userId: SEED_PORTFOLIO.ownerId, role: 'owner' },
+    ...portfolioMembers.map((m) => ({ projectId: portfolio.id, userId: m.userId, role: m.role })),
+  ]);
+  const now = Date.now();
+  await db.insert(knowledgeSources).values(
+    SEED_SOURCES.map(({ reviewedDaysAgo, ...s }) => ({
+      ...s,
+      projectId: portfolio.id,
+      verifiedById: s.verifiedById ?? null,
+      reviewedAt: new Date(now - reviewedDaysAgo * 86_400_000),
+    })),
+  );
 
   return { seeded: true, users: DEMO_USERS.length, projects: SEED_PROJECTS.length, tasks: taskTotal };
 }

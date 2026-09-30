@@ -1,9 +1,10 @@
-import { MEMBER_ROLES, TASK_PRIORITIES, TASK_STATUSES } from '@tectonic/shared';
-import { doublePrecision, index, integer, pgEnum, pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { MEMBER_ROLES, SOURCE_KINDS, TASK_PRIORITIES, TASK_STATUSES } from '@tectonic/shared';
+import { boolean, doublePrecision, index, integer, pgEnum, pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 export const taskStatusEnum = pgEnum('task_status', TASK_STATUSES);
 export const taskPriorityEnum = pgEnum('task_priority', TASK_PRIORITIES);
 export const memberRoleEnum = pgEnum('member_role', MEMBER_ROLES);
+export const sourceKindEnum = pgEnum('source_kind', SOURCE_KINDS);
 
 const timestamps = {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
@@ -67,7 +68,31 @@ export const tasks = pgTable(
   (t) => [index('tasks_project_status_position_idx').on(t.projectId, t.status, t.position)],
 );
 
+/** A piece of organisational knowledge (policy, chat, wiki page, ...) inside a client portfolio (project). */
+export const knowledgeSources = pgTable(
+  'knowledge_sources',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    projectId: uuid('project_id')
+      .notNull()
+      .references(() => projects.id, { onDelete: 'cascade' }),
+    title: text('title').notNull(),
+    kind: sourceKindEnum('kind').notNull(),
+    topic: text('topic').notNull(),
+    country: text('country').notNull().default('ALL'),
+    claim: text('claim').notNull(),
+    content: text('content').notNull().default(''),
+    ownerId: text('owner_id').references(() => users.id, { onDelete: 'set null' }),
+    verifiedById: text('verified_by_id').references(() => users.id, { onDelete: 'set null' }),
+    flaggedOutdated: boolean('flagged_outdated').notNull().default(false),
+    reviewedAt: timestamp('reviewed_at', { withTimezone: true }).notNull().defaultNow(),
+    ...timestamps,
+  },
+  (t) => [index('knowledge_sources_project_idx').on(t.projectId, t.topic)],
+);
+
 export type UserRow = typeof users.$inferSelect;
 export type ProjectRow = typeof projects.$inferSelect;
 export type ProjectMemberRow = typeof projectMembers.$inferSelect;
 export type TaskRow = typeof tasks.$inferSelect;
+export type KnowledgeSourceRow = typeof knowledgeSources.$inferSelect;
