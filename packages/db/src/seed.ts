@@ -1,7 +1,7 @@
 import { DEMO_USERS, type Country, type SourceKind, type SourceStatus } from '@tectonic/shared';
 import { count, sql } from 'drizzle-orm';
 import type { Database } from './client.ts';
-import { projectMembers, projects, sources, users } from './schema.ts';
+import { payslips, projectMembers, projects, sources, users } from './schema.ts';
 
 interface SeedTeam {
   key: string;
@@ -136,7 +136,6 @@ const SOURCES: SeedSource[] = [
     claim: 'Volgens een bericht in het team mag Atlas tot 25 oktober aanleveren.',
     quote: 'Ik dacht dat Atlas dit keer tot de 25e mocht aanleveren?',
     validFrom: '2026-10-05',
-    validTo: '2026-10-31',
     status: 'unconfirmed',
   },
   {
@@ -631,11 +630,41 @@ const SOURCES: SeedSource[] = [
   },
 ];
 
+/**
+ * Fictional employees. Payroll België holds two general employees, Klantteam Atlas two Atlas employees,
+ * so Sebastien (not in Atlas) cannot read the Atlas payslips. Figures are illustrative, not legal rates.
+ */
+const PAYSLIP_EMPLOYEES = [
+  { team: 'be', name: 'Emma Claes', number: 'BE-1001', client: null, gross: { '2026-09': 352000, '2026-10': 352000 }, taxRate: 0.27, overtime: { '2026-10': 18500 } },
+  { team: 'be', name: 'Noah Maes', number: 'BE-1002', client: null, gross: { '2026-09': 291000, '2026-10': 291000 }, taxRate: 0.23, overtime: {} },
+  { team: 'atlas', name: 'Sofie Willems', number: 'AT-2001', client: 'Atlas', gross: { '2026-09': 418000, '2026-10': 418000 }, taxRate: 0.31, overtime: {} },
+  { team: 'atlas', name: 'Thomas Jacobs', number: 'AT-2002', client: 'Atlas', gross: { '2026-09': 327500, '2026-10': 327500 }, taxRate: 0.25, overtime: { '2026-09': 24000 } },
+] as const;
+
+function buildPayslips(teamIds: Map<string, string>) {
+  return PAYSLIP_EMPLOYEES.flatMap((e) =>
+    Object.entries(e.gross).map(([period, base]) => {
+      const overtime = (e.overtime as Record<string, number>)[period] ?? 0;
+      const gross = base + overtime;
+      const rsz = Math.round(gross * 0.1307);
+      const tax = Math.round((gross - rsz) * e.taxRate);
+      const lines = [
+        { label: 'Brutoloon', kind: 'earning' as const, amountCents: base },
+        ...(overtime ? [{ label: 'Overuren', kind: 'earning' as const, amountCents: overtime }] : []),
+        { label: 'RSZ werknemersbijdrage (13,07%)', kind: 'deduction' as const, amountCents: rsz },
+        { label: 'Bedrijfsvoorheffing', kind: 'deduction' as const, amountCents: tax },
+      ];
+      return { projectId: teamIds.get(e.team)!, employeeName: e.name, employeeNumber: e.number, period, country: 'BE', client: e.client, grossCents: gross, netCents: gross - rsz - tax, lines };
+    }),
+  );
+}
+
 export interface SeedResult {
   seeded: boolean;
   users: number;
   projects: number;
   sources: number;
+  payslips: number;
 }
 
 /**
@@ -652,13 +681,14 @@ export async function seedDatabase(db: Database, options: { reset?: boolean } = 
     });
 
   if (options.reset) {
+    await db.delete(payslips);
     await db.delete(sources);
     await db.delete(projectMembers);
     await db.delete(projects);
   }
 
   const [existing] = await db.select({ n: count() }).from(projects);
-  if ((existing?.n ?? 0) > 0) return { seeded: false, users: DEMO_USERS.length, projects: 0, sources: 0 };
+  if ((existing?.n ?? 0) > 0) return { seeded: false, users: DEMO_USERS.length, projects: 0, sources: 0, payslips: 0 };
 
   const teamIds = new Map<string, string>();
   for (const team of TEAMS) {
@@ -687,5 +717,8 @@ export async function seedDatabase(db: Database, options: { reset?: boolean } = 
     })),
   );
 
-  return { seeded: true, users: DEMO_USERS.length, projects: TEAMS.length, sources: SOURCES.length };
+  const payslipRows = buildPayslips(teamIds);
+  await db.insert(payslips).values(payslipRows);
+
+  return { seeded: true, users: DEMO_USERS.length, projects: TEAMS.length, sources: SOURCES.length, payslips: payslipRows.length };
 }
