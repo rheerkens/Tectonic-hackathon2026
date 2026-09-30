@@ -31,6 +31,7 @@ export function serializeSource(row: SourceRow): Source {
     disputed: row.disputed,
     disputedById: row.disputedById,
     supersededBy: row.supersededBy,
+    audienceProjectIds: row.audienceProjectIds,
     createdAt: iso(row.createdAt),
   };
 }

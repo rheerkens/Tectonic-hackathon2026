@@ -109,7 +109,7 @@ function resolveLlm(env: EnvLike): LlmConfig | null {
   const rawTimeout = env.LLM_TIMEOUT_MS?.trim();
   const timeoutMs = rawTimeout ? Number(rawTimeout) : DEFAULT_LLM_TIMEOUT_MS;
   if (!Number.isInteger(timeoutMs) || timeoutMs < 1000) throw new ConfigError(`Invalid LLM_TIMEOUT_MS "${rawTimeout}" (milliseconds, at least 1000)`);
-  return { apiKey, model: env.LLM_MODEL?.trim() || DEFAULT_LLM_MODEL, timeoutMs };
+  return { apiKey, model: env.LLM_MODEL?.trim() || env.ANTHROPIC_MODEL?.trim() || DEFAULT_LLM_MODEL, timeoutMs };
 }
 
 export function resolveConfig(env: EnvLike = process.env): AppConfig {

@@ -61,6 +61,8 @@ export const HealthSchema = z.object({
 export type Health = z.infer<typeof HealthSchema>;
 
 export const DisputeInputSchema = z.object({ disputed: z.boolean() });
+/** The code (S1, S2, ...) of the newer source that replaces this one. */
+export const SupersedeInputSchema = z.object({ supersededBy: z.string().trim().min(1).max(20) });
 export const OkSchema = z.object({ ok: z.literal(true) });
 
 // ---- knowledge sources -----------------------------------------------------
@@ -92,6 +94,8 @@ export const SourceSchema = z.object({
   disputed: z.boolean(),
   disputedById: z.string().nullable(),
   supersededBy: z.string().nullable(),
+  /** Extra teams (projects) a viewer must ALL belong to, besides the owning team. Empty = the owning team only. */
+  audienceProjectIds: z.uuid().array(),
   createdAt: isoDate,
 });
 export type Source = z.infer<typeof SourceSchema>;
