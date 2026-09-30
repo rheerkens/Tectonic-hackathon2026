@@ -105,6 +105,7 @@
 .kn-tick--neutral { background: var(--surface); color: var(--kn-grey); border: 2px solid var(--kn-grey); }
 .kn-tick--muted { background: var(--kn-grey); color: var(--surface); }
 .kn-tick--warn { background: var(--brand-amber); color: var(--brand-navy); }
+.kn-tick--bad { background: var(--danger); color: var(--surface); }
 
 /* right panel */
 .kn-panel { background: var(--surface); grid-area: panel; min-width: 0; align-self: start; margin: 22px 20px 22px 0; padding: 26px; border-radius: 24px; box-shadow: 0 8px 32px rgb(25 45 70 / .05); }
@@ -148,6 +149,9 @@
 .kn-answer--muted { border-color: var(--kn-line); background: var(--bg); }
 .kn-answer--warn .kn-badge { background: color-mix(in srgb, var(--brand-amber) 30%, var(--surface)); color: var(--text); }
 .kn-answer--muted .kn-badge { background: var(--accent-soft); color: var(--kn-muted); }
+/* the same pills outside an answer card (chat) */
+.kn-badge--warn { background: color-mix(in srgb, var(--brand-amber) 30%, var(--surface)); color: var(--text); }
+.kn-badge--muted { background: var(--accent-soft); color: var(--kn-muted); }
 .kn-btn--full { width: 100%; margin-top: 20px; }
 a.kn-btn--outline { display: block; text-align: center; text-decoration: none; }
 .kn-link { border: 0; background: none; color: var(--accent-ink); font: inherit; font-size: 13px; cursor: pointer; text-decoration: underline; }

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { AskInput } from '@tectonic/shared';
+import type { AskInput, ChatInput } from '@tectonic/shared';
 import { createContext, useContext, useMemo } from 'react';
 import { useSession } from '../auth/context.ts';
 import { createApiClient, type ApiClient } from './api.ts';
@@ -85,4 +85,13 @@ export function useApproveSource() {
       void qc.invalidateQueries({ queryKey: keys.access });
     },
   });
+}
+
+/**
+ * One chat turn: the server runs the tools and the model and returns the answer with its trace.
+ * Nothing is cached or invalidated: a conversation is client state and every answer is a fresh run.
+ */
+export function useChat() {
+  const api = useApiClient();
+  return useMutation({ mutationFn: (body: ChatInput) => api.chat(body) });
 }
