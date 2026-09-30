@@ -32,7 +32,8 @@ function useCountUp(target: number, ms = 600): number {
     const start = performance.now();
     const origin = from.current;
     let raf = requestAnimationFrame(function tick(now) {
-      const t = Math.min(1, (now - start) / ms);
+      // rAF timestamps can precede `start`; an unclamped negative t makes the easing overshoot.
+      const t = Math.max(0, Math.min(1, (now - start) / ms));
       const v = Math.round(origin + (target - origin) * (1 - (1 - t) ** 3));
       from.current = v;
       setValue(v);
