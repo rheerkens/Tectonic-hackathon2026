@@ -69,8 +69,6 @@
 
 /* main */
 .kn-main { grid-area: main; padding: 30px 30px 40px; min-width: 0; }
-.kn-crumbs { color: var(--kn-muted); font-size: 14px; }
-.kn-sep { margin: 0 10px; }
 .kn-chips { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0 28px; }
 .kn-chip { padding: 8px 14px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-ink); font-size: 14px; }
 

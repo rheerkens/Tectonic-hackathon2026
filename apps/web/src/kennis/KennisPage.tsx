@@ -342,14 +342,6 @@ export function KennisPage() {
       </a>
       <Sidebar teams={access.data?.teams ?? []} />
       <main className="kn-main" id="kn-main" tabIndex={-1}>
-        <nav className="kn-crumbs" aria-label="Kruimelpad">
-          {[client ?? 'Alle klanten', 'Payroll', monthLabel(period)].map((c, i) => (
-            <span key={c}>
-              {i > 0 && <span className="kn-sep">/</span>}
-              {c}
-            </span>
-          ))}
-        </nav>
         <FinnStage
           userName={session.user.name}
           userColor={session.user.color}
