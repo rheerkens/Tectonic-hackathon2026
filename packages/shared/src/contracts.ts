@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AccessSchema, AskInputSchema, AskResultSchema, CheckInputSchema, CheckResultSchema, DisputeInputSchema, HealthSchema, MeSchema, NaiveAnswerSchema, OkSchema, UserSchema } from './schemas.ts';
+import { AccessSchema, AssessedSourceSchema, AskInputSchema, AskResultSchema, CheckInputSchema, CheckResultSchema, DisputeInputSchema, HealthSchema, MeSchema, NaiveAnswerSchema, OkSchema, UserSchema } from './schemas.ts';
 
 export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
@@ -41,6 +41,8 @@ export const api = {
 
   /** The teams I belong to, the clients in the sources I may see, and example questions. */
   access: route('GET', '/api/access', { response: AccessSchema }),
+  /** Every source I may see, rated for its own country and client in the current month. Feeds the knowledge map. */
+  listSources: route('GET', '/api/sources', { response: AssessedSourceSchema.array() }),
   /** Answers a question from the sources the caller may see, for a country, client and period. */
   ask: route('POST', '/api/ask', { body: AskInputSchema, response: AskResultSchema }),
   /** Checks a pasted message (e.g. from Teams) against the sources: which claims hold, and what contradicts them. */

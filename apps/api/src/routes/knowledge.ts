@@ -1,5 +1,5 @@
 import { projectMembers, projects, sources, type Database } from '@tectonic/db';
-import { AskInputSchema, CheckInputSchema, DisputeInputSchema, assess, naiveAnswer, roleAtLeast, type Access, type CheckResult } from '@tectonic/shared';
+import { AskInputSchema, CheckInputSchema, DisputeInputSchema, assess, naiveAnswer, scoreSource, verdictFor, roleAtLeast, type Access, type CheckResult } from '@tectonic/shared';
 import { and, eq, inArray } from 'drizzle-orm';
 import { Hono } from 'hono';
 import type { AppContext, AppEnv } from '../app.ts';
@@ -34,6 +34,18 @@ export function knowledgeRoutes(ctx: AppContext) {
     const { teams, rows } = await visibleSources(c.get('principal').userId);
     const clients = [...new Set(rows.map((r) => r.client).filter((x): x is string => x !== null))].sort();
     return c.json({ teams, clients, examples: EXAMPLES } satisfies Access);
+  });
+
+  router.get('/api/sources', async (c) => {
+    const { teams, rows } = await visibleSources(c.get('principal').userId);
+    const names = new Map(teams.map((t) => [t.id, t.name]));
+    const period = new Date().toISOString().slice(0, 7);
+    return c.json(
+      rows.map(serializeSource).map((s) => {
+        const ctx = { country: s.country, client: s.client, period };
+        return { ...s, projectName: names.get(s.projectId) ?? '', onderbouwing: scoreSource(s, ctx), verdict: verdictFor(s, ctx) };
+      }),
+    );
   });
 
   router.post('/api/ask', jsonBody(AskInputSchema), async (c) => {
