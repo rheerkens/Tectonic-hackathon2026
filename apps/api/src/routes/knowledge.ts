@@ -1,5 +1,5 @@
 import { projectMembers, projects, sources, type Database } from '@tectonic/db';
-import { AskInputSchema, assess, roleAtLeast, type Access } from '@tectonic/shared';
+import { AskInputSchema, assess, naiveAnswer, roleAtLeast, type Access } from '@tectonic/shared';
 import { and, eq, inArray } from 'drizzle-orm';
 import { Hono } from 'hono';
 import type { AppContext, AppEnv } from '../app.ts';
@@ -42,6 +42,13 @@ export function knowledgeRoutes(ctx: AppContext) {
     const names = new Map(teams.map((t) => [t.id, t.name]));
     return c.json(assess(question, rows.map(serializeSource), names, { country, client, period }));
   });
+
+  // --- naive answer (issue #3) ---
+  router.post('/api/naive-answer', jsonBody(AskInputSchema), async (c) => {
+    const { rows } = await visibleSources(c.get('principal').userId);
+    return c.json(naiveAnswer(c.req.valid('json').question, rows.map(serializeSource)));
+  });
+  // --- end naive answer ---
 
   router.post('/api/sources/:sourceId/approve', async (c) => {
     const principal = c.get('principal');

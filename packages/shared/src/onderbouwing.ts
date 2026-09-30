@@ -1,4 +1,4 @@
-import type { AnswerStatus, AskResult, AssessedSource, Country, Onderbouwing, Source, Verdict } from './schemas.ts';
+import type { AnswerStatus, AskResult, AssessedSource, Country, NaiveAnswer, Onderbouwing, Source, Verdict } from './schemas.ts';
 
 /**
  * "Onderbouwing" rates how well a source is substantiated, NOT the chance that its answer is true.
@@ -87,4 +87,17 @@ export function assess(question: string, sources: Source[], projectNames: Map<st
   const best = rated.find((s) => s.verdict.kind === 'exception' || s.verdict.kind === 'general') ?? null;
   const status: AnswerStatus = !best ? 'geen' : best.onderbouwing.score >= 80 ? 'onderbouwd' : best.onderbouwing.score >= 50 ? 'deels' : 'onvoldoende';
   return { topic, status, statusLabel: STATUS_LABELS[status], best, sources: rated };
+}
+
+// ---- naive answer (demo contrast) ------------------------------------------
+/** The claim of the source with the most keyword overlap, blind to country, client, period and status. ponytail: no LLM; add one if a key is configured. */
+export function naiveAnswer(question: string, sources: Source[]): NaiveAnswer {
+  const q = tokens(question);
+  let best: Source | null = null;
+  let hits = 0;
+  for (const s of sources) {
+    const n = overlap(q, s);
+    if (n > hits) [best, hits] = [s, n];
+  }
+  return best ? { answer: best.claim, source: { code: best.code, title: best.title } } : { answer: null, source: null };
 }
