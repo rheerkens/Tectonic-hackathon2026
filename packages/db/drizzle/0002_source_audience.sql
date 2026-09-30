@@ -1,0 +1,1 @@
+ALTER TABLE "sources" ADD COLUMN "audience_project_ids" uuid[] DEFAULT '{}'::uuid[] NOT NULL;

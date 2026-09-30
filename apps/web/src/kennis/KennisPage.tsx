@@ -11,6 +11,8 @@ import { useAccess, useApproveSource, useAsk, useNaiveAnswer, useUsers } from '.
 import { useRealtime, useTeamSubscriptions } from '../realtime/RealtimeProvider.tsx';
 import { KennisKaart } from './KennisKaart.tsx';
 import { CheckPanel } from './CheckPanel.tsx';
+import { VersionChain } from './VersionChain.tsx';
+import { SourceAudience } from './SourceAudience.tsx';
 import { DisputeControls } from './DisputeControls.tsx';
 import { ContextSelects, Icon, STATUS_TONE, Tick, VERDICT_TONE, dateLabel, monthLabel, type AskContext } from './ui.tsx';
 import './kennis.css';
@@ -109,7 +111,7 @@ function TimeTravel({ source, country, client }: { source: AssessedSource; count
   );
 }
 
-function Panel({ source, users, canApprove, canDispute, canResolve, country, client }: { source: AssessedSource; users: Map<string, { name: string; email: string | null }>; canApprove: boolean; canDispute: boolean; canResolve: boolean; country: Country; client: string | null }) {
+function Panel({ source, all, users, canApprove, canDispute, canResolve, country, client }: { source: AssessedSource; all: AssessedSource[]; users: Map<string, { name: string; email: string | null }>; canApprove: boolean; canDispute: boolean; canResolve: boolean; country: Country; client: string | null }) {
   const approve = useApproveSource();
   const score = useCountUp(source.onderbouwing.score);
   const toasts = useToasts();
@@ -159,11 +161,13 @@ function Panel({ source, users, canApprove, canDispute, canResolve, country, cli
         <Icon name="calendar" /> {dateLabel(source.validFrom)} {source.validTo ? `t/m ${dateLabel(source.validTo)}` : 'en doorlopend'}
       </p>
       <hr />
+      <VersionChain source={source} all={all} canEdit={canDispute} />
       <TimeTravel key={source.id} source={source} country={country} client={client} />
       <h3 className="kn-h3">Toegang</h3>
       <p className="kn-line">
-        <Icon name="lock" /> {source.projectName}
+        <Icon name="lock" /> Wie mag dit zien
       </p>
+      <SourceAudience source={source} projectName={source.projectName} />
       {canApprove && (
         <button
           type="button"
@@ -396,7 +400,7 @@ export function KennisPage() {
         <KennisKaart users={userMap} onSelect={setSelectedId} />
         <CheckPanel country={country} />
       </main>
-      {selected ? <Panel source={selected} users={userMap} canApprove={canApprove} canDispute={canDispute} canResolve={isOwner} country={country} client={client} /> : <aside className="kn-panel" aria-label="Geselecteerde bron"><p className="kn-muted">Selecteer een bron om de onderbouwing te zien.</p></aside>}
+      {selected ? <Panel source={selected} all={result?.sources ?? []} users={userMap} canApprove={canApprove} canDispute={canDispute} canResolve={isOwner} country={country} client={client} /> : <aside className="kn-panel" aria-label="Geselecteerde bron"><p className="kn-muted">Selecteer een bron om de onderbouwing te zien.</p></aside>}
       <ChatPanel context={{ country, client, period }} onContextChange={changeContext} />
     </div>
   );

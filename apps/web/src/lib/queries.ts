@@ -66,6 +66,15 @@ export function useDisputeSource() {
   });
 }
 
+export function useSupersedeSource() {
+  const api = useApiClient();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (v: { sourceId: string; supersededBy: string }) => api.supersedeSource(v.sourceId, { supersededBy: v.supersededBy }),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: keys.asks }),
+  });
+}
+
 export function useApproveSource() {
   const api = useApiClient();
   const qc = useQueryClient();
