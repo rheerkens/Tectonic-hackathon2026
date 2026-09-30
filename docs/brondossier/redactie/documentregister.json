@@ -1,0 +1,257 @@
+[
+  {
+    "id": "S0",
+    "title": "Werkafspraken dossierbeheer en bevoegdheden",
+    "origin": "Fictieve Atlascasus",
+    "files": [
+      "bronnen\\atlas\\S0_werkafspraken.pdf",
+      "bronnen\\atlas\\S0_werkafspraken.docx"
+    ],
+    "pages": 2,
+    "words": 539,
+    "sha256": {
+      "bronnen\\atlas\\S0_werkafspraken.pdf": "413a3f7c81b550d0885de3a284193b9df7999aa9e0fd5dbd32cd63c9ce64b9d3",
+      "bronnen\\atlas\\S0_werkafspraken.docx": "0e9472c4c139b81941f8e3e6163679c7df650b4c5a91c48dc4b89babc0b995eb"
+    }
+  },
+  {
+    "id": "S1",
+    "title": "Aanlevering loonmutaties België",
+    "origin": "Fictieve Atlascasus",
+    "files": [
+      "bronnen\\atlas\\S1_procedure_belgie.pdf",
+      "bronnen\\atlas\\S1_procedure_belgie.docx"
+    ],
+    "pages": 2,
+    "words": 613,
+    "sha256": {
+      "bronnen\\atlas\\S1_procedure_belgie.pdf": "2a1f0c7eb9bdd2e5a8227e90a58f463efa59056902ab36243139323c26bf72c7",
+      "bronnen\\atlas\\S1_procedure_belgie.docx": "74d89d7787435f09da6737e84029166b7f1d2965c6a2903084e4194bf0977bc8"
+    }
+  },
+  {
+    "id": "S2",
+    "title": "Aanlevering loonmutaties België",
+    "origin": "Fictieve Atlascasus",
+    "files": [
+      "bronnen\\atlas\\S2_procedure_belgie_vorige_versie.pdf",
+      "bronnen\\atlas\\S2_procedure_belgie_vorige_versie.docx"
+    ],
+    "pages": 1,
+    "words": 348,
+    "sha256": {
+      "bronnen\\atlas\\S2_procedure_belgie_vorige_versie.pdf": "da6b1348d28ff13998941dc44863375f2e4cbd73e90b3a269e6c23fcc6a7769b",
+      "bronnen\\atlas\\S2_procedure_belgie_vorige_versie.docx": "4f92667bf66c9793df1999bd8512139e9c43bdb23aaea6b370a3b7f82e6ccc79"
+    }
+  },
+  {
+    "id": "S4",
+    "title": "Klantafspraak Atlas België",
+    "origin": "Fictieve Atlascasus",
+    "files": [
+      "bronnen\\atlas\\S4_klantafspraak_atlas.pdf",
+      "bronnen\\atlas\\S4_klantafspraak_atlas.docx"
+    ],
+    "pages": 2,
+    "words": 567,
+    "sha256": {
+      "bronnen\\atlas\\S4_klantafspraak_atlas.pdf": "eadfc54b18575ebc22832aac07c3126199cdea2837a5fcfc074e468c39f81922",
+      "bronnen\\atlas\\S4_klantafspraak_atlas.docx": "267d570188d0cffcfa1eea5ea8ca1d8c30b32d734f51b243d6c84845ce96cc31"
+    }
+  },
+  {
+    "id": "S5",
+    "title": "Klantoverleg Atlas België",
+    "origin": "Fictieve Atlascasus",
+    "files": [
+      "bronnen\\atlas\\S5_klantoverleg.pdf",
+      "bronnen\\atlas\\S5_klantoverleg.docx"
+    ],
+    "pages": 2,
+    "words": 474,
+    "sha256": {
+      "bronnen\\atlas\\S5_klantoverleg.pdf": "b2e4c3a95dd27dd9d9fb97700f85966b7bce36c40fe38cc738e47a7d842a210a",
+      "bronnen\\atlas\\S5_klantoverleg.docx": "b453a244fa55e51f7725995c2e4a9f9c365b38cd967a51d4e5e7369706bc39a0"
+    }
+  },
+  {
+    "id": "S7",
+    "title": "Aanlevering loonmutaties Nederland",
+    "origin": "Fictieve Atlascasus",
+    "files": [
+      "bronnen\\atlas\\S7_procedure_nederland.pdf",
+      "bronnen\\atlas\\S7_procedure_nederland.docx"
+    ],
+    "pages": 1,
+    "words": 320,
+    "sha256": {
+      "bronnen\\atlas\\S7_procedure_nederland.pdf": "c93631205f1c242eb359ddedf8c13add74e1fe41090e885162325bb4e11c97cf",
+      "bronnen\\atlas\\S7_procedure_nederland.docx": "b0d0bd232eb8969798eea4549d254cf6575df3eeee634bf3dfe07780390853f9"
+    }
+  },
+  {
+    "id": "S8",
+    "title": "Aanvullend akkoord Atlas België",
+    "origin": "Fictieve Atlascasus",
+    "files": [
+      "bronnen\\atlas\\S8_aanvullend_akkoord.pdf",
+      "bronnen\\atlas\\S8_aanvullend_akkoord.docx"
+    ],
+    "pages": 1,
+    "words": 408,
+    "sha256": {
+      "bronnen\\atlas\\S8_aanvullend_akkoord.pdf": "d5d50d3063a7c53b29d2d0c16685be6312984d59fa86fb7fd02cba564c8deb8d",
+      "bronnen\\atlas\\S8_aanvullend_akkoord.docx": "56d6ae9b6137e393003c65dc39fd88a1b4affe201795db64974172071b374289"
+    }
+  },
+  {
+    "id": "P1",
+    "title": "Welke aangiften moet een werkgever indienen?",
+    "origin": "Officiële webtekst • Lokale tekstweergave",
+    "files": [
+      "bronnen\\praktijk\\P1_officiele_tekst.pdf",
+      "bronnen\\praktijk\\P1_officiele_tekst.html"
+    ],
+    "pages": 1,
+    "words": 252,
+    "url": "https://www.socialsecurity.be/site_nl/employer/infos/employers_nsso/which-declarations.htm",
+    "retrieved": "2026-09-30",
+    "reuse": "https://www.socialsecurity.be/site_nl/general/open-data.htm",
+    "download_sha256": "dce919452596eff00f47e6d6a1e909fb6d62d64dbdab18b4f83138e83b326bdc",
+    "sha256": {
+      "bronnen\\praktijk\\P1_officiele_tekst.pdf": "b97cb634797086be4c9feac439e1e04f09f147b87e3290fb56ac3704bfdeec3e",
+      "bronnen\\praktijk\\P1_officiele_tekst.html": "4083dd27ddde18e195fb451bc0fea0c64d43012c3839a736e7b25c5fb7989612"
+    }
+  },
+  {
+    "id": "P2",
+    "title": "Aan welke regels moet mijn werkgever zich houden bij een arbeidsovereenkomst?",
+    "origin": "Officiële webtekst • Lokale tekstweergave",
+    "files": [
+      "bronnen\\praktijk\\P2_officiele_tekst.pdf",
+      "bronnen\\praktijk\\P2_officiele_tekst.html"
+    ],
+    "pages": 2,
+    "words": 462,
+    "url": "https://www.rijksoverheid.nl/vraag-en-antwoord/arbeidsovereenkomst-en-cao/waaraan-moet-mijn-werkgever-zich-houden-bij-een-arbeidsovereenkomst",
+    "retrieved": "2026-09-30",
+    "reuse": "https://www.rijksoverheid.nl/service/copyright",
+    "download_sha256": "af992af84b9deb09fa05f7f0bd3cb3697928d8bb0844c48c4dc8e0fa84ab9109",
+    "sha256": {
+      "bronnen\\praktijk\\P2_officiele_tekst.pdf": "2796283b7ec95935e354c7fef0c694cfcdcd5cc7838760c4600fb49effb07d57",
+      "bronnen\\praktijk\\P2_officiele_tekst.html": "be47b606bdc841addadfafdecf5eb74348eb988110820fd432c43c74314c302c"
+    }
+  },
+  {
+    "id": "P3",
+    "title": "Overzicht van het proces",
+    "origin": "Officiële webtekst • Lokale tekstweergave",
+    "files": [
+      "bronnen\\praktijk\\P3_officiele_tekst.pdf",
+      "bronnen\\praktijk\\P3_officiele_tekst.html"
+    ],
+    "pages": 2,
+    "words": 530,
+    "url": "https://www.socialsecurity.be/site_nl/employer/applics/dmfa/web/intro/outline.htm",
+    "retrieved": "2026-09-30",
+    "reuse": "https://www.socialsecurity.be/site_nl/general/open-data.htm",
+    "download_sha256": "9792c3fa0b151b22f3e5cd81384a1711409e03dbd3d27d1a8a702f25e5a7b7bb",
+    "sha256": {
+      "bronnen\\praktijk\\P3_officiele_tekst.pdf": "d441086518c3cf997ba1f2d9cdc2e3a6550205b9e9b0cd4d1837664c6c84df8c",
+      "bronnen\\praktijk\\P3_officiele_tekst.html": "d99daeb1552753002cb19aa3f32b36d040b1dbc1f4fc04e82a4d58d6d83555db"
+    }
+  },
+  {
+    "id": "P4",
+    "title": "Leesnotitie bij de Belgische loonbescherming",
+    "origin": "Redactionele leesnotitie bij officiële bron",
+    "files": [
+      "bronnen\\praktijk\\P4_leesnotitie_loonbetaling.pdf"
+    ],
+    "pages": 1,
+    "words": 127,
+    "sha256": {
+      "bronnen\\praktijk\\P4_leesnotitie_loonbetaling.pdf": "2f2a269ea591a55cea6c291cb0d027c82b0078c377da63a3ba93819ae540eebc"
+    }
+  },
+  {
+    "id": "S3",
+    "title": "Mailwisseling Atlas oktober",
+    "origin": "Fictieve Atlascasus",
+    "files": [
+      "bronnen\\atlas\\S3_mailwisseling.pdf",
+      "bronnen\\atlas\\S3_mailwisseling.docx",
+      "bronnen/atlas/S3_mailwisseling.html",
+      "bronnen\\atlas\\S3_emails\\bericht_01.eml",
+      "bronnen\\atlas\\S3_emails\\bericht_02.eml",
+      "bronnen\\atlas\\S3_emails\\bericht_03.eml",
+      "bronnen\\atlas\\S3_emails\\bericht_04.eml",
+      "bronnen\\atlas\\S3_emails\\bericht_05.eml",
+      "bronnen\\atlas\\S3_emails\\bericht_06.eml",
+      "bronnen\\atlas\\S3_emails\\bericht_07.eml",
+      "bronnen/atlas/S3_mailwisseling.png"
+    ],
+    "pages": 4,
+    "words": 965,
+    "sha256": {
+      "bronnen\\atlas\\S3_mailwisseling.pdf": "1e6a5f3a9c7560917ec2c5597df0e7c007b1b7e45839a872a123269d531a9684",
+      "bronnen\\atlas\\S3_mailwisseling.docx": "e23a9680c5d5cdd2fbf805255c96cf67f7575f695d80ffea167469a85b6e1d77",
+      "bronnen/atlas/S3_mailwisseling.html": "709f081fe8ddebe1d7d89a837d82e5b669483e5fa1d76bf54f8ee712a0717d26",
+      "bronnen\\atlas\\S3_emails\\bericht_01.eml": "80619ecccf15d81852f652a98883da30a042a2806d4828d08dcbc27698aeffae",
+      "bronnen\\atlas\\S3_emails\\bericht_02.eml": "088a3e79f6771158ede1f41ac2a480a5dca001c555a020924e3267c0ba590f91",
+      "bronnen\\atlas\\S3_emails\\bericht_03.eml": "605183b0c4f9aca239db9a9b4e66fdac77676882539be777de75c8965448eb1c",
+      "bronnen\\atlas\\S3_emails\\bericht_04.eml": "00d926ba57e638e4d6962dcbb0d0ff1616e56730ebfeac3f0b56261b4992f49f",
+      "bronnen\\atlas\\S3_emails\\bericht_05.eml": "4094fbde68807b975ff17b59bb305aef6818abf458ec77eafc63101ebf0780ac",
+      "bronnen\\atlas\\S3_emails\\bericht_06.eml": "cb68f1a538a9a42dd65c7be40a532fbba8d135e25372251c80341502507d9768",
+      "bronnen\\atlas\\S3_emails\\bericht_07.eml": "ac3fd49acdc0e8ff7c93e650eb8fe8cacd78a3f2f39dbb5a94e3012ea0940847",
+      "bronnen/atlas/S3_mailwisseling.png": "74c1d896d7f35ff8edb9a2ea90698aeff1a897859c1ef5e6fc1efa73cc7444e2"
+    }
+  },
+  {
+    "id": "S6",
+    "title": "Klantteam Atlas • Oktoberplanning",
+    "origin": "Fictieve Atlascasus",
+    "files": [
+      "bronnen\\atlas\\S6_teamsgesprek.pdf",
+      "bronnen/atlas/S6_teamsgesprek.html",
+      "bronnen/atlas/S6_teamsgesprek.txt",
+      "bronnen\\atlas\\S6_teamsgesprek.png"
+    ],
+    "pages": 2,
+    "words": 423,
+    "sha256": {
+      "bronnen\\atlas\\S6_teamsgesprek.pdf": "82cf3cf5c0ea5042ba84ce6f9447be6df71372fdf20bd4d4705c649bfc14c2f5",
+      "bronnen/atlas/S6_teamsgesprek.html": "645dbd6e6042b9859a63be900d6daa959a1e8b06ea4273c0ec5b819f49a3b8f2",
+      "bronnen/atlas/S6_teamsgesprek.txt": "623214dfa5e71f533c8bb49deb8666fa40de9d500bb8bc0e02c6b17d9c5653ca",
+      "bronnen\\atlas\\S6_teamsgesprek.png": "829369b4a316d426147abe6271cb92dbe27586db44aced79c9b66b0326bc065a"
+    }
+  },
+  {
+    "id": "S9",
+    "title": "Foto van het overlegbord",
+    "origin": "Gegenereerde foto van fictieve overlegnotities",
+    "files": [
+      "bronnen/atlas/S9_overlegfoto.png"
+    ],
+    "logical_date": "2026-09-25",
+    "generation_date": "2026-09-30",
+    "sha256": {
+      "bronnen/atlas/S9_overlegfoto.png": "4f47d9b54da80fa54ed7fb671fe95dcfd9def9d72a84fcfd03b060d6b84d5951"
+    }
+  },
+  {
+    "id": "S10",
+    "title": "Portefeuilleoverdracht Atlas België",
+    "origin": "Fictieve Atlascasus",
+    "files": [
+      "bronnen\\atlas\\S10_portefeuilleoverdracht.pdf",
+      "bronnen\\atlas\\S10_portefeuilleoverdracht.docx"
+    ],
+    "pages": 1,
+    "words": 296,
+    "sha256": {
+      "bronnen\\atlas\\S10_portefeuilleoverdracht.pdf": "a9619748f61609537f76c18a453969a8807d74a557089a852f97b55fcdbdcdc6",
+      "bronnen\\atlas\\S10_portefeuilleoverdracht.docx": "104fc625f0e84a29366f3731b1ee5584271b83cbfa512a2b622747f186ce0ca9"
+    }
+  }
+]

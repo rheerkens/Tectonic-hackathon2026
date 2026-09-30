@@ -1,5 +1,5 @@
 import { projectMembers, projects, sources, type Database } from '@tectonic/db';
-import { AskInputSchema, assess, naiveAnswer, roleAtLeast, type Access } from '@tectonic/shared';
+import { AskInputSchema, CheckInputSchema, assess, naiveAnswer, roleAtLeast, type Access, type CheckResult } from '@tectonic/shared';
 import { and, eq, inArray } from 'drizzle-orm';
 import { Hono } from 'hono';
 import type { AppContext, AppEnv } from '../app.ts';
@@ -43,6 +43,23 @@ export function knowledgeRoutes(ctx: AppContext) {
     return c.json(assess(question, rows.map(serializeSource), names, { country, client, period }));
   });
 
+  // ponytail: stub, sentence split + keyword overlap via assess; no client/NLP, period = this month.
+  router.post('/api/check', jsonBody(CheckInputSchema), async (c) => {
+    const { text, country } = c.req.valid('json');
+    const { teams, rows } = await visibleSources(c.get('principal').userId);
+    const names = new Map(teams.map((t) => [t.id, t.name]));
+    const ctx = { country, client: null, period: new Date().toISOString().slice(0, 7) };
+    const claims: CheckResult['claims'] = [];
+    const contradictions: CheckResult['contradictions'] = [];
+    for (const claim of text.split(/(?<=[.!?])\s+|\n+/).map((x) => x.trim()).filter((x) => x.length >= 3)) {
+      const r = assess(claim, rows.map(serializeSource), names, ctx);
+      claims.push({ text: claim, topic: r.topic, status: r.status, statusLabel: r.statusLabel });
+      for (const source of r.sources) {
+        if (source.verdict.kind !== 'exception' && source.verdict.kind !== 'general') contradictions.push({ claim, source });
+      }
+    }
+    return c.json({ claims, contradictions } satisfies CheckResult);
+  });
   // --- naive answer (issue #3) ---
   router.post('/api/naive-answer', jsonBody(AskInputSchema), async (c) => {
     const { rows } = await visibleSources(c.get('principal').userId);

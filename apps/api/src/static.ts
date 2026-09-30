@@ -14,10 +14,16 @@ export function createStaticHandler(staticDir: string) {
     if (!available) return null;
     if (request.method !== 'GET' && request.method !== 'HEAD') return null;
     const url = new URL(request.url);
-    let pathname = decodeURIComponent(url.pathname);
+    let pathname: string;
+    try {
+      pathname = decodeURIComponent(url.pathname);
+    } catch {
+      return new Response('Bad request', { status: 400 });
+    }
     if (pathname.endsWith('/')) pathname += 'index.html';
     const candidate = path.resolve(root, `.${pathname}`);
-    if (!candidate.startsWith(root)) return new Response('Forbidden', { status: 403 });
+    // Compare with a trailing separator so sibling directories sharing the prefix (e.g. `dist-old`) are rejected too.
+    if (candidate !== root && !candidate.startsWith(root + path.sep)) return new Response('Forbidden', { status: 403 });
 
     let filePath = index;
     if (existsSync(candidate) && statSync(candidate).isFile()) filePath = candidate;
