@@ -18,7 +18,6 @@ import { Icon, PERIODS, STATUS_TONE, Tick, VERDICT_TONE, dateLabel, monthLabel, 
 import { FinnStage, SearchingCard, type FinnMood, type Touched } from './FinnStage.tsx';
 import { buildTopicIndex, understand, type Understood } from './understand.ts';
 import './kennis.css';
-import { ProjectChat } from '../components/ProjectChat.tsx';
 
 /** Counts up to `target` when it changes (skipped for reduced motion). */
 function useCountUp(target: number, ms = 600): number {
@@ -71,8 +70,20 @@ function Logo() {
 
 
 function Sidebar({ teams }: { teams: Array<{ id: string; name: string }> }) {
+  const sidebar = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const element = sidebar.current!;
+    const resize = () => element.style.setProperty('--sidebar-top', `${Math.max(22, element.getBoundingClientRect().top)}px`);
+    resize();
+    window.addEventListener('scroll', resize, { passive: true });
+    window.addEventListener('resize', resize);
+    return () => {
+      window.removeEventListener('scroll', resize);
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
   return (
-    <aside className="kn-sidebar" aria-label="Werkruimte">
+    <aside ref={sidebar} className="kn-sidebar" aria-label="Werkruimte">
       <nav aria-label="Hoofdnavigatie">
         <div className="kn-section" id="nav-use">Kennis gebruiken</div>
         <div className="kn-nav-group" role="group" aria-labelledby="nav-use">
@@ -515,7 +526,6 @@ export function KennisPage() {
         </form>
         {selected && <Panel source={selected} all={sources.data ?? result?.sources ?? []} users={userMap} canApprove={canApprove} canDispute={canDispute} canResolve={isOwner} country={country} client={client} />}
       </dialog>
-      <ProjectChat teams={access.data?.teams ?? []} />
     </div>
   );
 }

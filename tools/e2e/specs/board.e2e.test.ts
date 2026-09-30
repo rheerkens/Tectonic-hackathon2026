@@ -46,7 +46,9 @@ afterAll(async () => {
   await stack?.stop();
 });
 
-describe('project chat', () => {
+// The floating project chat is no longer exposed on KennisPage.
+// Restore these scenarios when the component has a new user-facing entry point.
+describe.skip('project chat', () => {
   test('streams a reply, shows tool results, and reloads its team history', async () => {
     const { page, releaseAccess } = await openKnowledgePage();
     const turn = {
