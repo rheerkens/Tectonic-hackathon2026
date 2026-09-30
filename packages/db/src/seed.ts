@@ -172,7 +172,7 @@ const SOURCES: SeedSource[] = [
   },
   {
     // An older version nobody marked as replaced yet: try "Markeer als vervangen door S6" in the source panel.
-    code: 'S8',
+    code: 'S9',
     team: 'be',
     title: 'Procedure ziekmelding België (oud)',
     kind: 'procedure',
