@@ -1,4 +1,6 @@
-# SD Trust
+# SDtrust
+
+[SDtrust branding, logo's en gebruiksrichtlijnen](docs/branding/README.md)
 
 **From "I found something" to "I understand why I can rely on it."**
 
