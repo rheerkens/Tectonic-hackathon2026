@@ -29,7 +29,7 @@ export function UserMenu() {
             ))}
           </div>
         )}
-        <button type="button" className="kn-menu-signout" onClick={() => { close(); session.signOut(); }}>
+        <button type="button" className="kn-menu-signout" onClick={() => { close(); try { sessionStorage.removeItem(`kennis-search:${session.user.id}`); } catch { /* storage blocked */ } session.signOut(); }}>
           {session.switchUser ? 'Terug naar aanmelden' : 'Afmelden'}
         </button>
       </div>
