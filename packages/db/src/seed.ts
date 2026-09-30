@@ -136,6 +136,7 @@ const SOURCES: SeedSource[] = [
     claim: 'Volgens een bericht in het team mag Atlas tot 25 oktober aanleveren.',
     quote: 'Ik dacht dat Atlas dit keer tot de 25e mocht aanleveren?',
     validFrom: '2026-10-05',
+    validTo: '2026-10-31',
     status: 'unconfirmed',
   },
   {
@@ -151,6 +152,7 @@ const SOURCES: SeedSource[] = [
     claim: 'In Nederland worden loonmutaties uiterlijk op 18 oktober aangeleverd.',
     quote: 'Nederlandse klanten leveren loonmutaties aan tot de 18e.',
     validFrom: '2026-01-01',
+    validTo: '2026-10-31',
     status: 'approved',
     ownerId: 'demo_sebastien',
     approvedById: 'demo_sebastien',
