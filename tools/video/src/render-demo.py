@@ -123,7 +123,10 @@ def initialize(args):
         raise ValueError('The transcript must match the 40 approved narration cues')
     starts = [sum(DURATIONS[:i]) for i in range(len(DURATIONS))]
     CUES = []
-    for item, words in zip(transcript, CORRECT):
+    narration = CORRECT.copy()
+    if args.context_audio:
+        narration[6] = 'Finn herkent België, de klant Atlas en oktober.'
+    for item, words in zip(transcript, narration):
         a, b = float(item['start']), float(item['end'])
         if not (math.isfinite(a) and math.isfinite(b) and 0 <= a <= b <= RAW[-1]):
             raise ValueError(f'Invalid transcript interval: {item}')
@@ -276,6 +279,8 @@ def main():
                         default=Path(os.environ.get('WINDIR', 'C:/Windows')) / 'Fonts')
     parser.add_argument('--style', type=Path, default=Path(__file__).resolve().parents[1] / 'style.json')
     parser.add_argument('--jobs', type=int, default=2)
+    parser.add_argument('--context-audio', type=Path,
+                        help='Optional 15 second stereo mix replacing main seconds 13 through 28')
     args = parser.parse_args()
     if args.jobs < 1:
         parser.error('--jobs must be at least 1')
@@ -284,6 +289,8 @@ def main():
             parser.error(f'{executable} must be on PATH')
     required = [args.baseline, args.intro, args.style, args.assets / 'transcript_lang.json',
                 args.assets / 'merk_reverse.png']
+    if args.context_audio:
+        required.append(args.context_audio)
     required += [args.captures / filename for filename in (
         'capture/context_clean.mp4', 'capture/answer-focused.png', 'capture/differences.png',
         'details/atlas-owner-validity-2x.png', 'details/atlas-access-2x.png')]
@@ -298,6 +305,11 @@ def main():
             parser.error(f'Missing font {style["font"][key]}; provide --font-dir')
     validate_video(args.baseline, 150, audio=True)
     validate_video(args.intro, 10, audio=True)
+    if args.context_audio:
+        info = probe(args.context_audio)
+        audio = next((s for s in info['streams'] if s['codec_type'] == 'audio'), None)
+        if audio is None or audio.get('channels') != 2 or abs(float(info['format']['duration']) - 15) > .05:
+            parser.error('--context-audio must contain 15 seconds of stereo audio')
     generated = [args.output / f'{name}.mp4' for name in ORDER]
     generated += [args.output / 'SDtrust_main_150.mp4', args.output / 'SDtrust_demo_159.4.mp4']
     if {path.resolve() for path in generated} & {path.resolve() for path in required}:
@@ -309,8 +321,17 @@ def main():
     listing = args.output / 'segments.txt'
     listing.write_text(''.join(f"file '{name}.mp4'\n" for name in ORDER), encoding='utf-8')
     main_video = args.output / 'SDtrust_main_150.mp4'
+    audio = ['-map', '0:v:0', '-map', '1:a:0', '-c', 'copy']
+    if args.context_audio:
+        filters = ('[1:a:0]atrim=start=0:end=13,asetpts=PTS-STARTPTS[before];'
+                   '[2:a:0]atrim=start=0:end=15,asetpts=PTS-STARTPTS[context];'
+                   '[1:a:0]atrim=start=28:end=150,asetpts=PTS-STARTPTS[after];'
+                   '[before][context][after]concat=n=3:v=0:a=1[a]')
+        audio = ['-i', str(args.context_audio), '-filter_complex', filters,
+                 '-map', '0:v:0', '-map', '[a]', '-c:v', 'copy', '-c:a', 'aac',
+                 '-b:a', '256k', '-ar', '48000', '-ac', '2']
     run(['ffmpeg', '-v', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', str(listing),
-         '-i', str(args.baseline), '-map', '0:v:0', '-map', '1:a:0', '-c', 'copy',
+         '-i', str(args.baseline), *audio,
          '-t', '150', '-movflags', '+faststart', str(main_video)])
     reports['main'] = validate_video(main_video, 150, audio=True, rendered=True)
     final_video = args.output / 'SDtrust_demo_159.4.mp4'

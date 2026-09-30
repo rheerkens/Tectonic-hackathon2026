@@ -1,0 +1,13 @@
+{
+  "text": "Finn herkent België, de klant Atlas en oktober.",
+  "asr": " Fin herkend België, de klantadlaas en Oktober.",
+  "voice": "Petra Vlaams, Energetic, Warm and Clear",
+  "service": "ElevenLabs v3",
+  "source": "C:\\Users\\Sebas\\Downloads\\ElevenLabs_2026-09-30T20_16_11_Petra Vlaams - Energetic, Warm and Clear_pvc_sp100_s50_sb75_v3.mp3",
+  "replaced_main_seconds": [
+    20.15,
+    23.74
+  ],
+  "duration": 15,
+  "tempo": 1.12
+}

@@ -1,0 +1,39 @@
+{
+  "url": "http://localhost:56390/?as=wanne",
+  "video": "capture\\raw\\context.webm",
+  "firstFrame": 1790799352282.228,
+  "lastFrame": 1790799364338.15,
+  "frames": 283,
+  "events": [
+    {
+      "name": "context_start",
+      "timestamp": 1790799352292,
+      "seconds": 0.00977197265625
+    },
+    {
+      "name": "typing_start",
+      "timestamp": 1790799353300,
+      "seconds": 1.01777197265625
+    },
+    {
+      "name": "typing_end",
+      "timestamp": 1790799358917,
+      "seconds": 6.63477197265625
+    },
+    {
+      "name": "submit",
+      "timestamp": 1790799361755,
+      "seconds": 9.47277197265625
+    },
+    {
+      "name": "answer_ready",
+      "timestamp": 1790799361832,
+      "seconds": 9.54977197265625
+    },
+    {
+      "name": "context_end",
+      "timestamp": 1790799367285,
+      "seconds": 15.00277197265625
+    }
+  ]
+}

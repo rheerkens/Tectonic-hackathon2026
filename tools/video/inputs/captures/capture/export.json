@@ -1,0 +1,83 @@
+{
+  "captureCommit": "1b25e358bd6eb143da42f3a5fd3565f86ca11430",
+  "appChanges": "",
+  "url": "http://localhost:56390/?as=wanne",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "deviceScaleFactor": 2,
+  "question": "Tot wanneer mag Atlas loonmutaties aanleveren in België in oktober?",
+  "screenshots": [
+    {
+      "path": "capture\\01-home.png",
+      "dialog": null
+    },
+    {
+      "path": "capture\\context-empty.png",
+      "dialog": null
+    },
+    {
+      "path": "capture\\context-question.png",
+      "dialog": null
+    },
+    {
+      "path": "capture\\answer.png",
+      "dialog": null
+    },
+    {
+      "path": "capture\\answer-focused.png",
+      "dialog": null
+    },
+    {
+      "path": "capture\\differences.png",
+      "dialog": null
+    },
+    {
+      "path": "details\\atlas-owner-validity-2x.png",
+      "dialog": {
+        "x": 410,
+        "y": 35.875,
+        "width": 620,
+        "height": 828.25
+      }
+    },
+    {
+      "path": "details\\atlas-access-2x.png",
+      "dialog": {
+        "x": 410,
+        "y": 35.875,
+        "width": 620,
+        "height": 828.25
+      }
+    },
+    {
+      "path": "details\\procedure-version-chain-2x.png",
+      "dialog": {
+        "x": 410,
+        "y": 24,
+        "width": 620,
+        "height": 852
+      }
+    },
+    {
+      "path": "capture\\compare.png",
+      "dialog": null
+    }
+  ],
+  "metadata": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "width": 1440,
+        "height": 900,
+        "r_frame_rate": "30/1",
+        "nb_frames": "450"
+      }
+    ],
+    "format": {
+      "duration": "15.000000"
+    }
+  }
+}

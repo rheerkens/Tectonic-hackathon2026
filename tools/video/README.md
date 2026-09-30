@@ -12,7 +12,7 @@ Keep the header logo in the same position and at the same size across scenes. Ne
 
 The local Finn renderer and the local `render_150.py` consume this file. Generated previews, media and local production scripts remain outside Git under `tools/video/output/` or the existing production folder.
 
-For the current demo, [DEMO.md](./DEMO.md) documents the checked-in capture and render scripts. They capture the running UI with a typed question, refresh the platform scenes, preserve the approved ElevenLabs audio and join the Finn intro. Required source media stays outside Git.
+For the current demo, [DEMO.md](./DEMO.md) documents the checked-in capture and render scripts and a complete render command. Fixed source media is bundled in `inputs/`, including the approved baseline, Finn intro, current UI captures and context audio. A fresh checkout can rebuild the film with Python, Pillow, NumPy, FFmpeg and the documented fonts. Only refreshing the UI captures needs a running app. Generated films and temporary captures stay outside Git.
 
 ## How this version was generated
 

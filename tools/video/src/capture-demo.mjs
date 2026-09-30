@@ -33,7 +33,7 @@ const runtime = values.url ? null : JSON.parse(await readFile(join(root, '.local
 const url = new URL(values.url ?? runtime.urls.web);
 url.searchParams.set('as', 'wanne');
 const size = { width: 1440, height: 900 };
-const question = 'Tot wanneer mag Atlas loonmutaties aanleveren?';
+const question = 'Tot wanneer mag Atlas loonmutaties aanleveren in België in oktober?';
 const durationMs = 15_000;
 const events = [];
 const screenshots = [];
@@ -89,9 +89,13 @@ try {
   mark('context_start');
   await page.waitForTimeout(1000);
   mark('typing_start');
-  await page.getByRole('textbox', { name: 'Stel je vraag' }).pressSequentially(question, { delay: 85 });
+  await page.getByRole('textbox', { name: 'Stel je vraag' }).pressSequentially(question, { delay: 65 });
   mark('typing_end');
-  await page.getByRole('combobox', { name: 'Klant', exact: true }).hover();
+  const contextPills = page.getByRole('list', { name: 'Wat Finn herkent in je vraag' });
+  for (const field of ['topic', 'country', 'client', 'period']) {
+    await contextPills.locator(`[data-field="${field}"][data-set="true"]`).waitFor();
+  }
+  await contextPills.locator('[data-field="client"]').hover();
   await page.waitForTimeout(1500);
   await screenshot(capture, 'context-question');
   await page.getByRole('button', { name: 'Vraag Finn', exact: true }).hover();
