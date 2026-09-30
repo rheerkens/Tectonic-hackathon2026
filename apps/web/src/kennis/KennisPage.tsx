@@ -1,7 +1,10 @@
 import { scoreSource, type AskInput, type AssessedSource, type Country } from '@tectonic/shared';
-import { Activity, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSession } from '../auth/context.ts';
 import { Avatar } from '../components/Avatar.tsx';
+import { Brand } from '../components/Brand.tsx';
+import { UserMenu } from '../components/UserMenu.tsx';
+import { ChatPanel } from '../chat/ChatPanel.tsx';
 import { ConnectionStatus } from '../components/ConnectionStatus.tsx';
 import { ErrorState } from '../components/States.tsx';
 import { useToasts } from '../components/Toasts.tsx';
@@ -10,9 +13,8 @@ import { useRealtime, useTeamSubscriptions } from '../realtime/RealtimeProvider.
 import { KennisKaart } from './KennisKaart.tsx';
 import { CheckPanel } from './CheckPanel.tsx';
 import { DisputeControls } from './DisputeControls.tsx';
-import { ContextSelects, Icon, type AskContext, STATUS_TONE, Tick, VERDICT_TONE, dateLabel, monthLabel } from './ui.tsx';
+import { ContextSelects, Icon, STATUS_TONE, Tick, VERDICT_TONE, dateLabel, monthLabel, type AskContext } from './ui.tsx';
 import './kennis.css';
-import { ChatView } from '../chat/ChatView.tsx';
 
 /** Counts up to `target` when it changes (skipped for reduced motion). */
 function useCountUp(target: number, ms = 600): number {
@@ -42,14 +44,14 @@ function Presence() {
   const { presence } = useRealtime();
   const session = useSession();
   const others = presence.filter((u) => u.userId !== session.user.id);
+  if (others.length === 0) return null;
   return (
     <div className="kn-presence" aria-label="Wie is er online" data-testid="presence">
       <span className="presence-avatars">
-        {presence.map((u) => (
-          <Avatar key={u.userId} name={u.name} color={u.color} size={30} title={u.userId === session.user.id ? `${u.name} (jij)` : u.name} />
+        {others.map((u) => (
+          <Avatar key={u.userId} name={u.name} color={u.color} size={30} title={`${u.name} is online`} />
         ))}
       </span>
-      <span className="kn-muted">{others.length > 0 ? `${others.map((u) => u.name).join(', ')} ${others.length > 1 ? 'zijn' : 'is'} online` : 'Alleen jij'}</span>
     </div>
   );
 }
@@ -57,63 +59,21 @@ function Presence() {
 function Logo() {
   return (
     <div className="kn-logo">
-      <svg width="30" height="40" viewBox="205 205 215 290" aria-hidden="true">
-        <polygon points="212,350 247,350 262,425 227,425" fill="#797e9b" />
-        <polygon points="290,290 326,290 304,487 268,487" fill="#e80137" />
-        <polygon points="375,213 412,213 366,425 330,425" fill="#f7a901" />
-      </svg>
-      <div>
-        <div className="kn-logo-name">SD Trust</div>
-        <div className="kn-logo-tag">Kennis met onderbouwing</div>
-      </div>
+      <Brand />
+      <div className="kn-logo-tag">Van kennis naar vertrouwen.</div>
     </div>
   );
 }
 
 
-/** Two views share the page shell: the question-and-sources page and the conversation. The view lives in the URL hash so it can be linked to (`#/chat`). */
-type View = 'zoeken' | 'chat';
-const readView = (): View => (window.location.hash.startsWith('#/chat') ? 'chat' : 'zoeken');
-function useView(): View {
-  const [view, setView] = useState<View>(readView);
-  useEffect(() => {
-    const onChange = () => setView(readView());
-    window.addEventListener('hashchange', onChange);
-    return () => window.removeEventListener('hashchange', onChange);
-  }, []);
-  return view;
-}
-
-const VIEWS: Array<{ view: View; href: string; label: string; icon: string }> = [
-  { view: 'zoeken', href: '#/', label: 'Kennis zoeken', icon: 'search' },
-  { view: 'chat', href: '#/chat', label: 'Chat', icon: 'chat' },
-];
-
-/** Compact view switch for narrow screens, where the sidebar sits at the bottom of the page. */
-function ViewTabs({ view }: { view: View }) {
-  return (
-    <nav className="kn-views" aria-label="Weergave">
-      {VIEWS.map((v) => (
-        <a key={v.view} href={v.href} className={`kn-view${v.view === view ? ' is-active' : ''}`} aria-current={v.view === view ? 'page' : undefined}>
-          <Icon name={v.icon} size={18} /> {v.label}
-        </a>
-      ))}
-    </nav>
-  );
-}
-
-function Sidebar({ teams, view }: { teams: Array<{ id: string; name: string }>; view: View }) {
+function Sidebar({ teams }: { teams: Array<{ id: string; name: string }> }) {
   return (
     <aside className="kn-sidebar" aria-label="Werkruimte">
-      <nav className="kn-sidebar-views" aria-label="Weergave">
-        <div className="kn-section">Werkruimte</div>
-        {VIEWS.map((v) => (
-          <a key={v.view} href={v.href} className={`kn-nav${v.view === view ? ' is-active' : ''}`} aria-current={v.view === view ? 'page' : undefined}>
-            <Icon name={v.icon} /> {v.label}
-          </a>
-        ))}
-        <hr />
-      </nav>
+      <div className="kn-section">Werkruimte</div>
+      <a href="#/" className="kn-nav is-active" aria-current="page">
+        <Icon name="search" /> Kennis zoeken
+      </a>
+      <hr />
       <div className="kn-section">Mijn toegang</div>
       {teams.map((t) => (
         <div key={t.id} className="kn-nav kn-nav--static">
@@ -169,7 +129,7 @@ function Panel({ source, users, canApprove, canDispute, canResolve, country, cli
         </span>
       </div>
       <div className="kn-bar" role="progressbar" aria-label="Onderbouwing" aria-valuenow={source.onderbouwing.score} aria-valuemin={0} aria-valuemax={100}>
-        <span style={{ width: `${source.onderbouwing.score}%` }} />
+        <span style={{ transform: `scaleX(${source.onderbouwing.score / 100})` }} />
       </div>
       <ul className="kn-checks">
         {source.onderbouwing.checks.map((c) => (
@@ -234,7 +194,6 @@ export function KennisPage() {
   const [period, setPeriod] = useState('2026-10');
   const [asked, setAsked] = useState<AskInput | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const view = useView();
 
   useTeamSubscriptions(useMemo(() => access.data?.teams.map((t) => t.id) ?? [], [access.data]));
 
@@ -265,7 +224,7 @@ export function KennisPage() {
     if (input.question.trim().length >= 3) setAsked(input);
   };
 
-  // One context for both views: changing it in the chat also re-asks the question on the Kennis page, so the two never disagree.
+  // One context for the page and the chat: changing it in either re-asks the page's question, so the two never disagree.
   const changeContext = (patch: Partial<AskContext>) => {
     if (patch.country) setCountry(patch.country);
     if (patch.client !== undefined) setClient(patch.client);
@@ -274,29 +233,19 @@ export function KennisPage() {
   };
 
   return (
-    <div className={`kn${view === 'chat' ? ' kn--chat' : ''}`} data-testid="kennis-page" data-view={view}>
+    <div className="kn" data-testid="kennis-page">
       <header className="kn-top">
         <Logo />
         <div className="kn-user">
           <Presence />
           <ConnectionStatus />
-          <span className="kn-avatar kn-avatar--lg">{session.user.name[0]}</span>
-          <div>
-            <strong>{session.user.name}</strong>
-            <div className="kn-muted">Payrollconsultant</div>
-          </div>
-          <button type="button" className="kn-link" onClick={session.signOut}>
-            Wissel
-          </button>
+          <UserMenu />
         </div>
       </header>
-      <ViewTabs view={view} />
       <a className="kn-skip" href="#kn-main" onClick={(e) => { e.preventDefault(); document.getElementById('kn-main')?.focus(); }}>
         Naar hoofdinhoud
       </a>
-      <Sidebar teams={access.data?.teams ?? []} view={view} />
-      <ChatView active={view === 'chat'} context={{ country, client, period }} onContextChange={changeContext} />
-      <Activity mode={view === 'zoeken' ? 'visible' : 'hidden'}>
+      <Sidebar teams={access.data?.teams ?? []} />
       <main className="kn-main" id="kn-main" tabIndex={-1}>
         <nav className="kn-crumbs" aria-label="Kruimelpad">
           {[client ?? 'Alle klanten', 'Payroll', monthLabel(period)].map((c, i) => (
@@ -310,6 +259,8 @@ export function KennisPage() {
         <form
           className="kn-ask"
           role="search"
+          data-loading={ask.isFetching}
+          aria-busy={ask.isFetching}
           onSubmit={(e) => {
             e.preventDefault();
             run();
@@ -320,6 +271,7 @@ export function KennisPage() {
             <Icon name="arrow" />
           </button>
         </form>
+        <span className="sr-only" role="status">{ask.isFetching ? 'Bronnen worden gecontroleerd.' : ''}</span>
         <div className="kn-chips">
           <ContextSelects value={{ country, client, period }} clients={access.data?.clients ?? []} onChange={changeContext} />
           <button type="button" className={`kn-chip kn-chip--toggle${compare ? ' is-on' : ''}`} aria-pressed={compare} onClick={() => setCompare(!compare)}>
@@ -346,7 +298,7 @@ export function KennisPage() {
               <p className="kn-muted">Stellig, zonder score en zonder uitleg.</p>
             </div>
             <div className="kn-compare-col kn-compare-col--lens">
-              <h3 className="kn-h3">Trust Lens</h3>
+              <h3 className="kn-h3">SDtrust</h3>
               <span className="kn-badge">
                 <Tick tone={STATUS_TONE[result.status]} /> {result.statusLabel}
                 {result.best ? ` · onderbouwing ${result.best.onderbouwing.score}/100` : ''}
@@ -445,7 +397,7 @@ export function KennisPage() {
         <CheckPanel country={country} />
       </main>
       {selected ? <Panel source={selected} users={userMap} canApprove={canApprove} canDispute={canDispute} canResolve={isOwner} country={country} client={client} /> : <aside className="kn-panel" aria-label="Geselecteerde bron"><p className="kn-muted">Selecteer een bron om de onderbouwing te zien.</p></aside>}
-      </Activity>
+      <ChatPanel context={{ country, client, period }} onContextChange={changeContext} />
     </div>
   );
 }

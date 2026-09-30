@@ -19,6 +19,9 @@ const ICONS: Record<string, ReactNode> = {
   refresh: <><path d="M20 11a8 8 0 0 0-14.3-4.5L4 8" /><path d="M4 4v4h4" /><path d="M4 13a8 8 0 0 0 14.3 4.5L20 16" /><path d="M20 20v-4h-4" /></>,
   steps: <path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" />,
   down: <path d="M12 5v14M6 13l6 6 6-6" />,
+  close: <path d="m6 6 12 12M18 6 6 18" />,
+  expand: <path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" />,
+  shrink: <path d="M20 10h-6V4M4 14h6v6M14 10l7-7M3 21l7-7" />,
 };
 
 export function Icon({ name, size = 20 }: { name: string; size?: number }) {

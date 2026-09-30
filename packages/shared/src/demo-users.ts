@@ -11,9 +11,9 @@ export interface DemoUser {
 }
 
 export const DEMO_USERS: readonly DemoUser[] = [
-  { id: 'demo_wanne', name: 'Wanne Van Camp', email: 'wanne@sdworkx.be', color: '#4f46e5', handle: 'wanne' },
-  { id: 'demo_roy', name: 'Roy Heerkens', email: 'roy@sdworkx.be', color: '#0ea5e9', handle: 'roy' },
-  { id: 'demo_sebastien', name: 'Sebastien De Couvreur', email: 'sebastien@sdworkx.be', color: '#10b981', handle: 'sebastien' },
+  { id: 'demo_wanne', name: 'Wanne Van Camp', email: 'wanne@sdworx.example', color: '#4f46e5', handle: 'wanne' },
+  { id: 'demo_roy', name: 'Roy Heerkens', email: 'roy@sdworx.example', color: '#0ea5e9', handle: 'roy' },
+  { id: 'demo_sebastien', name: 'Sebastien De Couvreur', email: 'sebastien@sdworx.example', color: '#10b981', handle: 'sebastien' },
 ];
 
 export const DEFAULT_DEMO_USER_ID = 'demo_wanne';

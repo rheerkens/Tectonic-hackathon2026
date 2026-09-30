@@ -192,7 +192,7 @@ De scenario’s gebruiken afzonderlijke, reproduceerbare toestanden van hetzelfd
 
 **Vraag.** Ada vraagt eerst “En voor volgende maand?” en verduidelijkt vervolgens dat zij november 2026 bedoelt.
 
-**Beginsituatie.** Het dossier van scenario 2 is beschikbaar. S4 is uitsluitend geldig voor oktober. Voor deze scenarioanalyse bevat S1 evenmin een bevestigde novembertermijn en is geen andere actuele bron beschikbaar.
+**Beginsituatie.** Het dossier van scenario 2 is beschikbaar. S4 is uitsluitend geldig voor oktober. In de seed is ook S1 (20 oktober) enkel als oktoberbewijs geldig (1 tot en met 31 oktober 2026) en bevat het dus geen bevestigde novembertermijn en is geen andere actuele bron beschikbaar.
 
 **Verloop.**
 

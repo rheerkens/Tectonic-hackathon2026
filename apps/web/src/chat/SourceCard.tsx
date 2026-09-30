@@ -71,7 +71,7 @@ export function SourceCard({ source, userName, id }: { source: AssessedSource; u
           </span>
         </div>
         <div className="kn-bar" role="progressbar" aria-label={`Onderbouwing van ${source.code}`} aria-valuenow={score} aria-valuemin={0} aria-valuemax={100}>
-          <span style={{ width: `${score}%` }} />
+          <span style={{ transform: `scaleX(${score / 100})` }} />
         </div>
         <ul className="ch-checks">
           {checks.map((c) => (
