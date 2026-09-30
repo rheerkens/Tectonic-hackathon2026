@@ -44,8 +44,10 @@ function Tick({ tone }: { tone: keyof typeof VERDICT_GLYPH }) {
 function Logo() {
   return (
     <div className="kn-logo">
-      <svg width="38" height="38" viewBox="0 0 32 32" aria-hidden="true">
-        <path d="M6 4h6L6 28H0z" fill="#545871" transform="translate(2 0)" /><path d="M15 4h6L15 28H9z" fill="#e80137" transform="translate(2 0)" /><path d="M24 4h6L24 28H18z" fill="#f7a901" transform="translate(2 0)" />
+      <svg width="30" height="40" viewBox="205 205 215 290" aria-hidden="true">
+        <polygon points="212,350 247,350 262,425 227,425" fill="#797e9b" />
+        <polygon points="290,290 326,290 304,487 268,487" fill="#e80137" />
+        <polygon points="375,213 412,213 366,425 330,425" fill="#f7a901" />
       </svg>
       <div>
         <div className="kn-logo-name">SD Trust</div>
