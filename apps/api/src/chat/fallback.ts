@@ -1,4 +1,4 @@
-import { COUNTRY_LABELS, subjectWords, type AskResult, type AssessedSource, type ChatContext, type ChatTurn, type Source } from '@tectonic/shared';
+import { COUNTRY_LABELS, assess, subjectWords, type AskResult, type AssessedSource, type ChatContext, type ChatTurn, type Source } from '@tectonic/shared';
 
 const MONTHS = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december'];
 export const periodLabel = (period: string) => `${MONTHS[Number(period.slice(5)) - 1] ?? period.slice(5)} ${period.slice(0, 4)}`;
@@ -16,8 +16,9 @@ const plain = (text: string) => text.toLowerCase().normalize('NFD').replace(/\p{
  */
 export function contextFromText(text: string, base: ChatContext): ChatContext {
   const t = plain(text);
-  const nl = /\b(nederland|nederlandse?|nl)\b/.test(t);
-  const be = /\b(belgie|belgische?|be)\b/.test(t);
+  // The abbreviations only in capitals: English "be" is not België.
+  const nl = /\b(nederland|nederlandse?)\b/.test(t) || /\bNL\b/.test(text);
+  const be = /\b(belgie|belgische?)\b/.test(t) || /\bBE\b/.test(text);
   const country = nl !== be ? (nl ? 'NL' : 'BE') : base.country;
 
   let [year, month] = base.period.split('-').map(Number) as [number, number];
@@ -35,7 +36,7 @@ export function contextFromText(text: string, base: ChatContext): ChatContext {
 export interface FallbackPlan {
   /** What the tools are asked: the last question, plus earlier ones while a message has no subject of its own. */
   question: string;
-  /** The chat context with the country/month the last message names. */
+  /** The chat context with the country/month these messages name, later messages winning. */
   context: ChatContext;
   /** The question continues an earlier one ("En voor Nederland?"). */
   followUp: boolean;
@@ -43,15 +44,16 @@ export interface FallbackPlan {
 
 /**
  * A message with no subject of its own ("En voor volgende maand?", "En in Nederland?", "Waarom?") continues the previous
- * question: the tools get the previous user question(s) plus this one. A message with a subject ("Mag ik maaltijdcheques
- * uitbetalen?") stands alone, even when it finds nothing: a gap must not be answered with the previous topic.
+ * question: the tools get the previous user question(s) plus this one, rated for the country/month named along the way.
+ * A message with a subject ("Mag ik maaltijdcheques uitbetalen?") or one that matches a topic by itself ("Tot wanneer mag
+ * Atlas aanleveren?") stands alone, even when it finds nothing: a gap must not be answered with the previous topic.
  */
-export function planFallback(messages: ChatTurn[], sources: Array<Pick<Source, 'client'>>, base: ChatContext): FallbackPlan {
+export function planFallback(messages: ChatTurn[], sources: Source[], base: ChatContext): FallbackPlan {
+  const standsAlone = (text: string) => subjectWords(text, sources, base).length > 0 || assess(text, sources, new Map(), base).topic !== null;
   const users = messages.filter((m) => m.role === 'user').map((m) => m.content);
-  const last = users.pop() ?? '';
-  const parts = [last];
-  while (users.length > 0 && parts.length < 3 && subjectWords(parts[0]!, sources, base).length === 0) parts.unshift(users.pop()!);
-  return { question: parts.join(' ').slice(-300), context: contextFromText(last, base), followUp: parts.length > 1 };
+  const parts = [users.pop() ?? ''];
+  while (users.length > 0 && parts.length < 3 && !standsAlone(parts[0]!)) parts.unshift(users.pop()!);
+  return { question: parts.join(' ').slice(-300), context: parts.reduce((ctx, text) => contextFromText(text, ctx), base), followUp: parts.length > 1 };
 }
 
 // ---- the answer text -------------------------------------------------------

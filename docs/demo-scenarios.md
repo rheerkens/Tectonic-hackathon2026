@@ -89,7 +89,7 @@ No source exists on: dertiende maand, bedrijfswagen, pensioen, kerstpakket.
 - **"En voor Nederland?"** has no subject of its own, so the tools get the previous question too (`find_knowledge` query "Tot wanneer ... aanleveren? En voor Nederland?"), `assess_trust` runs for Nederland: **18 oktober [S5]**, answer starts "Ik beoordeel dit voor Nederland in plaats van België, omdat je dat in je vraag noemt. Ik lees dit als vervolg op je vorige vraag." Footer "Antwoord voor Nederland".
 - **"En de ziekmelding?"** has its own subject: answered alone, D2 (S6).
 - **"En maaltijdcheques?"** is answered alone (S23). **"En de dertiende maand?"** stays a gap and never inherits the previous topic.
-- Country and month named in the message override the selects; one country, one month or "volgende/vorige maand", an optional year; never the client.
+- Country and month named in the message override the selects; one country, one month or "volgende/vorige maand", an optional year; never the client. In a follow-up the earlier question counts too: "Tot wanneer mag Atlas in Nederland loonmutaties aanleveren?" then "En voor november?" is rated for Nederland, november 2026. A message that finds a topic on its own ("Tot wanneer mag Atlas aanleveren?" after the ziekmelding question) is not a follow-up.
 
 ### D7. Period sensitivity (#63)
 - wanne; België, Atlas. **Oktober:** D1. **November** (Periode select, or turn 2 "En voor november?" / "En voor volgende maand?"): *Geen onderbouwd antwoord*; S1, S4, S9, S10, S11 "Niet geldig in deze periode", S3 not confirmed, S2 superseded, S5 other country. Tools: `find_knowledge`, `assess_trust`.
@@ -117,7 +117,8 @@ After inserting S33 (23 oktober, also approved, same scope) into a throwaway dat
 
 ## Topic-matching fix
 `assess` (used by `/api/ask`, `/api/check` and the chat tools `find_knowledge` and `assess_trust`; `/api/naive-answer` keeps its own plain word overlap on purpose, it is the "gewone AI" contrast) used to pick a topic when a **single** question word occurred anywhere in a source. Now (`packages/shared/src/onderbouwing.ts`):
-- Words that say nothing about the topic are ignored: stop words, generic words (*maand*, *jaar*, month names, *uitbetalen*, *procedure*, *deadline*, *termijn*, ...; compared by stem), digits, the country and client names (the chat's client and the clients of the visible sources). "Atlas" selects a client, not a topic.
+- Words that say nothing about the topic are ignored: stop words, time and place words (*maand*, *jaar*, month names, *Nederland*, ...), digits, the country and client names (the chat's client and the clients of the visible sources). "Atlas" selects a client, not a topic.
+- Generic payroll words (*uitbetalen*, *procedure*, *deadline*, *termijn*, *aanleveren*, ...; compared by stem) only count when the question has no more specific word: "Mag ik maaltijdcheques uitbetalen?" is about maaltijdcheques, while "Wat is de aanleverdatum voor Atlas?" and the check-panel claim "Atlas mag tot 25 oktober aanleveren." still find loonmutaties.
 - Per topic, words found in any title, topic or keywords count 1, words that only occur in a claim or value count 0.5.
 - A topic matches only when its evidence is at least 1 (one curated word) and more than a third of the remaining question words are backed.
 
