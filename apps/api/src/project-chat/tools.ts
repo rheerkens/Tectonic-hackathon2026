@@ -98,6 +98,12 @@ export function createTeamTools(context: TeamToolContext): AgentTool[] {
           inArray(projectMembers.projectId, currentAllowedProjectIds),
           arrayContained(sources.audienceProjectIds, currentAllowedProjectIds),
         ];
+        // A replacement the caller cannot see must not leak through its code, whatever the query or limit.
+        const visibleCodes = new Set((await ctx.db
+          .select({ code: sources.code })
+          .from(sources)
+          .innerJoin(projectMembers, and(eq(projectMembers.projectId, sources.projectId), eq(projectMembers.userId, userId)))
+          .where(and(...filters))).map((r) => r.code));
         if (args.teamId) filters.push(eq(sources.projectId, args.teamId));
         // ponytail: any word of the query may match any column (a model sends phrases like "Atlas loonmutaties deadline"); ranking is by team/topic, not relevance.
         const words = (args.query ?? '').split(/\s+/).filter((word) => word.length >= 3);
@@ -137,6 +143,7 @@ export function createTeamTools(context: TeamToolContext): AgentTool[] {
 
         return rows.map((source) => ({
           ...source,
+          supersededBy: visibleCodes.has(source.supersededBy ?? '') ? source.supersededBy : null,
           citation: `[${source.teamName} / ${source.code}]`,
         }));
       },
