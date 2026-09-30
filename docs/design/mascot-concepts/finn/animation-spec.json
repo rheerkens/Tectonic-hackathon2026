@@ -1,0 +1,218 @@
+{
+  "version": 1,
+  "character": "Finn",
+  "generationMode": "built-in image_gen",
+  "reference": "../01-finn-trusted-consultant-trust.png",
+  "notes": [
+    "Eight animation states, four source frames per state, read left-to-right then top-to-bottom.",
+    "Welcome plays once per browser-tab session; no greeting on every route change.",
+    "Reduced motion uses a representative static frame, with text carrying state.",
+    "Verified is reserved for explicit verification, not merely a completed response.",
+    "Do not auto-open the chat, play sounds, or repeatedly wave for attention.",
+    "Source sheets are generated animation drafts. Trim/pivot metadata stabilizes playback; use the preview to review visual consistency."
+  ],
+  "states": [
+    {
+      "id": "idle",
+      "name": "Calm idle",
+      "trigger": "Chat is available; no active request.",
+      "behavior": "A quiet blink every 6–9 seconds, with stillness between blinks.",
+      "loop": true,
+      "frameDurations": [
+        6000,
+        90,
+        110,
+        140
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "detail": "A calm neutral idle and blink cycle. RIGHT arm (viewer right) relaxed at side, hand resting lightly at cardigan pocket; LEFT arm holds folder. Frame 1: eyes open, calm closed-mouth smile. Frame 2: eyelids half closed, identical pose. Frame 3: eyes gently fully closed for a blink behind same glasses, identical pose. Frame 4: eyes open again, identical to frame 1. No wave. NO BODY MOVEMENT; only the eyelids change.",
+      "prompt": "Use case: identity-preserve. Create an animation SPRITE SHEET of the EXACT Finn mascot in the supplied reference image. This reference is the identity reference, not a sheet to copy. Preserve adult nerdy male consultant, same warm skin, brown wavy quiff, large round charcoal spectacles, red cardigan #F1002F, ivory shirt, dark charcoal trousers, cream sneakers with yellow soles, yellow payroll folder with cream shield and charcoal checkmark held against chest by the LEFT arm (viewer left). Tiny blue collar pin only; blue is never a dominant color. Preserve the original polished soft-shaded cartoon appearance and proportions. All four characters must be IDENTICAL in design, outfit, colors, size, camera angle, lighting and drawing style; only the specified animation motion changes.\nOUTPUT: ONE square PNG with REAL alpha transparency. EXACTLY FOUR full-body animation frames arranged in a perfectly regular 2 COLUMN by 2 ROW grid. Each quadrant is an equal-sized square animation cell. Read order: top left = frame 1; top right = frame 2; bottom left = frame 3; bottom right = frame 4. No visible grid, no borders, no labels, no typography, no floor, no shadows outside character. In every cell character is centered at the same local X position; BOTH FEET on an identical local baseline 90% down that cell; top of hair approximately 10% down that cell. Maintain EXACT same overall SCALE and foot registration across all four frames, so playback is stable. Entire body, hair, folder and gesture must fit WITHIN its own cell with transparent margins. No overlapping cells, no cropped limbs. Keep feet, legs, folder and torso stable, except explicitly requested tiny changes. Do not rotate the whole character. There is ONE Finn per cell, exactly four Finns total. No duplicate hands or extra limbs. Animation should feel calm, trustworthy and welcoming, not frantic.\nAnimation: A calm neutral idle and blink cycle. RIGHT arm (viewer right) relaxed at side, hand resting lightly at cardigan pocket; LEFT arm holds folder. Frame 1: eyes open, calm closed-mouth smile. Frame 2: eyelids half closed, identical pose. Frame 3: eyes gently fully closed for a blink behind same glasses, identical pose. Frame 4: eyes open again, identical to frame 1. No wave. NO BODY MOVEMENT; only the eyelids change.",
+      "file": "finn-idle.png",
+      "nextState": null,
+      "staticFrame": 0,
+      "sample": "Ask me a payroll question whenever you’re ready."
+    },
+    {
+      "id": "welcome",
+      "name": "Welcome wave",
+      "trigger": "First page visit in a session, or deliberate greeting replay.",
+      "behavior": "One brief wave, then return to idle. Do not replay on every route change.",
+      "loop": false,
+      "frameDurations": [
+        220,
+        190,
+        190,
+        260
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        1,
+        2,
+        3
+      ],
+      "detail": "A brief welcome wave using RIGHT hand (viewer right), while LEFT arm holds folder. Feet and head registered identically. Frame 1: right hand lifting to shoulder height, elbow bent, palm open toward viewer. Frame 2: hand raised beside head, palm tilted slightly outward. Frame 3: same elbow and shoulder, palm tilted slightly inward by wrist, cheerful small open smile. Frame 4: hand lowered back near shoulder, gentle closed-mouth smile. Differences are small and smoothly connect. Show a friendly human hand with five fingers, not a mitten.",
+      "prompt": "Use case: identity-preserve. Create an animation SPRITE SHEET of the EXACT Finn mascot in the supplied reference image. This reference is the identity reference, not a sheet to copy. Preserve adult nerdy male consultant, same warm skin, brown wavy quiff, large round charcoal spectacles, red cardigan #F1002F, ivory shirt, dark charcoal trousers, cream sneakers with yellow soles, yellow payroll folder with cream shield and charcoal checkmark held against chest by the LEFT arm (viewer left). Tiny blue collar pin only; blue is never a dominant color. Preserve the original polished soft-shaded cartoon appearance and proportions. All four characters must be IDENTICAL in design, outfit, colors, size, camera angle, lighting and drawing style; only the specified animation motion changes.\nOUTPUT: ONE square PNG with REAL alpha transparency. EXACTLY FOUR full-body animation frames arranged in a perfectly regular 2 COLUMN by 2 ROW grid. Each quadrant is an equal-sized square animation cell. Read order: top left = frame 1; top right = frame 2; bottom left = frame 3; bottom right = frame 4. No visible grid, no borders, no labels, no typography, no floor, no shadows outside character. In every cell character is centered at the same local X position; BOTH FEET on an identical local baseline 90% down that cell; top of hair approximately 10% down that cell. Maintain EXACT same overall SCALE and foot registration across all four frames, so playback is stable. Entire body, hair, folder and gesture must fit WITHIN its own cell with transparent margins. No overlapping cells, no cropped limbs. Keep feet, legs, folder and torso stable, except explicitly requested tiny changes. Do not rotate the whole character. There is ONE Finn per cell, exactly four Finns total. No duplicate hands or extra limbs. Animation should feel calm, trustworthy and welcoming, not frantic.\nAnimation: A brief welcome wave using RIGHT hand (viewer right), while LEFT arm holds folder. Feet and head registered identically. Frame 1: right hand lifting to shoulder height, elbow bent, palm open toward viewer. Frame 2: hand raised beside head, palm tilted slightly outward. Frame 3: same elbow and shoulder, palm tilted slightly inward by wrist, cheerful small open smile. Frame 4: hand lowered back near shoulder, gentle closed-mouth smile. Differences are small and smoothly connect. Show a friendly human hand with five fingers, not a mitten.",
+      "file": "finn-welcome.png",
+      "nextState": "idle",
+      "staticFrame": 0,
+      "sample": "Hi, I’m Finn. What can I help you check?"
+    },
+    {
+      "id": "listening",
+      "name": "Listening",
+      "trigger": "User opens the chat or is composing a question.",
+      "behavior": "Small acknowledging nod on entry, then hold an attentive pose.",
+      "loop": false,
+      "frameDurations": [
+        380,
+        220,
+        260,
+        480
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "detail": "Attentive listening sequence. Right arm relaxed near pocket, left arm holds folder. No wave, no talking, no bouncing. Frame 1: attentive face looking toward user, mouth closed gentle smile. Frame 2: a subtle forward nod, chin just slightly down, eyes attentive. Frame 3: chin slightly lowered at bottom of nod, eyebrows gently raised to show interest. Frame 4: head returned to original position with warm attentive expression. Tiny head motion only, identical feet and scale.",
+      "prompt": "Use case: identity-preserve. Create an animation SPRITE SHEET of the EXACT Finn mascot in the supplied reference image. This reference is the identity reference, not a sheet to copy. Preserve adult nerdy male consultant, same warm skin, brown wavy quiff, large round charcoal spectacles, red cardigan #F1002F, ivory shirt, dark charcoal trousers, cream sneakers with yellow soles, yellow payroll folder with cream shield and charcoal checkmark held against chest by the LEFT arm (viewer left). Tiny blue collar pin only; blue is never a dominant color. Preserve the original polished soft-shaded cartoon appearance and proportions. All four characters must be IDENTICAL in design, outfit, colors, size, camera angle, lighting and drawing style; only the specified animation motion changes.\nOUTPUT: ONE square PNG with REAL alpha transparency. EXACTLY FOUR full-body animation frames arranged in a perfectly regular 2 COLUMN by 2 ROW grid. Each quadrant is an equal-sized square animation cell. Read order: top left = frame 1; top right = frame 2; bottom left = frame 3; bottom right = frame 4. No visible grid, no borders, no labels, no typography, no floor, no shadows outside character. In every cell character is centered at the same local X position; BOTH FEET on an identical local baseline 90% down that cell; top of hair approximately 10% down that cell. Maintain EXACT same overall SCALE and foot registration across all four frames, so playback is stable. Entire body, hair, folder and gesture must fit WITHIN its own cell with transparent margins. No overlapping cells, no cropped limbs. Keep feet, legs, folder and torso stable, except explicitly requested tiny changes. Do not rotate the whole character. There is ONE Finn per cell, exactly four Finns total. No duplicate hands or extra limbs. Animation should feel calm, trustworthy and welcoming, not frantic.\nAnimation: Attentive listening sequence. Right arm relaxed near pocket, left arm holds folder. No wave, no talking, no bouncing. Frame 1: attentive face looking toward user, mouth closed gentle smile. Frame 2: a subtle forward nod, chin just slightly down, eyes attentive. Frame 3: chin slightly lowered at bottom of nod, eyebrows gently raised to show interest. Frame 4: head returned to original position with warm attentive expression. Tiny head motion only, identical feet and scale.",
+      "file": "finn-listening.png",
+      "nextState": null,
+      "staticFrame": 3,
+      "sample": "Tell me which client and period you’re working with."
+    },
+    {
+      "id": "thinking",
+      "name": "Checking sources",
+      "trigger": "A question was submitted and the answer is being prepared.",
+      "behavior": "Slow thoughtful loop during the request; stop immediately when it resolves.",
+      "loop": true,
+      "frameDurations": [
+        750,
+        650,
+        750,
+        650
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "detail": "Thoughtful source-checking loop. RIGHT hand raised to chin with index finger resting gently against chin; left arm keeps folder in same fixed spot. Frame 1: thoughtful relaxed expression, eyes forward and slightly down. Frame 2: eyes glance gently down toward the yellow folder, eyebrows concentrating slightly. Frame 3: eyes still toward folder, eyelids half lowered as if carefully checking information. Frame 4: eyes return forward with thoughtful expression matching frame 1. Keep chin hand, body, feet and folder stable. Friendly concentrating, not worried. NO FLOATING DOTS, no question marks, no added props.",
+      "prompt": "Use case: identity-preserve. Create an animation SPRITE SHEET of the EXACT Finn mascot in the supplied reference image. This reference is the identity reference, not a sheet to copy. Preserve adult nerdy male consultant, same warm skin, brown wavy quiff, large round charcoal spectacles, red cardigan #F1002F, ivory shirt, dark charcoal trousers, cream sneakers with yellow soles, yellow payroll folder with cream shield and charcoal checkmark held against chest by the LEFT arm (viewer left). Tiny blue collar pin only; blue is never a dominant color. Preserve the original polished soft-shaded cartoon appearance and proportions. All four characters must be IDENTICAL in design, outfit, colors, size, camera angle, lighting and drawing style; only the specified animation motion changes.\nOUTPUT: ONE square PNG with REAL alpha transparency. EXACTLY FOUR full-body animation frames arranged in a perfectly regular 2 COLUMN by 2 ROW grid. Each quadrant is an equal-sized square animation cell. Read order: top left = frame 1; top right = frame 2; bottom left = frame 3; bottom right = frame 4. No visible grid, no borders, no labels, no typography, no floor, no shadows outside character. In every cell character is centered at the same local X position; BOTH FEET on an identical local baseline 90% down that cell; top of hair approximately 10% down that cell. Maintain EXACT same overall SCALE and foot registration across all four frames, so playback is stable. Entire body, hair, folder and gesture must fit WITHIN its own cell with transparent margins. No overlapping cells, no cropped limbs. Keep feet, legs, folder and torso stable, except explicitly requested tiny changes. Do not rotate the whole character. There is ONE Finn per cell, exactly four Finns total. No duplicate hands or extra limbs. Animation should feel calm, trustworthy and welcoming, not frantic.\nAnimation: Thoughtful source-checking loop. RIGHT hand raised to chin with index finger resting gently against chin; left arm keeps folder in same fixed spot. Frame 1: thoughtful relaxed expression, eyes forward and slightly down. Frame 2: eyes glance gently down toward the yellow folder, eyebrows concentrating slightly. Frame 3: eyes still toward folder, eyelids half lowered as if carefully checking information. Frame 4: eyes return forward with thoughtful expression matching frame 1. Keep chin hand, body, feet and folder stable. Friendly concentrating, not worried. NO FLOATING DOTS, no question marks, no added props.",
+      "file": "finn-thinking.png",
+      "nextState": null,
+      "staticFrame": 0,
+      "sample": "I’m checking the sources for this question."
+    },
+    {
+      "id": "answer",
+      "name": "Here is the answer",
+      "trigger": "An answer is ready to read.",
+      "behavior": "One open-palm gesture toward the answer, then return to idle.",
+      "loop": false,
+      "frameDurations": [
+        220,
+        300,
+        500,
+        260
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "detail": "A helpful presenting gesture, neutral about confidence. LEFT arm holds folder. Frame 1: RIGHT hand moving from waist toward viewer right with palm turning up. Frame 2: right forearm extended out to viewer right, palm up in clear 'here is the information' gesture. Frame 3: hold palm-up gesture, slight warm smile and gently raised eyebrows. Frame 4: right arm relaxes partway down toward waist. Keep feet and head placement stable; no pointing finger, no thumbs up, no confetti, no celebration, no large mouth changes.",
+      "prompt": "Use case: identity-preserve. Create an animation SPRITE SHEET of the EXACT Finn mascot in the supplied reference image. This reference is the identity reference, not a sheet to copy. Preserve adult nerdy male consultant, same warm skin, brown wavy quiff, large round charcoal spectacles, red cardigan #F1002F, ivory shirt, dark charcoal trousers, cream sneakers with yellow soles, yellow payroll folder with cream shield and charcoal checkmark held against chest by the LEFT arm (viewer left). Tiny blue collar pin only; blue is never a dominant color. Preserve the original polished soft-shaded cartoon appearance and proportions. All four characters must be IDENTICAL in design, outfit, colors, size, camera angle, lighting and drawing style; only the specified animation motion changes.\nOUTPUT: ONE square PNG with REAL alpha transparency. EXACTLY FOUR full-body animation frames arranged in a perfectly regular 2 COLUMN by 2 ROW grid. Each quadrant is an equal-sized square animation cell. Read order: top left = frame 1; top right = frame 2; bottom left = frame 3; bottom right = frame 4. No visible grid, no borders, no labels, no typography, no floor, no shadows outside character. In every cell character is centered at the same local X position; BOTH FEET on an identical local baseline 90% down that cell; top of hair approximately 10% down that cell. Maintain EXACT same overall SCALE and foot registration across all four frames, so playback is stable. Entire body, hair, folder and gesture must fit WITHIN its own cell with transparent margins. No overlapping cells, no cropped limbs. Keep feet, legs, folder and torso stable, except explicitly requested tiny changes. Do not rotate the whole character. There is ONE Finn per cell, exactly four Finns total. No duplicate hands or extra limbs. Animation should feel calm, trustworthy and welcoming, not frantic.\nAnimation: A helpful presenting gesture, neutral about confidence. LEFT arm holds folder. Frame 1: RIGHT hand moving from waist toward viewer right with palm turning up. Frame 2: right forearm extended out to viewer right, palm up in clear 'here is the information' gesture. Frame 3: hold palm-up gesture, slight warm smile and gently raised eyebrows. Frame 4: right arm relaxes partway down toward waist. Keep feet and head placement stable; no pointing finger, no thumbs up, no confetti, no celebration, no large mouth changes.",
+      "file": "finn-answer.png",
+      "nextState": "idle",
+      "staticFrame": 2,
+      "sample": "Here’s what I found, with the source behind it."
+    },
+    {
+      "id": "verified",
+      "name": "Verified result",
+      "trigger": "The app explicitly reports that the result is verified or well substantiated.",
+      "behavior": "One modest approving nod and thumbs-up. Never use for unverified answers.",
+      "loop": false,
+      "frameDurations": [
+        260,
+        330,
+        420,
+        340
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "detail": "A modest verified-success animation. LEFT arm holds folder. Frame 1: RIGHT hand near chest begins to form a thumbs-up. Frame 2: clear thumbs-up beside chest, pleased modest closed-mouth smile. Frame 3: same thumbs-up with tiny approving head nod. Frame 4: head back to neutral, thumbs-up held in a relaxed way. Confident but restrained; no jumping, no raised victory arms, no confetti, no floating symbols. Same stable feet and scale.",
+      "prompt": "Use case: identity-preserve. Create an animation SPRITE SHEET of the EXACT Finn mascot in the supplied reference image. This reference is the identity reference, not a sheet to copy. Preserve adult nerdy male consultant, same warm skin, brown wavy quiff, large round charcoal spectacles, red cardigan #F1002F, ivory shirt, dark charcoal trousers, cream sneakers with yellow soles, yellow payroll folder with cream shield and charcoal checkmark held against chest by the LEFT arm (viewer left). Tiny blue collar pin only; blue is never a dominant color. Preserve the original polished soft-shaded cartoon appearance and proportions. All four characters must be IDENTICAL in design, outfit, colors, size, camera angle, lighting and drawing style; only the specified animation motion changes.\nOUTPUT: ONE square PNG with REAL alpha transparency. EXACTLY FOUR full-body animation frames arranged in a perfectly regular 2 COLUMN by 2 ROW grid. Each quadrant is an equal-sized square animation cell. Read order: top left = frame 1; top right = frame 2; bottom left = frame 3; bottom right = frame 4. No visible grid, no borders, no labels, no typography, no floor, no shadows outside character. In every cell character is centered at the same local X position; BOTH FEET on an identical local baseline 90% down that cell; top of hair approximately 10% down that cell. Maintain EXACT same overall SCALE and foot registration across all four frames, so playback is stable. Entire body, hair, folder and gesture must fit WITHIN its own cell with transparent margins. No overlapping cells, no cropped limbs. Keep feet, legs, folder and torso stable, except explicitly requested tiny changes. Do not rotate the whole character. There is ONE Finn per cell, exactly four Finns total. No duplicate hands or extra limbs. Animation should feel calm, trustworthy and welcoming, not frantic.\nAnimation: A modest verified-success animation. LEFT arm holds folder. Frame 1: RIGHT hand near chest begins to form a thumbs-up. Frame 2: clear thumbs-up beside chest, pleased modest closed-mouth smile. Frame 3: same thumbs-up with tiny approving head nod. Frame 4: head back to neutral, thumbs-up held in a relaxed way. Confident but restrained; no jumping, no raised victory arms, no confetti, no floating symbols. Same stable feet and scale.",
+      "file": "finn-verified.png",
+      "nextState": "idle",
+      "staticFrame": 2,
+      "sample": "This result has been verified for the selected context."
+    },
+    {
+      "id": "uncertain",
+      "name": "Let’s check",
+      "trigger": "Sources conflict, confidence is low, or a clarification is needed.",
+      "behavior": "A thoughtful gesture, then hold. Pair with text explaining what needs checking.",
+      "loop": false,
+      "frameDurations": [
+        330,
+        420,
+        420,
+        600
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "detail": "Honest uncertainty or need-for-clarification animation. LEFT arm holds folder. RIGHT hand makes a small palm-up questioning gesture close to waist, one shoulder very slightly raised. Frame 1: neutral kind face, beginning to lift right palm. Frame 2: right palm up near waist, eyebrows gently drawn together in thought, slight head tilt. Frame 3: same gentle head tilt with one eyebrow raised a little more, kind closed-mouth expression, not smiling broadly. Frame 4: hold small palm-up pose with thoughtful concerned-but-calm face. No sadness, no panic, no shrugging both arms, no question-mark graphics, no thumbs-up. Distinguish clearly from happy verified pose.",
+      "prompt": "Use case: identity-preserve. Create an animation SPRITE SHEET of the EXACT Finn mascot in the supplied reference image. This reference is the identity reference, not a sheet to copy. Preserve adult nerdy male consultant, same warm skin, brown wavy quiff, large round charcoal spectacles, red cardigan #F1002F, ivory shirt, dark charcoal trousers, cream sneakers with yellow soles, yellow payroll folder with cream shield and charcoal checkmark held against chest by the LEFT arm (viewer left). Tiny blue collar pin only; blue is never a dominant color. Preserve the original polished soft-shaded cartoon appearance and proportions. All four characters must be IDENTICAL in design, outfit, colors, size, camera angle, lighting and drawing style; only the specified animation motion changes.\nOUTPUT: ONE square PNG with REAL alpha transparency. EXACTLY FOUR full-body animation frames arranged in a perfectly regular 2 COLUMN by 2 ROW grid. Each quadrant is an equal-sized square animation cell. Read order: top left = frame 1; top right = frame 2; bottom left = frame 3; bottom right = frame 4. No visible grid, no borders, no labels, no typography, no floor, no shadows outside character. In every cell character is centered at the same local X position; BOTH FEET on an identical local baseline 90% down that cell; top of hair approximately 10% down that cell. Maintain EXACT same overall SCALE and foot registration across all four frames, so playback is stable. Entire body, hair, folder and gesture must fit WITHIN its own cell with transparent margins. No overlapping cells, no cropped limbs. Keep feet, legs, folder and torso stable, except explicitly requested tiny changes. Do not rotate the whole character. There is ONE Finn per cell, exactly four Finns total. No duplicate hands or extra limbs. Animation should feel calm, trustworthy and welcoming, not frantic.\nAnimation: Honest uncertainty or need-for-clarification animation. LEFT arm holds folder. RIGHT hand makes a small palm-up questioning gesture close to waist, one shoulder very slightly raised. Frame 1: neutral kind face, beginning to lift right palm. Frame 2: right palm up near waist, eyebrows gently drawn together in thought, slight head tilt. Frame 3: same gentle head tilt with one eyebrow raised a little more, kind closed-mouth expression, not smiling broadly. Frame 4: hold small palm-up pose with thoughtful concerned-but-calm face. No sadness, no panic, no shrugging both arms, no question-mark graphics, no thumbs-up. Distinguish clearly from happy verified pose.",
+      "file": "finn-uncertain.png",
+      "nextState": null,
+      "staticFrame": 3,
+      "sample": "These sources disagree. Let’s check which one applies."
+    },
+    {
+      "id": "retry",
+      "name": "Something went wrong",
+      "trigger": "A request fails or the connection drops.",
+      "behavior": "One small apologetic gesture, then hold. Keep a visible retry action in the UI.",
+      "loop": false,
+      "frameDurations": [
+        300,
+        360,
+        440,
+        600
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "detail": "Gentle apology for a temporary technical error. LEFT arm holds yellow folder securely. RIGHT hand rests open over upper chest as if saying sorry, shoulders relaxed. Frame 1: right hand lifting toward chest, eyebrows slightly lifted at inner corners, calm closed mouth. Frame 2: right hand over chest, head dips in a very small apologetic nod. Frame 3: same hand on chest, head at small nod, softly concerned expression. Frame 4: head rises, hand stays over chest, face becomes quietly reassuring. No alarm, no tears, no sweat, no broken objects, no warning signs, no checkmark gesture with right hand. Keep full-body registration stable.",
+      "prompt": "Use case: identity-preserve. Create an animation SPRITE SHEET of the EXACT Finn mascot in the supplied reference image. This reference is the identity reference, not a sheet to copy. Preserve adult nerdy male consultant, same warm skin, brown wavy quiff, large round charcoal spectacles, red cardigan #F1002F, ivory shirt, dark charcoal trousers, cream sneakers with yellow soles, yellow payroll folder with cream shield and charcoal checkmark held against chest by the LEFT arm (viewer left). Tiny blue collar pin only; blue is never a dominant color. Preserve the original polished soft-shaded cartoon appearance and proportions. All four characters must be IDENTICAL in design, outfit, colors, size, camera angle, lighting and drawing style; only the specified animation motion changes.\nOUTPUT: ONE square PNG with REAL alpha transparency. EXACTLY FOUR full-body animation frames arranged in a perfectly regular 2 COLUMN by 2 ROW grid. Each quadrant is an equal-sized square animation cell. Read order: top left = frame 1; top right = frame 2; bottom left = frame 3; bottom right = frame 4. No visible grid, no borders, no labels, no typography, no floor, no shadows outside character. In every cell character is centered at the same local X position; BOTH FEET on an identical local baseline 90% down that cell; top of hair approximately 10% down that cell. Maintain EXACT same overall SCALE and foot registration across all four frames, so playback is stable. Entire body, hair, folder and gesture must fit WITHIN its own cell with transparent margins. No overlapping cells, no cropped limbs. Keep feet, legs, folder and torso stable, except explicitly requested tiny changes. Do not rotate the whole character. There is ONE Finn per cell, exactly four Finns total. No duplicate hands or extra limbs. Animation should feel calm, trustworthy and welcoming, not frantic.\nAnimation: Gentle apology for a temporary technical error. LEFT arm holds yellow folder securely. RIGHT hand rests open over upper chest as if saying sorry, shoulders relaxed. Frame 1: right hand lifting toward chest, eyebrows slightly lifted at inner corners, calm closed mouth. Frame 2: right hand over chest, head dips in a very small apologetic nod. Frame 3: same hand on chest, head at small nod, softly concerned expression. Frame 4: head rises, hand stays over chest, face becomes quietly reassuring. No alarm, no tears, no sweat, no broken objects, no warning signs, no checkmark gesture with right hand. Keep full-body registration stable.",
+      "file": "finn-retry.png",
+      "nextState": null,
+      "staticFrame": 3,
+      "sample": "I couldn’t complete that request. Please try again."
+    }
+  ]
+}

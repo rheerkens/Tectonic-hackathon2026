@@ -1,0 +1,3030 @@
+{
+  "version": 2,
+  "character": "Finn",
+  "generationMode": "built-in image_gen",
+  "reference": "finn-idle.png",
+  "notes": [
+    "96 newly generated source frames, twelve per state; each source PNG has four columns and three rows.",
+    "Genuinely generated in-between drawings; original four-frame sheets are preserved separately.",
+    "Transitions use entry, core, and return-to-rest frames. Thinking loops only the core pose.",
+    "Idle timing deliberately holds still, and reuses progressive eyelid frames to avoid an unintended wink.",
+    "Welcome plays once per browser-tab session. No sound or automatic chat opening.",
+    "Use static representative frames for reduced motion. Verified gestures are reserved for verified results.",
+    "Generated frame-to-frame drawing variation remains; preview at the intended chat-button size."
+  ],
+  "render": {
+    "canvasSize": 512,
+    "baseline": 466,
+    "characterHeight": 424
+  },
+  "states": [
+    {
+      "id": "idle",
+      "name": "Calm idle",
+      "trigger": "Chat is available; no active request.",
+      "behavior": "A blink shortly after activation, then a quiet six-second rest between blinks.",
+      "loop": true,
+      "frameDurations": [
+        6000,
+        180,
+        60,
+        60,
+        60,
+        70,
+        60,
+        60,
+        60,
+        110,
+        180,
+        180
+      ],
+      "sequence": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        3,
+        2,
+        9,
+        10,
+        11,
+        0
+      ],
+      "file": "finn-idle-v2.png",
+      "nextState": null,
+      "staticFrame": 0,
+      "sample": "Ask me a payroll question whenever you\u2019re ready.",
+      "grid": {
+        "columns": 4,
+        "rows": 3
+      },
+      "reviewSequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "loopSequence": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        3,
+        2,
+        9,
+        10,
+        11,
+        0
+      ],
+      "exitSequence": [],
+      "restFrames": [
+        0,
+        1,
+        9,
+        10,
+        11
+      ],
+      "sheetSize": [
+        1448,
+        1086
+      ],
+      "frames": [
+        {
+          "cell": [
+            0,
+            0,
+            423,
+            358
+          ],
+          "bounds": [
+            182,
+            7,
+            363,
+            345
+          ],
+          "pivot": [
+            280.5,
+            343
+          ],
+          "characterHeight": 334,
+          "atlasCell": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            423,
+            0,
+            307,
+            358
+          ],
+          "bounds": [
+            61,
+            7,
+            242,
+            345
+          ],
+          "pivot": [
+            159.0,
+            343
+          ],
+          "characterHeight": 334,
+          "atlasCell": [
+            256,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            730,
+            0,
+            310,
+            358
+          ],
+          "bounds": [
+            66,
+            7,
+            248,
+            345
+          ],
+          "pivot": [
+            165.0,
+            343
+          ],
+          "characterHeight": 334,
+          "atlasCell": [
+            512,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1040,
+            0,
+            408,
+            358
+          ],
+          "bounds": [
+            62,
+            7,
+            243,
+            345
+          ],
+          "pivot": [
+            160.5,
+            343
+          ],
+          "characterHeight": 334,
+          "atlasCell": [
+            768,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            0,
+            358,
+            423,
+            361
+          ],
+          "bounds": [
+            181,
+            14,
+            364,
+            354
+          ],
+          "pivot": [
+            280.5,
+            352
+          ],
+          "characterHeight": 336,
+          "atlasCell": [
+            0,
+            256,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            423,
+            358,
+            307,
+            361
+          ],
+          "bounds": [
+            59,
+            14,
+            242,
+            354
+          ],
+          "pivot": [
+            158.5,
+            352
+          ],
+          "characterHeight": 336,
+          "atlasCell": [
+            256,
+            256,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            730,
+            358,
+            310,
+            361
+          ],
+          "bounds": [
+            65,
+            13,
+            248,
+            354
+          ],
+          "pivot": [
+            164.5,
+            352
+          ],
+          "characterHeight": 337,
+          "atlasCell": [
+            512,
+            256,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1040,
+            358,
+            408,
+            361
+          ],
+          "bounds": [
+            62,
+            13,
+            244,
+            354
+          ],
+          "pivot": [
+            160.5,
+            352
+          ],
+          "characterHeight": 337,
+          "atlasCell": [
+            768,
+            256,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            0,
+            719,
+            422,
+            367
+          ],
+          "bounds": [
+            179,
+            9,
+            364,
+            352
+          ],
+          "pivot": [
+            279.5,
+            350
+          ],
+          "characterHeight": 339,
+          "atlasCell": [
+            0,
+            512,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            422,
+            719,
+            308,
+            367
+          ],
+          "bounds": [
+            59,
+            8,
+            245,
+            352
+          ],
+          "pivot": [
+            160.0,
+            350
+          ],
+          "characterHeight": 340,
+          "atlasCell": [
+            256,
+            512,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            730,
+            719,
+            310,
+            367
+          ],
+          "bounds": [
+            63,
+            9,
+            249,
+            352
+          ],
+          "pivot": [
+            164.0,
+            350
+          ],
+          "characterHeight": 339,
+          "atlasCell": [
+            512,
+            512,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1040,
+            719,
+            408,
+            367
+          ],
+          "bounds": [
+            62,
+            9,
+            245,
+            352
+          ],
+          "pivot": [
+            160.5,
+            350
+          ],
+          "characterHeight": 339,
+          "atlasCell": [
+            768,
+            512,
+            256,
+            256
+          ]
+        }
+      ]
+    },
+    {
+      "id": "welcome",
+      "name": "Welcome wave",
+      "trigger": "First page visit in a session, or deliberate greeting replay.",
+      "behavior": "One brief wave, then return to idle. Do not replay on every route change.",
+      "loop": false,
+      "frameDurations": [
+        120,
+        90,
+        90,
+        90,
+        90,
+        95,
+        95,
+        95,
+        95,
+        90,
+        90,
+        160
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        6,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "file": "finn-welcome-v2.png",
+      "nextState": "idle",
+      "staticFrame": 5,
+      "sample": "Hi, I\u2019m Finn. What can I help you check?",
+      "grid": {
+        "columns": 4,
+        "rows": 3
+      },
+      "reviewSequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "loopSequence": null,
+      "exitSequence": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "restFrames": [
+        0,
+        11
+      ],
+      "sheetSize": [
+        1448,
+        1086
+      ],
+      "frames": [
+        {
+          "cell": [
+            0,
+            0,
+            365,
+            357
+          ],
+          "bounds": [
+            93,
+            5,
+            275,
+            349
+          ],
+          "pivot": [
+            192.0,
+            347
+          ],
+          "characterHeight": 340,
+          "atlasCell": [
+            0,
+            768,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            365,
+            0,
+            365,
+            357
+          ],
+          "bounds": [
+            90,
+            5,
+            279,
+            349
+          ],
+          "pivot": [
+            189.0,
+            347
+          ],
+          "characterHeight": 340,
+          "atlasCell": [
+            256,
+            768,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            730,
+            0,
+            376,
+            357
+          ],
+          "bounds": [
+            87,
+            5,
+            304,
+            349
+          ],
+          "pivot": [
+            186.0,
+            347
+          ],
+          "characterHeight": 340,
+          "atlasCell": [
+            512,
+            768,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1106,
+            0,
+            342,
+            357
+          ],
+          "bounds": [
+            73,
+            5,
+            271,
+            349
+          ],
+          "pivot": [
+            172.0,
+            347
+          ],
+          "characterHeight": 340,
+          "atlasCell": [
+            768,
+            768,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            0,
+            357,
+            376,
+            362
+          ],
+          "bounds": [
+            93,
+            9,
+            297,
+            354
+          ],
+          "pivot": [
+            192.0,
+            352
+          ],
+          "characterHeight": 341,
+          "atlasCell": [
+            0,
+            1024,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            376,
+            357,
+            362,
+            362
+          ],
+          "bounds": [
+            79,
+            9,
+            284,
+            354
+          ],
+          "pivot": [
+            177.5,
+            352
+          ],
+          "characterHeight": 341,
+          "atlasCell": [
+            256,
+            1024,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            738,
+            357,
+            360,
+            362
+          ],
+          "bounds": [
+            79,
+            9,
+            280,
+            354
+          ],
+          "pivot": [
+            178.0,
+            352
+          ],
+          "characterHeight": 341,
+          "atlasCell": [
+            512,
+            1024,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1098,
+            357,
+            350,
+            362
+          ],
+          "bounds": [
+            81,
+            9,
+            285,
+            354
+          ],
+          "pivot": [
+            180.0,
+            352
+          ],
+          "characterHeight": 341,
+          "atlasCell": [
+            768,
+            1024,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            0,
+            719,
+            378,
+            367
+          ],
+          "bounds": [
+            93,
+            9,
+            301,
+            355
+          ],
+          "pivot": [
+            192.0,
+            353
+          ],
+          "characterHeight": 342,
+          "atlasCell": [
+            0,
+            1280,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            378,
+            719,
+            357,
+            367
+          ],
+          "bounds": [
+            77,
+            9,
+            275,
+            355
+          ],
+          "pivot": [
+            176.0,
+            353
+          ],
+          "characterHeight": 342,
+          "atlasCell": [
+            256,
+            1280,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            735,
+            719,
+            356,
+            367
+          ],
+          "bounds": [
+            82,
+            9,
+            268,
+            355
+          ],
+          "pivot": [
+            181.0,
+            353
+          ],
+          "characterHeight": 342,
+          "atlasCell": [
+            512,
+            1280,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1091,
+            719,
+            357,
+            367
+          ],
+          "bounds": [
+            88,
+            9,
+            270,
+            355
+          ],
+          "pivot": [
+            187.0,
+            353
+          ],
+          "characterHeight": 342,
+          "atlasCell": [
+            768,
+            1280,
+            256,
+            256
+          ]
+        }
+      ]
+    },
+    {
+      "id": "listening",
+      "name": "Listening",
+      "trigger": "User opens the chat or is composing a question.",
+      "behavior": "Small acknowledging nod on entry, then hold an attentive pose.",
+      "loop": false,
+      "frameDurations": [
+        180,
+        90,
+        90,
+        90,
+        90,
+        120,
+        120,
+        90,
+        90,
+        90,
+        90,
+        180
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "file": "finn-listening-v2.png",
+      "nextState": null,
+      "staticFrame": 7,
+      "sample": "Tell me which client and period you\u2019re working with.",
+      "grid": {
+        "columns": 4,
+        "rows": 3
+      },
+      "reviewSequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "loopSequence": null,
+      "exitSequence": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "restFrames": [
+        0,
+        11
+      ],
+      "sheetSize": [
+        1448,
+        1086
+      ],
+      "frames": [
+        {
+          "cell": [
+            0,
+            0,
+            413,
+            370
+          ],
+          "bounds": [
+            160,
+            8,
+            350,
+            364
+          ],
+          "pivot": [
+            264.0,
+            362
+          ],
+          "characterHeight": 352,
+          "atlasCell": [
+            0,
+            1536,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            413,
+            0,
+            318,
+            370
+          ],
+          "bounds": [
+            64,
+            10,
+            253,
+            364
+          ],
+          "pivot": [
+            168.0,
+            362
+          ],
+          "characterHeight": 350,
+          "atlasCell": [
+            256,
+            1536,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            731,
+            0,
+            321,
+            370
+          ],
+          "bounds": [
+            66,
+            10,
+            255,
+            364
+          ],
+          "pivot": [
+            169.5,
+            362
+          ],
+          "characterHeight": 350,
+          "atlasCell": [
+            512,
+            1536,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1052,
+            0,
+            396,
+            370
+          ],
+          "bounds": [
+            66,
+            10,
+            256,
+            364
+          ],
+          "pivot": [
+            169.5,
+            362
+          ],
+          "characterHeight": 350,
+          "atlasCell": [
+            768,
+            1536,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            0,
+            370,
+            413,
+            353
+          ],
+          "bounds": [
+            160,
+            7,
+            350,
+            351
+          ],
+          "pivot": [
+            263.5,
+            349
+          ],
+          "characterHeight": 340,
+          "atlasCell": [
+            0,
+            1792,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            413,
+            370,
+            319,
+            353
+          ],
+          "bounds": [
+            64,
+            8,
+            254,
+            351
+          ],
+          "pivot": [
+            168.5,
+            349
+          ],
+          "characterHeight": 339,
+          "atlasCell": [
+            256,
+            1792,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            732,
+            370,
+            320,
+            353
+          ],
+          "bounds": [
+            65,
+            8,
+            256,
+            351
+          ],
+          "pivot": [
+            169.5,
+            349
+          ],
+          "characterHeight": 339,
+          "atlasCell": [
+            512,
+            1792,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1052,
+            370,
+            396,
+            353
+          ],
+          "bounds": [
+            64,
+            6,
+            255,
+            351
+          ],
+          "pivot": [
+            168.5,
+            349
+          ],
+          "characterHeight": 341,
+          "atlasCell": [
+            768,
+            1792,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            0,
+            723,
+            413,
+            363
+          ],
+          "bounds": [
+            158,
+            3,
+            350,
+            357
+          ],
+          "pivot": [
+            263.0,
+            355
+          ],
+          "characterHeight": 350,
+          "atlasCell": [
+            0,
+            2048,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            413,
+            723,
+            320,
+            363
+          ],
+          "bounds": [
+            64,
+            4,
+            257,
+            358
+          ],
+          "pivot": [
+            169.0,
+            356
+          ],
+          "characterHeight": 350,
+          "atlasCell": [
+            256,
+            2048,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            733,
+            723,
+            320,
+            363
+          ],
+          "bounds": [
+            64,
+            4,
+            257,
+            358
+          ],
+          "pivot": [
+            169.0,
+            356
+          ],
+          "characterHeight": 350,
+          "atlasCell": [
+            512,
+            2048,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1053,
+            723,
+            395,
+            363
+          ],
+          "bounds": [
+            63,
+            3,
+            257,
+            358
+          ],
+          "pivot": [
+            168.5,
+            356
+          ],
+          "characterHeight": 351,
+          "atlasCell": [
+            768,
+            2048,
+            256,
+            256
+          ]
+        }
+      ]
+    },
+    {
+      "id": "thinking",
+      "name": "Checking sources",
+      "trigger": "A question was submitted and the answer is being prepared.",
+      "behavior": "Slow thoughtful loop during the request; stop immediately when it resolves.",
+      "loop": true,
+      "frameDurations": [
+        120,
+        90,
+        90,
+        220,
+        220,
+        220,
+        220,
+        300,
+        90,
+        90,
+        90,
+        120
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "file": "finn-thinking-v2.png",
+      "nextState": null,
+      "staticFrame": 3,
+      "sample": "I\u2019m checking the sources for this question.",
+      "grid": {
+        "columns": 4,
+        "rows": 3
+      },
+      "reviewSequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "loopSequence": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "exitSequence": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "restFrames": [
+        0,
+        11
+      ],
+      "sheetSize": [
+        1448,
+        1086
+      ],
+      "frames": [
+        {
+          "cell": [
+            0,
+            0,
+            382,
+            365
+          ],
+          "bounds": [
+            131,
+            5,
+            321,
+            365
+          ],
+          "pivot": [
+            234.0,
+            363
+          ],
+          "characterHeight": 356,
+          "atlasCell": [
+            0,
+            2304,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            382,
+            0,
+            332,
+            365
+          ],
+          "bounds": [
+            62,
+            5,
+            250,
+            365
+          ],
+          "pivot": [
+            163.0,
+            363
+          ],
+          "characterHeight": 356,
+          "atlasCell": [
+            256,
+            2304,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            714,
+            0,
+            347,
+            365
+          ],
+          "bounds": [
+            82,
+            5,
+            274,
+            365
+          ],
+          "pivot": [
+            183.5,
+            363
+          ],
+          "characterHeight": 356,
+          "atlasCell": [
+            512,
+            2304,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1061,
+            0,
+            387,
+            365
+          ],
+          "bounds": [
+            74,
+            4,
+            262,
+            365
+          ],
+          "pivot": [
+            174.5,
+            363
+          ],
+          "characterHeight": 357,
+          "atlasCell": [
+            768,
+            2304,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            0,
+            365,
+            387,
+            362
+          ],
+          "bounds": [
+            131,
+            1,
+            326,
+            362
+          ],
+          "pivot": [
+            236.5,
+            360
+          ],
+          "characterHeight": 357,
+          "atlasCell": [
+            0,
+            2560,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            387,
+            365,
+            333,
+            362
+          ],
+          "bounds": [
+            61,
+            1,
+            254,
+            362
+          ],
+          "pivot": [
+            163.0,
+            360
+          ],
+          "characterHeight": 357,
+          "atlasCell": [
+            256,
+            2560,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            720,
+            365,
+            343,
+            362
+          ],
+          "bounds": [
+            80,
+            1,
+            273,
+            362
+          ],
+          "pivot": [
+            180.5,
+            360
+          ],
+          "characterHeight": 357,
+          "atlasCell": [
+            512,
+            2560,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1063,
+            365,
+            385,
+            362
+          ],
+          "bounds": [
+            71,
+            1,
+            260,
+            362
+          ],
+          "pivot": [
+            172.0,
+            360
+          ],
+          "characterHeight": 357,
+          "atlasCell": [
+            768,
+            2560,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            0,
+            727,
+            384,
+            359
+          ],
+          "bounds": [
+            130,
+            2,
+            325,
+            359
+          ],
+          "pivot": [
+            233.0,
+            359
+          ],
+          "characterHeight": 355,
+          "atlasCell": [
+            0,
+            2816,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            384,
+            727,
+            331,
+            359
+          ],
+          "bounds": [
+            60,
+            1,
+            252,
+            359
+          ],
+          "pivot": [
+            161.0,
+            359
+          ],
+          "characterHeight": 356,
+          "atlasCell": [
+            256,
+            2816,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            715,
+            727,
+            347,
+            359
+          ],
+          "bounds": [
+            80,
+            2,
+            274,
+            359
+          ],
+          "pivot": [
+            184.5,
+            359
+          ],
+          "characterHeight": 355,
+          "atlasCell": [
+            512,
+            2816,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1062,
+            727,
+            386,
+            359
+          ],
+          "bounds": [
+            73,
+            1,
+            263,
+            359
+          ],
+          "pivot": [
+            175.5,
+            359
+          ],
+          "characterHeight": 356,
+          "atlasCell": [
+            768,
+            2816,
+            256,
+            256
+          ]
+        }
+      ]
+    },
+    {
+      "id": "answer",
+      "name": "Here is the answer",
+      "trigger": "An answer is ready to read.",
+      "behavior": "One open-palm gesture toward the answer, then return to idle.",
+      "loop": false,
+      "frameDurations": [
+        100,
+        83,
+        83,
+        83,
+        100,
+        180,
+        260,
+        100,
+        83,
+        83,
+        83,
+        140
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "file": "finn-answer-v2.png",
+      "nextState": "idle",
+      "staticFrame": 5,
+      "sample": "Here\u2019s what I found, with the source behind it.",
+      "grid": {
+        "columns": 4,
+        "rows": 3
+      },
+      "reviewSequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "loopSequence": null,
+      "exitSequence": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "restFrames": [
+        0,
+        11
+      ],
+      "sheetSize": [
+        1448,
+        1086
+      ],
+      "frames": [
+        {
+          "cell": [
+            0,
+            0,
+            368,
+            359
+          ],
+          "bounds": [
+            101,
+            7,
+            284,
+            352
+          ],
+          "pivot": [
+            201.5,
+            350
+          ],
+          "characterHeight": 341,
+          "atlasCell": [
+            0,
+            3072,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            368,
+            0,
+            358,
+            359
+          ],
+          "bounds": [
+            85,
+            7,
+            275,
+            352
+          ],
+          "pivot": [
+            185.5,
+            350
+          ],
+          "characterHeight": 341,
+          "atlasCell": [
+            256,
+            3072,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            726,
+            0,
+            373,
+            359
+          ],
+          "bounds": [
+            84,
+            7,
+            306,
+            352
+          ],
+          "pivot": [
+            184.0,
+            350
+          ],
+          "characterHeight": 341,
+          "atlasCell": [
+            512,
+            3072,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1099,
+            0,
+            349,
+            359
+          ],
+          "bounds": [
+            68,
+            7,
+            302,
+            352
+          ],
+          "pivot": [
+            169.5,
+            350
+          ],
+          "characterHeight": 341,
+          "atlasCell": [
+            768,
+            3072,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            0,
+            359,
+            401,
+            359
+          ],
+          "bounds": [
+            101,
+            7,
+            349,
+            352
+          ],
+          "pivot": [
+            201.5,
+            350
+          ],
+          "characterHeight": 341,
+          "atlasCell": [
+            0,
+            3328,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            401,
+            359,
+            356,
+            359
+          ],
+          "bounds": [
+            52,
+            8,
+            304,
+            352
+          ],
+          "pivot": [
+            152.5,
+            350
+          ],
+          "characterHeight": 340,
+          "atlasCell": [
+            256,
+            3328,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            757,
+            359,
+            357,
+            359
+          ],
+          "bounds": [
+            53,
+            8,
+            305,
+            353
+          ],
+          "pivot": [
+            153.0,
+            351
+          ],
+          "characterHeight": 341,
+          "atlasCell": [
+            512,
+            3328,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1114,
+            359,
+            334,
+            359
+          ],
+          "bounds": [
+            53,
+            9,
+            263,
+            353
+          ],
+          "pivot": [
+            154.5,
+            351
+          ],
+          "characterHeight": 340,
+          "atlasCell": [
+            768,
+            3328,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            0,
+            718,
+            377,
+            368
+          ],
+          "bounds": [
+            99,
+            7,
+            302,
+            354
+          ],
+          "pivot": [
+            200.5,
+            352
+          ],
+          "characterHeight": 343,
+          "atlasCell": [
+            0,
+            3584,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            377,
+            718,
+            347,
+            368
+          ],
+          "bounds": [
+            76,
+            7,
+            260,
+            354
+          ],
+          "pivot": [
+            177.5,
+            352
+          ],
+          "characterHeight": 343,
+          "atlasCell": [
+            256,
+            3584,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            724,
+            718,
+            357,
+            368
+          ],
+          "bounds": [
+            88,
+            7,
+            271,
+            354
+          ],
+          "pivot": [
+            188.0,
+            352
+          ],
+          "characterHeight": 343,
+          "atlasCell": [
+            512,
+            3584,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1081,
+            718,
+            367,
+            368
+          ],
+          "bounds": [
+            87,
+            7,
+            271,
+            354
+          ],
+          "pivot": [
+            188.0,
+            352
+          ],
+          "characterHeight": 343,
+          "atlasCell": [
+            768,
+            3584,
+            256,
+            256
+          ]
+        }
+      ]
+    },
+    {
+      "id": "verified",
+      "name": "Verified result",
+      "trigger": "The app explicitly reports that the result is verified or well substantiated.",
+      "behavior": "One modest approving nod and thumbs-up. Never use for unverified answers.",
+      "loop": false,
+      "frameDurations": [
+        100,
+        90,
+        90,
+        90,
+        150,
+        110,
+        150,
+        240,
+        90,
+        90,
+        90,
+        130
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "file": "finn-verified-v2.png",
+      "nextState": "idle",
+      "staticFrame": 6,
+      "sample": "This result has been verified for the selected context.",
+      "grid": {
+        "columns": 4,
+        "rows": 3
+      },
+      "reviewSequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "loopSequence": null,
+      "exitSequence": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "restFrames": [
+        0,
+        11
+      ],
+      "sheetSize": [
+        1448,
+        1086
+      ],
+      "frames": [
+        {
+          "cell": [
+            0,
+            0,
+            369,
+            360
+          ],
+          "bounds": [
+            118,
+            9,
+            294,
+            353
+          ],
+          "pivot": [
+            212.5,
+            351
+          ],
+          "characterHeight": 340,
+          "atlasCell": [
+            0,
+            3840,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            369,
+            0,
+            346,
+            360
+          ],
+          "bounds": [
+            76,
+            11,
+            258,
+            353
+          ],
+          "pivot": [
+            172.5,
+            351
+          ],
+          "characterHeight": 338,
+          "atlasCell": [
+            256,
+            3840,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            715,
+            0,
+            359,
+            360
+          ],
+          "bounds": [
+            89,
+            10,
+            270,
+            353
+          ],
+          "pivot": [
+            187.5,
+            351
+          ],
+          "characterHeight": 339,
+          "atlasCell": [
+            512,
+            3840,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1074,
+            0,
+            374,
+            360
+          ],
+          "bounds": [
+            90,
+            9,
+            269,
+            353
+          ],
+          "pivot": [
+            187.0,
+            351
+          ],
+          "characterHeight": 340,
+          "atlasCell": [
+            768,
+            3840,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            0,
+            360,
+            371,
+            362
+          ],
+          "bounds": [
+            113,
+            7,
+            300,
+            355
+          ],
+          "pivot": [
+            212.5,
+            353
+          ],
+          "characterHeight": 344,
+          "atlasCell": [
+            0,
+            4096,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            371,
+            360,
+            346,
+            362
+          ],
+          "bounds": [
+            72,
+            11,
+            258,
+            355
+          ],
+          "pivot": [
+            170.5,
+            353
+          ],
+          "characterHeight": 340,
+          "atlasCell": [
+            256,
+            4096,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            717,
+            360,
+            359,
+            362
+          ],
+          "bounds": [
+            88,
+            7,
+            273,
+            355
+          ],
+          "pivot": [
+            185.5,
+            353
+          ],
+          "characterHeight": 344,
+          "atlasCell": [
+            512,
+            4096,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1076,
+            360,
+            372,
+            362
+          ],
+          "bounds": [
+            87,
+            8,
+            272,
+            355
+          ],
+          "pivot": [
+            185.0,
+            353
+          ],
+          "characterHeight": 343,
+          "atlasCell": [
+            768,
+            4096,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            0,
+            722,
+            370,
+            364
+          ],
+          "bounds": [
+            113,
+            7,
+            296,
+            355
+          ],
+          "pivot": [
+            212.5,
+            353
+          ],
+          "characterHeight": 344,
+          "atlasCell": [
+            0,
+            4352,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            370,
+            722,
+            346,
+            364
+          ],
+          "bounds": [
+            75,
+            8,
+            258,
+            355
+          ],
+          "pivot": [
+            171.5,
+            353
+          ],
+          "characterHeight": 343,
+          "atlasCell": [
+            256,
+            4352,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            716,
+            722,
+            359,
+            364
+          ],
+          "bounds": [
+            89,
+            8,
+            272,
+            355
+          ],
+          "pivot": [
+            186.5,
+            353
+          ],
+          "characterHeight": 343,
+          "atlasCell": [
+            512,
+            4352,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1075,
+            722,
+            373,
+            364
+          ],
+          "bounds": [
+            88,
+            8,
+            268,
+            355
+          ],
+          "pivot": [
+            186.5,
+            353
+          ],
+          "characterHeight": 343,
+          "atlasCell": [
+            768,
+            4352,
+            256,
+            256
+          ]
+        }
+      ]
+    },
+    {
+      "id": "uncertain",
+      "name": "Let\u2019s check",
+      "trigger": "Sources conflict, confidence is low, or a clarification is needed.",
+      "behavior": "A thoughtful gesture, then hold. Pair with text explaining what needs checking.",
+      "loop": false,
+      "frameDurations": [
+        110,
+        90,
+        90,
+        110,
+        130,
+        130,
+        160,
+        220,
+        90,
+        90,
+        90,
+        110
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "file": "finn-uncertain-v2.png",
+      "nextState": null,
+      "staticFrame": 5,
+      "sample": "These sources disagree. Let\u2019s check which one applies.",
+      "grid": {
+        "columns": 4,
+        "rows": 3
+      },
+      "reviewSequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "loopSequence": null,
+      "exitSequence": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "restFrames": [
+        0,
+        11
+      ],
+      "sheetSize": [
+        1448,
+        1086
+      ],
+      "frames": [
+        {
+          "cell": [
+            0,
+            0,
+            363,
+            360
+          ],
+          "bounds": [
+            92,
+            8,
+            272,
+            353
+          ],
+          "pivot": [
+            190.5,
+            351
+          ],
+          "characterHeight": 341,
+          "atlasCell": [
+            0,
+            4608,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            363,
+            0,
+            363,
+            360
+          ],
+          "bounds": [
+            91,
+            8,
+            273,
+            353
+          ],
+          "pivot": [
+            188.5,
+            351
+          ],
+          "characterHeight": 341,
+          "atlasCell": [
+            256,
+            4608,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            726,
+            0,
+            373,
+            360
+          ],
+          "bounds": [
+            90,
+            8,
+            295,
+            353
+          ],
+          "pivot": [
+            187.5,
+            351
+          ],
+          "characterHeight": 341,
+          "atlasCell": [
+            512,
+            4608,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1099,
+            0,
+            349,
+            360
+          ],
+          "bounds": [
+            79,
+            8,
+            288,
+            353
+          ],
+          "pivot": [
+            176.0,
+            351
+          ],
+          "characterHeight": 341,
+          "atlasCell": [
+            768,
+            4608,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            0,
+            360,
+            377,
+            363
+          ],
+          "bounds": [
+            92,
+            8,
+            301,
+            355
+          ],
+          "pivot": [
+            190.0,
+            353
+          ],
+          "characterHeight": 343,
+          "atlasCell": [
+            0,
+            4864,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            377,
+            360,
+            362,
+            363
+          ],
+          "bounds": [
+            77,
+            10,
+            286,
+            355
+          ],
+          "pivot": [
+            174.5,
+            353
+          ],
+          "characterHeight": 341,
+          "atlasCell": [
+            256,
+            4864,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            739,
+            360,
+            362,
+            363
+          ],
+          "bounds": [
+            77,
+            10,
+            286,
+            355
+          ],
+          "pivot": [
+            174.5,
+            353
+          ],
+          "characterHeight": 341,
+          "atlasCell": [
+            512,
+            4864,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1101,
+            360,
+            347,
+            363
+          ],
+          "bounds": [
+            77,
+            11,
+            286,
+            355
+          ],
+          "pivot": [
+            174.5,
+            353
+          ],
+          "characterHeight": 340,
+          "atlasCell": [
+            768,
+            4864,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            0,
+            723,
+            368,
+            363
+          ],
+          "bounds": [
+            92,
+            8,
+            282,
+            354
+          ],
+          "pivot": [
+            190.0,
+            352
+          ],
+          "characterHeight": 342,
+          "atlasCell": [
+            0,
+            5120,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            368,
+            723,
+            358,
+            363
+          ],
+          "bounds": [
+            86,
+            8,
+            269,
+            354
+          ],
+          "pivot": [
+            183.5,
+            352
+          ],
+          "characterHeight": 342,
+          "atlasCell": [
+            256,
+            5120,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            726,
+            723,
+            360,
+            363
+          ],
+          "bounds": [
+            90,
+            8,
+            269,
+            354
+          ],
+          "pivot": [
+            187.5,
+            352
+          ],
+          "characterHeight": 342,
+          "atlasCell": [
+            512,
+            5120,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1086,
+            723,
+            362,
+            363
+          ],
+          "bounds": [
+            92,
+            8,
+            271,
+            354
+          ],
+          "pivot": [
+            189.5,
+            352
+          ],
+          "characterHeight": 342,
+          "atlasCell": [
+            768,
+            5120,
+            256,
+            256
+          ]
+        }
+      ]
+    },
+    {
+      "id": "retry",
+      "name": "Something went wrong",
+      "trigger": "A request fails or the connection drops.",
+      "behavior": "One small apologetic gesture, then hold. Keep a visible retry action in the UI.",
+      "loop": false,
+      "frameDurations": [
+        110,
+        90,
+        90,
+        110,
+        150,
+        150,
+        160,
+        220,
+        90,
+        90,
+        90,
+        110
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "file": "finn-retry-v2.png",
+      "nextState": null,
+      "staticFrame": 7,
+      "sample": "I couldn\u2019t complete that request. Please try again.",
+      "grid": {
+        "columns": 4,
+        "rows": 3
+      },
+      "reviewSequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "loopSequence": null,
+      "exitSequence": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "restFrames": [
+        0,
+        11
+      ],
+      "sheetSize": [
+        1448,
+        1086
+      ],
+      "frames": [
+        {
+          "cell": [
+            0,
+            0,
+            368,
+            356
+          ],
+          "bounds": [
+            100,
+            8,
+            274,
+            343
+          ],
+          "pivot": [
+            194.5,
+            341
+          ],
+          "characterHeight": 331,
+          "atlasCell": [
+            0,
+            5376,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            368,
+            0,
+            362,
+            356
+          ],
+          "bounds": [
+            94,
+            8,
+            268,
+            343
+          ],
+          "pivot": [
+            188.5,
+            341
+          ],
+          "characterHeight": 331,
+          "atlasCell": [
+            256,
+            5376,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            730,
+            0,
+            362,
+            356
+          ],
+          "bounds": [
+            94,
+            8,
+            268,
+            343
+          ],
+          "pivot": [
+            188.5,
+            341
+          ],
+          "characterHeight": 331,
+          "atlasCell": [
+            512,
+            5376,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1092,
+            0,
+            356,
+            356
+          ],
+          "bounds": [
+            94,
+            8,
+            268,
+            343
+          ],
+          "pivot": [
+            188.5,
+            341
+          ],
+          "characterHeight": 331,
+          "atlasCell": [
+            768,
+            5376,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            0,
+            356,
+            368,
+            362
+          ],
+          "bounds": [
+            100,
+            17,
+            274,
+            349
+          ],
+          "pivot": [
+            194.5,
+            347
+          ],
+          "characterHeight": 328,
+          "atlasCell": [
+            0,
+            5632,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            368,
+            356,
+            362,
+            362
+          ],
+          "bounds": [
+            94,
+            22,
+            268,
+            349
+          ],
+          "pivot": [
+            188.5,
+            347
+          ],
+          "characterHeight": 323,
+          "atlasCell": [
+            256,
+            5632,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            730,
+            356,
+            362,
+            362
+          ],
+          "bounds": [
+            94,
+            14,
+            268,
+            349
+          ],
+          "pivot": [
+            188.5,
+            347
+          ],
+          "characterHeight": 331,
+          "atlasCell": [
+            512,
+            5632,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1092,
+            356,
+            356,
+            362
+          ],
+          "bounds": [
+            94,
+            14,
+            268,
+            349
+          ],
+          "pivot": [
+            188.5,
+            347
+          ],
+          "characterHeight": 331,
+          "atlasCell": [
+            768,
+            5632,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            0,
+            718,
+            367,
+            368
+          ],
+          "bounds": [
+            100,
+            14,
+            273,
+            349
+          ],
+          "pivot": [
+            194.0,
+            347
+          ],
+          "characterHeight": 331,
+          "atlasCell": [
+            0,
+            5888,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            367,
+            718,
+            363,
+            368
+          ],
+          "bounds": [
+            95,
+            14,
+            269,
+            349
+          ],
+          "pivot": [
+            190.0,
+            347
+          ],
+          "characterHeight": 331,
+          "atlasCell": [
+            256,
+            5888,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            730,
+            718,
+            362,
+            368
+          ],
+          "bounds": [
+            94,
+            14,
+            268,
+            349
+          ],
+          "pivot": [
+            188.5,
+            347
+          ],
+          "characterHeight": 331,
+          "atlasCell": [
+            512,
+            5888,
+            256,
+            256
+          ]
+        },
+        {
+          "cell": [
+            1092,
+            718,
+            356,
+            368
+          ],
+          "bounds": [
+            94,
+            14,
+            268,
+            349
+          ],
+          "pivot": [
+            188.5,
+            347
+          ],
+          "characterHeight": 331,
+          "atlasCell": [
+            768,
+            5888,
+            256,
+            256
+          ]
+        }
+      ]
+    }
+  ],
+  "exportAtlas": {
+    "columns": 4,
+    "frameSize": 256,
+    "frameCount": 96,
+    "width": 1024,
+    "height": 6144
+  }
+}

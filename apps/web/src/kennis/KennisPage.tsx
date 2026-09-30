@@ -1,11 +1,10 @@
-import { COUNTRIES, COUNTRY_LABELS, scoreSource, type AskInput, type AssessedSource, type Country, type Verdict } from '@tectonic/shared';
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { scoreSource, type AskInput, type AssessedSource, type Country } from '@tectonic/shared';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSession } from '../auth/context.ts';
 import { Avatar } from '../components/Avatar.tsx';
 import { Brand } from '../components/Brand.tsx';
 import { UserMenu } from '../components/UserMenu.tsx';
 import { ConnectionStatus } from '../components/ConnectionStatus.tsx';
-import { ProjectChat } from '../components/ProjectChat.tsx';
 import { ErrorState } from '../components/States.tsx';
 import { useToasts } from '../components/Toasts.tsx';
 import { useAccess, useApproveSource, useAsk, useNaiveAnswer, useUsers } from '../lib/queries.ts';
@@ -15,29 +14,9 @@ import { CheckPanel } from './CheckPanel.tsx';
 import { VersionChain } from './VersionChain.tsx';
 import { SourceAudience } from './SourceAudience.tsx';
 import { DisputeControls } from './DisputeControls.tsx';
+import { ContextSelects, Icon, STATUS_TONE, Tick, VERDICT_TONE, dateLabel, monthLabel, type AskContext } from './ui.tsx';
 import './kennis.css';
-
-const ICONS: Record<string, ReactNode> = {
-  search: <><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></>,
-  file: <><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" /><path d="M14 3v5h5M9 13h6M9 17h6" /></>,
-  users: <><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6" /><circle cx="17" cy="9" r="2.5" /><path d="M17 14c2.7 0 4.5 1.8 4.5 4.5" /></>,
-  building: <path d="M4 21V4a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v17M15 9h4a1 1 0 0 1 1 1v11M3 21h18M8 7h3M8 11h3M8 15h3" />,
-  lock: <><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></>,
-  chat: <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" />,
-  calendar: <><rect x="3.5" y="5" width="17" height="15" rx="2" /><path d="M3.5 10h17M8 3v4M16 3v4" /></>,
-  info: <><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h.01" /></>,
-  arrow: <path d="M5 12h14M13 6l6 6-6 6" />,
-  chevron: <path d="m6 9 6 6 6-6" />,
-  quote: <path d="M9 7H6a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h2v1a2 2 0 0 1-2 2M19 7h-3a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h2v1a2 2 0 0 1-2 2" />,
-};
-
-function Icon({ name, size = 20 }: { name: string; size?: number }) {
-  return (
-    <svg className="kn-icon" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      {ICONS[name]}
-    </svg>
-  );
-}
+import { ProjectChat } from '../components/ProjectChat.tsx';
 
 /** Counts up to `target` when it changes (skipped for reduced motion). */
 function useCountUp(target: number, ms = 600): number {
@@ -79,16 +58,6 @@ function Presence() {
   );
 }
 
-const VERDICT_GLYPH = { good: '✓', neutral: '◎', muted: '–', warn: '!' } as const;
-
-function Tick({ tone }: { tone: keyof typeof VERDICT_GLYPH }) {
-  return (
-    <span className={`kn-tick kn-tick--${tone}`} aria-hidden="true">
-      {VERDICT_GLYPH[tone]}
-    </span>
-  );
-}
-
 function Logo() {
   return (
     <div className="kn-logo">
@@ -98,26 +67,6 @@ function Logo() {
   );
 }
 
-
-type Tone = 'good' | 'neutral' | 'muted' | 'warn';
-const VERDICT_TONE: Record<Verdict['kind'], Tone> = {
-  exception: 'good',
-  general: 'neutral',
-  unconfirmed: 'warn',
-  expired: 'muted',
-  superseded: 'muted',
-  'other-client': 'muted',
-  'other-country': 'muted',
-};
-
-const PERIODS = ['2026-09', '2026-10', '2026-11'];
-const monthLabel = (period: string) => {
-  const [y, m] = period.split('-').map(Number) as [number, number];
-  const text = new Intl.DateTimeFormat('nl-BE', { month: 'long', year: 'numeric' }).format(new Date(Date.UTC(y, m - 1, 1)));
-  return text.charAt(0).toUpperCase() + text.slice(1);
-};
-const dateLabel = (iso: string) => new Intl.DateTimeFormat('nl-BE', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(iso));
-const STATUS_TONE = { onderbouwd: 'good', deels: 'warn', onvoldoende: 'warn', geen: 'muted' } as const;
 
 function Sidebar({ teams }: { teams: Array<{ id: string; name: string }> }) {
   return (
@@ -279,6 +228,14 @@ export function KennisPage() {
     if (input.question.trim().length >= 3) setAsked(input);
   };
 
+  // One context for the page and the chat: changing it in either re-asks the page's question, so the two never disagree.
+  const changeContext = (patch: Partial<AskContext>) => {
+    if (patch.country) setCountry(patch.country);
+    if (patch.client !== undefined) setClient(patch.client);
+    if (patch.period) setPeriod(patch.period);
+    run(patch);
+  };
+
   return (
     <div className="kn" data-testid="kennis-page">
       <header className="kn-top">
@@ -320,28 +277,7 @@ export function KennisPage() {
         </form>
         <span className="sr-only" role="status">{ask.isFetching ? 'Bronnen worden gecontroleerd.' : ''}</span>
         <div className="kn-chips">
-          <select className="kn-chip" value={country} aria-label="Land" onChange={(e) => { setCountry(e.target.value as Country); run({ country: e.target.value as Country }); }}>
-            {COUNTRIES.map((c) => (
-              <option key={c} value={c}>
-                {COUNTRY_LABELS[c]}
-              </option>
-            ))}
-          </select>
-          <select className="kn-chip" value={client ?? ''} aria-label="Klant" onChange={(e) => { const v = e.target.value || null; setClient(v); run({ client: v }); }}>
-            <option value="">Alle klanten</option>
-            {(access.data?.clients ?? []).map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-          <select className="kn-chip" value={period} aria-label="Periode" onChange={(e) => { setPeriod(e.target.value); run({ period: e.target.value }); }}>
-            {PERIODS.map((p) => (
-              <option key={p} value={p}>
-                {monthLabel(p)}
-              </option>
-            ))}
-          </select>
+          <ContextSelects value={{ country, client, period }} clients={access.data?.clients ?? []} onChange={changeContext} />
           <button type="button" className={`kn-chip kn-chip--toggle${compare ? ' is-on' : ''}`} aria-pressed={compare} onClick={() => setCompare(!compare)}>
             Vergelijk
           </button>
