@@ -1,16 +1,12 @@
 import type { ReactNode } from 'react';
 import { Avatar } from '../components/Avatar.tsx';
+import { Finn, type FinnMood } from '../components/Finn.tsx';
 import { ContextSelects, Icon, type AskContext } from './ui.tsx';
 import type { Span, Understood } from './understand.ts';
 import './finn.css';
 
-export type FinnMood = 'welcome' | 'idle' | 'listening' | 'thinking' | 'answer' | 'verified' | 'uncertain' | 'retry';
+export type { FinnMood } from '../components/Finn.tsx';
 export type Touched = Partial<Record<'country' | 'client' | 'period', boolean>>;
-
-/** Finn as the existing static poses (apps/web/public/mascots/finn). The pose follows the state; a new pose fades in. */
-export function Finn({ mood }: { mood: FinnMood }) {
-  return <img key={mood} className="fs-finn" src={`/mascots/finn/finn-${mood}.png`} width={256} height={256} alt="" />;
-}
 
 function Marked({ text, spans }: { text: string; spans: Span[] }) {
   const parts: ReactNode[] = [];
@@ -41,6 +37,7 @@ export interface FinnStageProps {
   onContext: (patch: Partial<AskContext>) => void;
   busy: boolean;
   mood: FinnMood;
+  run: number;
   /** Finn's line: a question while the user still has to add something, a short result line afterwards. */
   line: string;
 }
@@ -85,7 +82,7 @@ export function FinnStage(p: FinnStageProps) {
               // Enter sends, like the search field it replaces; the question is one line, so there is nothing to break.
               if (e.key === 'Enter') {
                 e.preventDefault();
-                if (!e.nativeEvent.isComposing) p.onSubmit();
+                if (!e.nativeEvent.isComposing && !p.busy) p.onSubmit();
               }
             }}
           />
@@ -94,7 +91,7 @@ export function FinnStage(p: FinnStageProps) {
           <div className="fs-ctx" role="group" aria-label="Context van je vraag">
             <ContextSelects value={p.context} clients={p.clients} touched={p.touched} onChange={p.onContext} />
           </div>
-          <button type="submit" className="fs-send">
+          <button type="submit" className="fs-send" disabled={p.busy || p.question.trim().length < 3}>
             Vraag Finn <Icon name="arrow" size={18} />
           </button>
         </div>
@@ -104,7 +101,7 @@ export function FinnStage(p: FinnStageProps) {
         <p className="fs-say" role={p.mood === 'thinking' ? 'status' : undefined}>
           {p.line}
         </p>
-        <Finn mood={p.mood} />
+        <Finn mood={p.mood} replayKey={p.run} className="fs-finn" />
       </div>
     </div>
   );

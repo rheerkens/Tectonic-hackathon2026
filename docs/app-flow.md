@@ -1,6 +1,6 @@
 # Applicatieflow met Finn
 
-Hoe een gebruiker door SD Trust ("Kennis zoeken") loopt en waar de mascotte **Finn** op reageert. Finn staat (als statische pose, zonder GIF) in **Kennis zoeken** als vraagbubbel met Finn ernaast (`apps/web/src/kennis/FinnStage.tsx`, `understand.ts`): welcome (eenmalig bij een lege vraag), listening/thinking tijdens typen en vragen, thinking tijdens het laden, verified/answer/uncertain bij een resultaat en retry bij een fout. Nog niet gebouwd: de stappen van de tabel hieronder die buiten de zoekpagina vallen. Dit document blijft de specificatie. De animaties staan in [`design/mascot-concepts/finn`](design/mascot-concepts/finn/README.md) (8 states, `manifest.json`). Het chatbackend (`POST /api/chat`, #20) bestaat, de chat-UI (#21, #22) is het aanknopingspunt voor Finn.
+Hoe een gebruiker door SD Trust ("Kennis zoeken") loopt en waar de mascotte **Finn** op reageert. Finn speelt de goedgekeurde animaties in **Kennis zoeken** als vraagbubbel met Finn ernaast (`apps/web/src/kennis/FinnStage.tsx`, `understand.ts`): welcome (eenmalig bij een lege vraag), listening/thinking tijdens typen en vragen, thinking tijdens het laden, verified/answer/uncertain bij een resultaat en retry bij een fout. Nog niet gebouwd: de stappen van de tabel hieronder die buiten de zoekpagina vallen. Dit document blijft de specificatie. De animaties staan in [`design/mascot-concepts/finn`](design/mascot-concepts/finn/README.md) (8 states, `manifest.json`). Finn staat ook op de zwevende projectchatknop en volgt daar de echte bericht- en toolstatus. De gedeelde speler (`apps/web/src/components/Finn.tsx`) gebruikt `web-animations.json`: transparante video met WebP/GIF-fallback, stilstaande posters bij reduced motion en pauze wanneer de tab verborgen is.
 
 ## Principes
 
@@ -102,9 +102,13 @@ flowchart TD
 
 ## Testresultaat (API, dev-stack, 2026-09-30)
 
-Getest met `curl` en `x-dev-user`; Finn zelf is nog niet gebouwd en dus niet getest.
+De vraagflow en Finn zijn in de browser gecontroleerd: Enter en Vraag Finn voeren beide de API-logica uit; dezelfde vraag opnieuw versturen voert opnieuw een aanvraag uit. Typen geeft listening, een lopende aanvraag thinking en de echte antwoordstatus bepaalt de resultaatpose.
 
 - Antwoorden kloppen: BE/Atlas/oktober 22 oktober 2026, NL 18 oktober, november `geen`, ziekmelding 24 uur.
 - Toegang klopt: Sebastien ziet alleen S1, S2, S5; zonder `x-dev-user` geeft de API 401.
 - Rechten kloppen: Wanne kan S3 niet bevestigen en een betwisting niet oplossen (403); Roy wel.
 - Gevonden en in dit document gecorrigeerd: `naive-answer` vraagt de volledige context; `/api/check` geeft bij tegenspraak status `geen`; een betwiste bron houdt status `onderbouwd`.
+
+## Afspelen en versturen
+
+Animatie blokkeert de API nooit. Iedere expliciete zoekopdracht krijgt een nieuwe query-sleutel, ook als de tekst en context gelijk blijven. De bestaande `sources.changed`-invalidatie blijft via het `ask`-prefix werken. Resultaatgebaren spelen eenmaal en keren terug naar idle; thinking loopt zolang de echte aanvraag actief is. De zwevende chat verstuurt via de bestaande projectchatroute en gebruikt answer zodra een antwoord binnen is, zonder daar verificatie uit af te leiden.

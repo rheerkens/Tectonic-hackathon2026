@@ -256,7 +256,7 @@ export function KennisPage() {
   }, [asked]);
 
   const [compare, setCompare] = useState(false);
-  const ask = useAsk(asked);
+  const ask = useAsk(asked, runs);
   const naive = useNaiveAnswer(asked, compare);
   const userMap = useMemo(() => new Map((users.data ?? []).map((u) => [u.id, u])), [users.data]);
   // `useAsk` keeps the previous result while a new question loads; that result must not pass as the answer to the new one.
@@ -277,6 +277,8 @@ export function KennisPage() {
   const run = (next?: Partial<AskInput>) => {
     const input: AskInput = { question, country, client, period, ...next };
     if (input.question.trim().length < 3) return;
+    window.clearTimeout(typingTimer.current);
+    setTyping(false);
     setAsked(input);
     setRuns((n) => n + 1);
     setTouched({ country: true, client: true, period: true }); // sending accepts the context as shown
@@ -386,6 +388,7 @@ export function KennisPage() {
           onContext={changeContext}
           busy={ask.isFetching}
           mood={finn.mood}
+          run={runs}
           line={finn.line}
         />
         <div className="kn-chips">
