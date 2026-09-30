@@ -54,6 +54,7 @@ export function Tick({ tone }: { tone: Tone }) {
 export const VERDICT_TONE: Record<Verdict['kind'], Tone> = {
   exception: 'good',
   general: 'neutral',
+  disputed: 'warn',
   unconfirmed: 'warn',
   expired: 'muted',
   superseded: 'muted',

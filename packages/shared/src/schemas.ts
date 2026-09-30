@@ -111,7 +111,7 @@ export type OnderbouwingCheck = z.infer<typeof OnderbouwingCheckSchema>;
 export const OnderbouwingSchema = z.object({ score: z.number().int(), checks: OnderbouwingCheckSchema.array() });
 export type Onderbouwing = z.infer<typeof OnderbouwingSchema>;
 
-export const VERDICT_KINDS = ['exception', 'general', 'unconfirmed', 'expired', 'superseded', 'other-client', 'other-country'] as const;
+export const VERDICT_KINDS = ['exception', 'general', 'disputed', 'unconfirmed', 'expired', 'superseded', 'other-client', 'other-country'] as const;
 export const VerdictSchema = z.object({ kind: z.enum(VERDICT_KINDS), label: z.string() });
 export type Verdict = z.infer<typeof VerdictSchema>;
 
