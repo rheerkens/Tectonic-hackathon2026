@@ -1,4 +1,4 @@
-import { COUNTRIES, COUNTRY_LABELS, scoreSource, type AskInput, type AssessedSource, type Country } from '@tectonic/shared';
+import { AskInputSchema, COUNTRIES, COUNTRY_LABELS, scoreSource, type AskInput, type AssessedSource, type Country } from '@tectonic/shared';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSession } from '../auth/context.ts';
 import { Avatar } from '../components/Avatar.tsx';
@@ -198,6 +198,16 @@ function Panel({ source, all, users, canApprove, canDispute, canResolve, country
   );
 }
 
+const SEARCH_KEY = 'kennis-search';
+function readSavedSearch(): AskInput | null {
+  try {
+    const parsed = AskInputSchema.safeParse(JSON.parse(sessionStorage.getItem(SEARCH_KEY) ?? 'null'));
+    return parsed.success ? parsed.data : null;
+  } catch {
+    return null;
+  }
+}
+
 export function KennisPage() {
   const session = useSession();
   const access = useAccess();
@@ -223,17 +233,27 @@ export function KennisPage() {
 
   useTeamSubscriptions(useMemo(() => access.data?.teams.map((t) => t.id) ?? [], [access.data]));
 
-  // First load: prefill the first example, and the first client (the demo scenario) and ask once.
+  // First load: restore this tab's last search; only when there is none, prefill the first example (and the first client: the demo scenario) and ask once.
   useEffect(() => {
     if (!access.data || asked) return;
-    const q = access.data.examples[0] ?? '';
-    const c = access.data.clients[0] ?? null;
+    const saved = readSavedSearch();
+    const q = saved?.question ?? access.data.examples[0] ?? '';
+    const c = saved ? saved.client : access.data.clients[0] ?? null;
+    if (saved) {
+      setCountry(saved.country);
+      setPeriod(saved.period);
+      setTouched({ country: true, client: true, period: true });
+    }
     setQuestion(q);
     setClient(c);
-    if (c) setTouched((t) => ({ ...t, client: true }));
+    if (c && !saved) setTouched((t) => ({ ...t, client: true }));
     seen.current = understand(q, { clients: access.data.clients, periods: PERIODS, topics: topicIndex });
-    if (q) setAsked({ question: q, country, client: c, period });
+    if (q) setAsked(saved ?? { question: q, country, client: c, period });
   }, [access.data]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (asked) try { sessionStorage.setItem(SEARCH_KEY, JSON.stringify(asked)); } catch { /* storage blocked: the search just is not remembered */ }
+  }, [asked]);
 
   const [compare, setCompare] = useState(false);
   const ask = useAsk(asked);

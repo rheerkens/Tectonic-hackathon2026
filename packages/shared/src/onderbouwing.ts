@@ -94,10 +94,21 @@ const GENERIC = new Set(
   [
     'regel', 'regels', 'procedure', 'procedures', 'afspraak', 'afspraken', 'klant', 'klanten', 'werknemer', 'werknemers',
     'termijn', 'termijnen', 'deadline', 'aanleveren', 'aanleverdatum', 'inleveren', 'doorgeven', 'doorgegeven', 'melden', 'uiterlijk',
-    'uitbetalen', 'uitbetaald', 'uitbetaling', 'betalen', 'betaald', 'betaling', 'binnen', 'lang', 'snel', 'veel', 'hoeveel', 'welk', 'toepassen', 'bestellen', 'heb', 'hebt', 'nodig', 'zit',
+    'uitbetalen', 'uitbetaald', 'uitbetaling', 'betalen', 'betaald', 'betaling', 'binnen', 'lang', 'snel', 'veel', 'hoeveel', 'welk', 'toepassen', 'bestellen', 'werkt', 'werken', 'heb', 'hebt', 'nodig', 'zit',
     'worden', 'wordt', 'werd', 'zijn', 'heeft', 'hebben', 'moeten', 'mogen', 'kunnen', 'niet', 'geen', 'ook', 'nog', 'naar', 'over', 'uit', 'dit', 'onze', 'alle', 'per', 'mij', 'jij', 'gelden', 'geldig', 'waarom', 'hoezo', 'dan', 'eens', 'graag',
   ].map(stem),
 );
+
+/**
+ * Everyday words that name a topic without being in its keywords: "de lonen aanleveren" is loonmutaties. Exact (accent-free,
+ * lower-case) words only, so "loonindexering" does not become loonmutaties. ponytail: a hand-kept list; embeddings if it grows past a screen.
+ */
+const SYNONYMS: Record<string, string> = {
+  lonen: 'loonmutaties', salaris: 'loonmutaties', salarissen: 'loonmutaties', wedde: 'loonmutaties',
+  overwerk: 'overuren', bonus: 'eindejaarspremie', eindejaarsbonus: 'eindejaarspremie',
+  ontslag: 'uitdiensttreding', ontslagen: 'uitdiensttreding', aanwerving: 'indiensttreding', aanwerven: 'indiensttreding',
+  kostennota: 'onkosten', onkostennota: 'onkosten', kostenvergoeding: 'onkosten', ziekteverlof: 'ziekmelding', ziektemelding: 'ziekmelding',
+};
 
 /**
  * The words of a question that carry its subject: no stop words, no generic words, no digits, and nothing that is
@@ -107,7 +118,7 @@ const GENERIC = new Set(
 export function subjectWords(question: string, sources: Array<Pick<Source, 'client'>>, ctx?: Pick<Context, 'client'>, withGeneric = false): string[] {
   const context = new Set(tokens([ctx?.client, ...sources.map((s) => s.client)].filter(Boolean).join(' ')).map(stem));
   const seen = new Set<string>();
-  return tokens(question).filter((w) => {
+  return tokens(question).flatMap((w) => (SYNONYMS[w] ? [w, SYNONYMS[w]] : [w])).filter((w) => {
     const k = stem(w);
     if (CONTEXT_WORDS.has(k) || (!withGeneric && GENERIC.has(k)) || context.has(k) || /^\d+$/.test(w) || seen.has(k)) return false;
     seen.add(k);
