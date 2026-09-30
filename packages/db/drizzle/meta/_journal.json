@@ -15,6 +15,13 @@
       "when": 1790791119823,
       "tag": "0001_mighty_joshua_kane",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790792386910,
+      "tag": "0002_gray_meltdown",
+      "breakpoints": true
     }
   ]
 }

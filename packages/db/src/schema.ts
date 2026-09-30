@@ -1,5 +1,5 @@
-import { MEMBER_ROLES, SOURCE_KINDS, SOURCE_STATUSES } from '@tectonic/shared';
-import { boolean, date, index, integer, pgEnum, pgTable, primaryKey, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
+import { MEMBER_ROLES, SOURCE_KINDS, SOURCE_STATUSES, type ProjectChatToolCall } from '@tectonic/shared';
+import { boolean, date, index, integer, jsonb, pgEnum, pgTable, primaryKey, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 
 export const memberRoleEnum = pgEnum('member_role', MEMBER_ROLES);
 export const sourceKindEnum = pgEnum('source_kind', SOURCE_KINDS);
@@ -79,6 +79,19 @@ export const sources = pgTable(
   },
   (t) => [uniqueIndex('sources_code_idx').on(t.code), index('sources_project_topic_idx').on(t.projectId, t.topic)],
 );
+
+/** Each member has a private assistant conversation within a project. */
+export const chatTurns = pgTable('chat_turns', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  projectId: uuid('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  message: text('message').notNull(),
+  reply: text('reply').notNull().default(''),
+  tools: jsonb('tools').$type<ProjectChatToolCall[]>().notNull().default([]),
+  contextProjectIds: jsonb('context_project_ids').$type<string[]>().notNull().default([]),
+  status: text('status').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [index('chat_turns_project_user_created_idx').on(t.projectId, t.userId, t.createdAt)]);
 
 export type UserRow = typeof users.$inferSelect;
 export type ProjectRow = typeof projects.$inferSelect;

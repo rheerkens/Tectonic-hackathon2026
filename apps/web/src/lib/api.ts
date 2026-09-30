@@ -70,6 +70,8 @@ export function createApiClient(getAuthHeaders: AuthHeaders) {
     check: (body: Body<'check'>) => request('check', {}, body),
     disputeSource: (sourceId: string, body: Body<'disputeSource'>) => request('disputeSource', { sourceId }, body),
     approveSource: (sourceId: string) => request('approveSource', { sourceId }),
+    chatStatus: () => request('chatStatus', {}),
+    chatHistory: (projectId: string) => request('chatHistory', { projectId }),
   };
 }
 

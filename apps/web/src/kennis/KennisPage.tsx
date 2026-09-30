@@ -4,8 +4,8 @@ import { useSession } from '../auth/context.ts';
 import { Avatar } from '../components/Avatar.tsx';
 import { Brand } from '../components/Brand.tsx';
 import { UserMenu } from '../components/UserMenu.tsx';
-import { ChatPlaceholder } from '../components/ChatPlaceholder.tsx';
 import { ConnectionStatus } from '../components/ConnectionStatus.tsx';
+import { ProjectChat } from '../components/ProjectChat.tsx';
 import { ErrorState } from '../components/States.tsx';
 import { useToasts } from '../components/Toasts.tsx';
 import { useAccess, useApproveSource, useAsk, useNaiveAnswer, useUsers } from '../lib/queries.ts';
@@ -461,7 +461,7 @@ export function KennisPage() {
         <CheckPanel country={country} />
       </main>
       {selected ? <Panel source={selected} users={userMap} canApprove={canApprove} canDispute={canDispute} canResolve={isOwner} country={country} client={client} /> : <aside className="kn-panel" aria-label="Geselecteerde bron"><p className="kn-muted">Selecteer een bron om de onderbouwing te zien.</p></aside>}
-      <ChatPlaceholder />
+      <ProjectChat teams={access.data?.teams ?? []} />
     </div>
   );
 }

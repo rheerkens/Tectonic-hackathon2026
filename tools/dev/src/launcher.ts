@@ -1,4 +1,5 @@
 import { createDb, runMigrations, seedDatabase, waitForDatabase } from '@tectonic/db';
+import AsyncExitHook from 'async-exit-hook';
 import { existsSync, mkdirSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import rootPackage from '../../../package.json' with { type: 'json' };
@@ -6,6 +7,7 @@ import { acquireLock, AlreadyRunningError } from './lock.ts';
 import { allocatePorts, isPortFree } from './ports.ts';
 import { startPostgres, type PostgresHandle } from './postgres.ts';
 import { spawnManaged, stopManaged, type ManagedProcess } from './procs.ts';
+import { createShutdown } from './shutdown.ts';
 import { buildUrls, readRuntime, runtimeFile, writeRuntime, type RuntimeInfo } from './runtime.ts';
 import { hashPath, listWorktreeRoots, localDir, resolveWorktree } from './worktree.ts';
 
@@ -135,20 +137,20 @@ export async function launch(options: LaunchOptions = {}): Promise<void> {
   const children: ManagedProcess[] = [];
   let postgres: PostgresHandle | null = null;
   let stopping = false;
-
-  const shutdown = async (reason: string, code = 0) => {
-    if (stopping) return;
+  const shutdown = createShutdown(async (reason, code) => {
     stopping = true;
     log('dev', `shutting down (${reason})`);
     await Promise.all(children.map((child) => stopManaged(child).catch(() => {})));
     if (postgres) await postgres.stop().catch((error) => log('pg', `stop failed: ${String(error)}`));
     writeRuntime(local, { ...runtime, status: code === 0 ? 'stopped' : 'failed', pids: { api: null, web: null, postgres: null } });
     releaseLock();
-    process.exit(code);
-  };
-  process.on('SIGINT', () => void shutdown('SIGINT'));
-  process.on('SIGTERM', () => void shutdown('SIGTERM'));
-  process.on('SIGHUP', () => void shutdown('SIGHUP'));
+  });
+  AsyncExitHook((done) => {
+    void shutdown('process exit').then(done, (error: unknown) => {
+      log('dev', `shutdown failed: ${String(error)}`);
+      done();
+    });
+  });
 
   try {
     // 3. Database, migrations, seed.
@@ -184,7 +186,7 @@ export async function launch(options: LaunchOptions = {}): Promise<void> {
     children.push(api);
     runtime.pids.api = api.proc.pid;
     void api.exited.then((code) => {
-      if (!stopping) void shutdown(`api exited with code ${code}`, 1);
+      if (!stopping) void shutdown(`api exited with code ${code}`, 1).then(() => process.exit(1));
     });
     await waitForHttp(runtime.urls.apiHealth, 30_000);
 
@@ -205,7 +207,7 @@ export async function launch(options: LaunchOptions = {}): Promise<void> {
       children.push(web);
       runtime.pids.web = web.proc.pid;
       void web.exited.then((code) => {
-        if (!stopping) void shutdown(`web exited with code ${code}`, 1);
+        if (!stopping) void shutdown(`web exited with code ${code}`, 1).then(() => process.exit(1));
       });
       await waitForHttp(runtime.urls.web, 30_000);
     }
@@ -219,6 +221,7 @@ export async function launch(options: LaunchOptions = {}): Promise<void> {
     log('dev', `\x1b[31mstartup failed: ${runtime.error}\x1b[0m`);
     writeRuntime(local, { ...runtime, status: 'failed' });
     await shutdown('startup failure', 1);
+    process.exit(1);
   }
 }
 
