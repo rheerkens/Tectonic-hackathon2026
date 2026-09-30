@@ -1,3 +1,4 @@
+import type { PresenceUser } from '@tectonic/shared';
 import { useQueryClient } from '@tanstack/react-query';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useSession } from '../auth/context.ts';
@@ -8,6 +9,8 @@ import { RealtimeClient, type ConnectionStatus } from '../lib/realtime.ts';
 
 interface RealtimeContextValue {
   status: ConnectionStatus;
+  /** Everyone currently online in any subscribed team (one entry per person). */
+  presence: PresenceUser[];
   subscribe(projectId: string): () => void;
 }
 
@@ -34,6 +37,7 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
   const qc = useQueryClient();
   const toasts = useToasts();
   const [status, setStatus] = useState<ConnectionStatus>('connecting');
+  const [presenceByTeam, setPresenceByTeam] = useState<Record<string, PresenceUser[]>>({});
   const clientRef = useRef<RealtimeClient | null>(null);
 
   const client = useMemo(() => {
@@ -45,6 +49,7 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const offStatus = client.onStatus(setStatus);
+    const offPresence = client.onPresence(({ projectId, users }) => setPresenceByTeam((old) => ({ ...old, [projectId]: users })));
     const offReconnect = client.onReconnect(() => {
       // Events may have been missed while offline: refetch what is on screen.
       void qc.invalidateQueries();
@@ -68,6 +73,7 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
     client.connect();
     return () => {
       offStatus();
+      offPresence();
       offReconnect();
       offError();
       offEvent();
@@ -76,6 +82,7 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
   }, [client, qc, session.user.id, toasts]);
 
   const subscribe = useCallback((projectId: string) => client.subscribe(projectId), [client]);
-  const value = useMemo<RealtimeContextValue>(() => ({ status, subscribe }), [status, subscribe]);
+  const presence = useMemo(() => [...new Map(Object.values(presenceByTeam).flat().map((u) => [u.userId, u])).values()], [presenceByTeam]);
+  const value = useMemo<RealtimeContextValue>(() => ({ status, presence, subscribe }), [status, presence, subscribe]);
   return <RealtimeContext.Provider value={value}>{children}</RealtimeContext.Provider>;
 }
