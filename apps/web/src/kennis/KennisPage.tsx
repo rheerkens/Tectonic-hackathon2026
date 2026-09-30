@@ -398,7 +398,7 @@ export function KennisPage() {
           </>
         )}
         <KennisKaart users={userMap} onSelect={setSelectedId} />
-        <CheckPanel country={country} />
+        <CheckPanel country={country} client={client} period={period} />
       </main>
       {selected ? <Panel source={selected} all={result?.sources ?? []} users={userMap} canApprove={canApprove} canDispute={canDispute} canResolve={isOwner} country={country} client={client} /> : <aside className="kn-panel" aria-label="Geselecteerde bron"><p className="kn-muted">Selecteer een bron om de onderbouwing te zien.</p></aside>}
       <ProjectChat teams={access.data?.teams ?? []} />

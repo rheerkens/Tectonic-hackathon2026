@@ -164,6 +164,9 @@ export type AskInput = z.input<typeof AskInputSchema>;
 export const CheckInputSchema = z.object({
   text: z.string().trim().min(3, 'Plak een bericht').max(2000),
   country: CountrySchema,
+  /** The page's context chips; without them the check ignores client and uses the current month. */
+  client: z.string().trim().max(80).nullable().optional(),
+  period: period.optional(),
 });
 export type CheckInput = z.input<typeof CheckInputSchema>;
 
@@ -173,7 +176,7 @@ export type ExtractedClaim = z.infer<typeof ExtractedClaimSchema>;
 
 export const CheckResultSchema = z.object({
   /** The claims found in the text (one per sentence) and how well the sources back each. */
-  claims: z.object({ text: z.string(), topic: z.string().nullable(), status: AnswerStatusSchema, statusLabel: z.string() }).array(),
+  claims: z.object({ text: z.string(), topic: z.string().nullable(), status: AnswerStatusSchema, statusLabel: z.string(), /** The best source states a different value than the claim. */ conflict: z.object({ code: z.string(), value: z.string() }).nullable() }).array(),
   /** Per claim, the sources on the same topic that do not apply or disagree, with their trust. */
   contradictions: z.object({ claim: z.string(), source: AssessedSourceSchema }).array(),
 });

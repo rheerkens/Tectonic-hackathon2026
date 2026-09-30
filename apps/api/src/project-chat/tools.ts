@@ -99,17 +99,11 @@ export function createTeamTools(context: TeamToolContext): AgentTool[] {
           arrayContained(sources.audienceProjectIds, currentAllowedProjectIds),
         ];
         if (args.teamId) filters.push(eq(sources.projectId, args.teamId));
-        if (args.query) {
-          const query = `%${args.query.replace(/[\\%_]/g, '\\$&')}%`;
-          const matchingSource = or(
-            ilike(sources.code, query),
-            ilike(sources.title, query),
-            ilike(sources.topic, query),
-            ilike(sources.keywords, query),
-            ilike(sources.value, query),
-            ilike(sources.claim, query),
-            ilike(sources.quote, query),
-          );
+        // ponytail: any word of the query may match any column (a model sends phrases like "Atlas loonmutaties deadline"); ranking is by team/topic, not relevance.
+        const words = (args.query ?? '').split(/\s+/).filter((word) => word.length >= 3);
+        if (words.length) {
+          const columns = [sources.code, sources.title, sources.topic, sources.keywords, sources.value, sources.claim, sources.quote];
+          const matchingSource = or(...words.flatMap((word) => columns.map((column) => ilike(column, `%${word.replace(/[\\%_]/g, '\\$&')}%`))));
           if (matchingSource) filters.push(matchingSource);
         }
         const rows = await ctx.db

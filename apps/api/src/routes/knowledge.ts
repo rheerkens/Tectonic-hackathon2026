@@ -51,19 +51,24 @@ export function knowledgeRoutes(ctx: AppContext) {
     return c.json(assess(question, serializeVisible(rows), names, { country, client, period }));
   });
 
+  // ponytail: the claim's digits must all appear in the source value ('25 oktober' vs '22 oktober 2026'); no date parsing, so '25 okt' also conflicts.
+  const statesOtherValue = (claim: string, best?: { code: string; value: string | null } | null) => {
+    const digits = claim.match(/\d+/g);
+    return best?.value && digits && !digits.every((d) => best.value!.includes(d)) ? { code: best.code, value: best.value } : null;
+  };
+
   // Claims come from the LLM when a key is set, else sentence split (see claims.ts); matching stays keyword overlap via assess.
   router.post('/api/check', jsonBody(CheckInputSchema), async (c) => {
-    const { text, country } = c.req.valid('json');
+    const { text, country, client = null, period = new Date().toISOString().slice(0, 7) } = c.req.valid('json');
     const { userId } = c.get('principal');
     const { teams, rows } = await visibleSources(userId);
     const names = new Map(teams.map((t) => [t.id, t.name]));
-    const period = new Date().toISOString().slice(0, 7);
     const claims: CheckResult['claims'] = [];
     const contradictions: CheckResult['contradictions'] = [];
     const llm = config.llm && rows.length > 0 && takeLlmBudget(userId) ? config.llm : null;
     for (const { claim, country: found } of await extractClaims(text, llm)) {
-      const r = assess(claim, serializeVisible(rows), names, { country: found ?? country, client: null, period });
-      claims.push({ text: claim, topic: r.topic, status: r.status, statusLabel: r.statusLabel });
+      const r = assess(claim, serializeVisible(rows), names, { country: found ?? country, client, period });
+      claims.push({ text: claim, topic: r.topic, status: r.status, statusLabel: r.statusLabel, conflict: statesOtherValue(claim, r.best) });
       for (const source of r.sources) {
         if (source.verdict.kind !== 'exception' && source.verdict.kind !== 'general') contradictions.push({ claim, source });
       }

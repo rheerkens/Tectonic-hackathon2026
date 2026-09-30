@@ -10,10 +10,10 @@ const VERDICT_TONE: Record<Verdict['kind'], 'good' | 'neutral' | 'muted' | 'warn
   exception: 'good', general: 'neutral', unconfirmed: 'warn', expired: 'muted', superseded: 'muted', 'other-client': 'muted', 'other-country': 'muted',
 };
 
-export function CheckPanel({ country }: { country: Country }) {
+export function CheckPanel({ country, client, period }: { country: Country; client: string | null; period: string }) {
   const api = useApiClient();
   const [text, setText] = useState('');
-  const check = useMutation({ mutationFn: (t: string) => api.check({ text: t, country }) });
+  const check = useMutation({ mutationFn: (t: string) => api.check({ text: t, country, client, period }) });
   const run = (t = text) => t.trim().length >= 3 && check.mutate(t);
   const result = check.data;
 
@@ -34,9 +34,10 @@ export function CheckPanel({ country }: { country: Country }) {
       {result?.claims.map((c, i) => {
         const conflicts = result.contradictions.filter((x) => x.claim === c.text);
         return (
-          <div key={i} className={`kn-answer kn-answer--${TONE[c.status]} kc-claim`} data-status={c.status}>
-            <span className="kn-badge">{c.statusLabel}</span>
+          <div key={i} className={`kn-answer kn-answer--${TONE[c.conflict ? 'onvoldoende' : c.status]} kc-claim`} data-status={c.status}>
+            <span className="kn-badge">{c.conflict ? 'Tegenstrijdig met bron' : c.statusLabel}</span>
             <p className="kn-answer-text">“{c.text}”</p>
+            {c.conflict && <p className="kc-conflict">De bron zegt: {c.conflict.value} ({c.conflict.code}).</p>}
             {conflicts.map(({ source: s }) => (
               <p key={s.id} className="kc-conflict">
                 <span className={`kn-verdict kn-verdict--${VERDICT_TONE[s.verdict.kind]}`}>{s.verdict.label}</span> {s.code} · {s.title} <span className="kn-muted">(onderbouwing {s.onderbouwing.score}/100)</span>
