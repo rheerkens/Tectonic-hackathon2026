@@ -8,8 +8,8 @@ const monthNr = (name: string) => MONTH_NR.indexOf(name === 'mrt' ? 'maa' : name
 // Each pattern yields a value key and is blanked out of the text so later patterns do not re-read its digits.
 const PATTERNS: Array<[RegExp, (m: string[]) => string | null]> = [
   [/\b(\d{4})-(\d{2})-(\d{2})\b/g, (m) => `date:${+m[3]!}-${+m[2]!}@${m[1]}`],
-  [new RegExp(`\\b(\\d{1,2})(?:e|ste|de)?\\s*(${MONTHS})\\b\\.?(?:\\s+(\\d{4})\\b)?`, 'gi'), (m) => `date:${+m[1]!}-${monthNr(m[2]!.toLowerCase())}${m[3] ? `@${m[3]}` : ''}`],
-  [/\b(\d{1,2})[-/.](\d{1,2})(?:[-/.](\d{2,4}))?\b/g, (m) => (+m[1]! <= 31 && +m[2]! >= 1 && +m[2]! <= 12 ? `date:${+m[1]!}-${+m[2]!}${m[3]?.length === 4 ? `@${m[3]}` : ''}` : null)],
+  [new RegExp(`\\b(\\d{1,2})(?:e|ste|de)?\\s*(${MONTHS})\\b\\.?(?:\\s+((?:19|20)\\d{2})\\b)?`, 'gi'), (m) => `date:${+m[1]!}-${monthNr(m[2]!.toLowerCase())}${m[3] ? `@${m[3]}` : ''}`],
+  [/\b(\d{1,2})[-/.](\d{1,2})(?:[-/.](\d{2,4}))?\b/g, (m) => (+m[1]! <= 31 && +m[2]! >= 1 && +m[2]! <= 12 ? `date:${+m[1]!}-${+m[2]!}${/^(?:19|20)\d{2}$/.test(m[3] ?? '') ? `@${m[3]}` : ''}` : null)],
   [/(\d+(?:[.,]\d+)?)\s*(uur|uren|dagen|dag)\b/gi, (m) => `hours:${parseFloat(m[1]!.replace(',', '.')) * (/^d/i.test(m[2]!) ? 24 : 1)}`],
   [/\d+(?:[.,]\d+)?/g, (m) => `number:${parseFloat(m[0]!.replace(',', '.'))}`],
 ];
