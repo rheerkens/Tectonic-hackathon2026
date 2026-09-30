@@ -8,6 +8,7 @@ import { useAccess, useApproveSource, useAsk, useNaiveAnswer, useUsers } from '.
 import { useTeamSubscriptions } from '../realtime/RealtimeProvider.tsx';
 import { KennisKaart } from './KennisKaart.tsx';
 import { CheckPanel } from './CheckPanel.tsx';
+import { DisputeControls } from './DisputeControls.tsx';
 import './kennis.css';
 
 const ICONS: Record<string, ReactNode> = {
@@ -45,8 +46,10 @@ function Tick({ tone }: { tone: keyof typeof VERDICT_GLYPH }) {
 function Logo() {
   return (
     <div className="kn-logo">
-      <svg width="38" height="38" viewBox="0 0 32 32" aria-hidden="true">
-        <path d="M6 4h6L6 28H0z" fill="#545871" transform="translate(2 0)" /><path d="M15 4h6L15 28H9z" fill="#e80137" transform="translate(2 0)" /><path d="M24 4h6L24 28H18z" fill="#f7a901" transform="translate(2 0)" />
+      <svg width="30" height="40" viewBox="205 205 215 290" aria-hidden="true">
+        <polygon points="212,350 247,350 262,425 227,425" fill="#797e9b" />
+        <polygon points="290,290 326,290 304,487 268,487" fill="#e80137" />
+        <polygon points="375,213 412,213 366,425 330,425" fill="#f7a901" />
       </svg>
       <div>
         <div className="kn-logo-name">SD Trust</div>
@@ -119,7 +122,7 @@ function TimeTravel({ source, country, client }: { source: AssessedSource; count
   );
 }
 
-function Panel({ source, users, canApprove, country, client }: { source: AssessedSource; users: Map<string, { name: string; email: string | null }>; canApprove: boolean; country: Country; client: string | null }) {
+function Panel({ source, users, canApprove, canDispute, canResolve, country, client }: { source: AssessedSource; users: Map<string, { name: string; email: string | null }>; canApprove: boolean; canDispute: boolean; canResolve: boolean; country: Country; client: string | null }) {
   const approve = useApproveSource();
   const toasts = useToasts();
   const owner = source.ownerId ? users.get(source.ownerId) : undefined;
@@ -183,6 +186,7 @@ function Panel({ source, users, canApprove, country, client }: { source: Assesse
           Bevestig deze bron
         </button>
       )}
+      <DisputeControls source={source} canDispute={canDispute} canResolve={canResolve} disputerName={source.disputedById ? users.get(source.disputedById)?.name : undefined} />
       {owner?.email && (
         <a className="kn-btn kn-btn--outline" href={`mailto:${owner.email}?subject=${encodeURIComponent(`Verduidelijking: ${source.title}`)}`}>
           Vraag verduidelijking
@@ -223,6 +227,9 @@ export function KennisPage() {
   const selected = result?.sources.find((s) => s.id === selectedId) ?? result?.best ?? result?.sources[0] ?? null;
   const roleOf = (projectId: string) => access.data?.teams.find((t) => t.id === projectId)?.role;
   const canApprove = !!selected && selected.status === 'unconfirmed' && roleOf(selected.projectId) !== 'viewer' && (selected.ownerId === session.user.id || (selected.ownerId === null && roleOf(selected.projectId) === 'owner'));
+
+  const isOwner = !!selected && roleOf(selected.projectId) !== 'viewer' && (selected.ownerId === session.user.id || (selected.ownerId === null && roleOf(selected.projectId) === 'owner'));
+  const canDispute = !!selected && roleOf(selected.projectId) !== 'viewer';
 
   const run = (next?: Partial<AskInput>) => {
     const input: AskInput = { question, country, client, period, ...next };
@@ -405,7 +412,7 @@ export function KennisPage() {
         <KennisKaart users={userMap} onSelect={setSelectedId} />
         <CheckPanel country={country} />
       </main>
-      {selected ? <Panel source={selected} users={userMap} canApprove={canApprove} country={country} client={client} /> : <aside className="kn-panel" />}
+      {selected ? <Panel source={selected} users={userMap} canApprove={canApprove} canDispute={canDispute} canResolve={isOwner} country={country} client={client} /> : <aside className="kn-panel" />}
     </div>
   );
 }

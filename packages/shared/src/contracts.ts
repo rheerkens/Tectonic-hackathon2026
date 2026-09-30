@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AccessSchema, AssessedSourceSchema, AskInputSchema, AskResultSchema, CheckInputSchema, CheckResultSchema, HealthSchema, MeSchema, NaiveAnswerSchema, OkSchema, UserSchema } from './schemas.ts';
+import { AccessSchema, AssessedSourceSchema, AskInputSchema, AskResultSchema, CheckInputSchema, CheckResultSchema, DisputeInputSchema, HealthSchema, MeSchema, NaiveAnswerSchema, OkSchema, UserSchema } from './schemas.ts';
 
 export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
@@ -51,6 +51,8 @@ export const api = {
   naiveAnswer: route('POST', '/api/naive-answer', { body: AskInputSchema, response: NaiveAnswerSchema }),
   /** The source owner (or the team owner, for an ownerless source) confirms a source is approved. */
   approveSource: route('POST', '/api/sources/:sourceId/approve', { response: OkSchema }),
+  /** Any editor disputes a source (`disputed: true`); only its owner (or the team owner, if ownerless) resolves it (`false`). */
+  disputeSource: route('POST', '/api/sources/:sourceId/dispute', { body: DisputeInputSchema, response: OkSchema }),
 } as const;
 
 export type ApiContracts = typeof api;
