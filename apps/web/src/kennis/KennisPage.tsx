@@ -9,8 +9,6 @@ import { ErrorState } from '../components/States.tsx';
 import { useToasts } from '../components/Toasts.tsx';
 import { useAccess, useApproveSource, useAsk, useNaiveAnswer, useSources, useUsers } from '../lib/queries.ts';
 import { useRealtime, useTeamSubscriptions } from '../realtime/RealtimeProvider.tsx';
-import { KennisKaart } from './KennisKaart.tsx';
-import { CheckPanel } from './CheckPanel.tsx';
 import { VersionChain } from './VersionChain.tsx';
 import { SourceAudience } from './SourceAudience.tsx';
 import { DisputeControls } from './DisputeControls.tsx';
@@ -452,9 +450,9 @@ export function KennisPage() {
                 <>
                   <h2>{result.best.value}</h2>
                   <p className="kn-answer-text">{result.best.claim}</p>
-                  <p className="kn-meta">
-                    Geldig voor {monthLabel(period)}
-                    {result.best.approvedById ? ` · Bevestigd door ${userMap.get(result.best.approvedById)?.name ?? 'een collega'}` : ''}
+                  <p className="kn-meta kn-answer-meta">
+                    <span><Icon name="calendar" size={15} /> Geldig voor {monthLabel(period)}</span>
+                    {result.best.approvedById && <span><Icon name="users" size={15} /> Bevestigd door {userMap.get(result.best.approvedById)?.name ?? 'een collega'}</span>}
                   </p>
                   {result.best.quote && (
                     <blockquote className="kn-quote">
@@ -463,11 +461,14 @@ export function KennisPage() {
                   )}
                   <div className="kn-answer-foot">
                     <a className="kn-source-link" href="#source-title" onClick={(e) => { e.preventDefault(); openSource(result.best!.id); }}>
-                      <Icon name="file" /> {result.best.code} · {result.best.title}
-                      {result.best.version ? ` · versie ${result.best.version}` : ''}
+                      <Icon name="file" size={18} />
+                      <span>
+                        <strong>{result.best.title}</strong>
+                        <small>{result.best.code}{result.best.version ? ` · versie ${result.best.version}` : ''}</small>
+                      </span>
                     </a>
                     <button type="button" className="kn-btn" onClick={() => openSource(result.best!.id)}>
-                      Bekijk bron
+                      Bekijk bron <Icon name="arrow" size={16} />
                     </button>
                   </div>
                 </>
@@ -482,8 +483,12 @@ export function KennisPage() {
             </section>
 
             {result.sources.length > 0 && (
-              <section>
-                <h3 className="kn-h3">Waarom deze bron?</h3>
+              <details className="kn-evidence kn-disclosure">
+                <summary>
+                  <span>Waarom deze bron?</span>
+                  <span className="kn-disclosure-count">{result.sources.length} {result.sources.length === 1 ? 'bron' : 'bronnen'}</span>
+                  <Icon name="chevron" size={16} />
+                </summary>
                 <table className="kn-table" aria-label="Bronnen en beoordeling">
                   <thead>
                     <tr>
@@ -495,13 +500,13 @@ export function KennisPage() {
                     {result.sources.map((s) => {
                       const tone = VERDICT_TONE[s.verdict.kind];
                       return (
-                        <tr key={s.id} className={s.id === selected?.id ? 'is-selected' : ''} onClick={() => openSource(s.id)} tabIndex={0} aria-current={s.id === selected?.id} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSource(s.id); } }}>
+                        <tr key={s.id} className={s.id === selected?.id ? 'is-selected' : ''} onClick={() => openSource(s.id)} aria-current={s.id === selected?.id}>
                           <td>
-                            <span className="kn-src">
-                              <Icon name={s.kind === 'chat' ? 'chat' : 'file'} size={18} />
+                            <button type="button" className="kn-src" aria-haspopup="dialog">
+                              <Icon name={s.kind === 'chat' ? 'chat' : 'file'} size={16} />
                               <span className="kn-src-id">{s.code}</span>
-                              {s.title}
-                            </span>
+                              <span className="kn-src-title">{s.title}</span>
+                            </button>
                           </td>
                           <td>
                             <span className={`kn-verdict kn-verdict--${tone}`}>
@@ -516,12 +521,10 @@ export function KennisPage() {
                 <p className="kn-footnote">
                   <Icon name="info" size={15} /> Een geldig document is niet automatisch van toepassing.
                 </p>
-              </section>
+              </details>
             )}
           </>
         )}
-        <KennisKaart users={userMap} onSelect={openSource} />
-        <CheckPanel country={country} client={client} period={period} />
       </main>
       <dialog ref={sourceDialog} className="kn-source-dialog" aria-labelledby="source-title">
         <form method="dialog" className="kn-source-close">

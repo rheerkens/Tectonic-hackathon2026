@@ -35,12 +35,18 @@ export function Icon({ name, size = 20 }: { name: string; size?: number }) {
 }
 
 export type Tone = 'good' | 'neutral' | 'muted' | 'warn' | 'bad';
-const GLYPH: Record<Tone, string> = { good: '✓', neutral: '◎', muted: '–', warn: '!', bad: '✕' };
+const GLYPH: Record<Tone, ReactNode> = {
+  good: <path d="m5 10 3 3 7-7" />,
+  neutral: <><circle cx="10" cy="10" r="6.5" /><path d="M10 9v4M10 6.5h.01" /></>,
+  muted: <path d="M5 10h10" />,
+  warn: <><path d="m10 3 8 14H2Z" /><path d="M10 7.5v4M10 14h.01" /></>,
+  bad: <path d="m6 6 8 8M14 6l-8 8" />,
+};
 
 export function Tick({ tone }: { tone: Tone }) {
   return (
     <span className={`kn-tick kn-tick--${tone}`} aria-hidden="true">
-      {GLYPH[tone]}
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">{GLYPH[tone]}</svg>
     </span>
   );
 }
