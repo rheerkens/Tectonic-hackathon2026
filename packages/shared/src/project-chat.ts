@@ -1,6 +1,10 @@
 import { z } from 'zod';
 
 export const DEFAULT_PROJECT_CHAT_MODEL = 'gpt-6-luna';
+/** Raw JSON budget, including escaping of the 8,000-character message. */
+export const CHAT_MAX_REQUEST_BYTES = 64 * 1024;
+/** Completed history text sent to the provider, excluding the new message and system prompt. */
+export const CHAT_MAX_HISTORY_CHARS = 80_000;
 export const CHAT_MAX_REPLY = 64_000;
 export const CHAT_MAX_TOOLS = 16;
 export const CHAT_MAX_TOOL_RESULT = 16_000;

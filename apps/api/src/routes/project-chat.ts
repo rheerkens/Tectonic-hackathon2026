@@ -1,8 +1,9 @@
 import { chatTurns, projectMembers, sources } from '@tectonic/db';
-import { CHAT_STREAM_PATH, ProjectChatInputSchema, ProjectChatTurnSchema, api, type ChatEvent, type ChatStatus, type ProjectChatToolCall, type ProjectChatTurn } from '@tectonic/shared';
+import { CHAT_MAX_REQUEST_BYTES, CHAT_STREAM_PATH, ProjectChatInputSchema, ProjectChatTurnSchema, api, type ChatEvent, type ChatStatus, type ProjectChatToolCall, type ProjectChatTurn } from '@tectonic/shared';
 import { and, asc, desc, eq, inArray } from 'drizzle-orm';
 import { createHash } from 'node:crypto';
 import { Hono } from 'hono';
+import { bodyLimit } from 'hono/body-limit';
 import { stream } from 'hono/streaming';
 import type { AppContext, AppEnv } from '../app.ts';
 import { getCodexStatus } from '../project-chat/codex.ts';
@@ -72,7 +73,10 @@ export function projectChatRoutes(ctx: AppContext, run: ChatRunner = runProjectC
     return c.json(await history(projectId, userId, allowedProjectIds, currentSourceAccessHash));
   });
 
-  router.post(CHAT_STREAM_PATH, jsonBody(ProjectChatInputSchema), async (c) => {
+  router.post(CHAT_STREAM_PATH, bodyLimit({
+    maxSize: CHAT_MAX_REQUEST_BYTES,
+    onError: (c) => c.json({ error: { code: 'validation_failed', message: 'Chat request body is too large.' } }, 413),
+  }), jsonBody(ProjectChatInputSchema), async (c) => {
     const projectId = c.req.param('projectId');
     const userId = c.get('principal').userId;
     await requireProjectAccess(ctx.db, projectId, userId, 'viewer');
@@ -82,8 +86,9 @@ export function projectChatRoutes(ctx: AppContext, run: ChatRunner = runProjectC
     }
     const status = await readStatus();
     if (!status.available) throw badRequest(status.message);
-    const key = `${projectId}:${userId}`;
-    if (active.has(key)) throw conflict('A reply is already running for this conversation.');
+    // One provider run per user, even when separate team conversations are opened.
+    const key = userId;
+    if (active.has(key)) throw conflict('A reply is already running. Wait for it to finish before sending another message.');
     active.add(key);
     let allowedProjectIds: string[];
     let previous: ProjectChatTurn[];
