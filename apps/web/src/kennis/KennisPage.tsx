@@ -6,6 +6,7 @@ import { ErrorState } from '../components/States.tsx';
 import { useToasts } from '../components/Toasts.tsx';
 import { useAccess, useApproveSource, useAsk, useNaiveAnswer, useUsers } from '../lib/queries.ts';
 import { useTeamSubscriptions } from '../realtime/RealtimeProvider.tsx';
+import { KennisKaart } from './KennisKaart.tsx';
 import { CheckPanel } from './CheckPanel.tsx';
 import './kennis.css';
 
@@ -401,6 +402,7 @@ export function KennisPage() {
             )}
           </>
         )}
+        <KennisKaart users={userMap} onSelect={setSelectedId} />
         <CheckPanel country={country} />
       </main>
       {selected ? <Panel source={selected} users={userMap} canApprove={canApprove} country={country} client={client} /> : <aside className="kn-panel" />}

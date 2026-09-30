@@ -46,6 +46,12 @@ export function useAsk(input: AskInput | null) {
   });
 }
 
+/** Refreshed on `sources.changed` via the `asks` key prefix. */
+export function useSources() {
+  const api = useApiClient();
+  return useQuery({ queryKey: [...keys.asks, 'sources'], queryFn: api.listSources });
+}
+
 export function useNaiveAnswer(input: AskInput | null, enabled: boolean) {
   const api = useApiClient();
   return useQuery({ queryKey: [...keys.asks, 'naive', input], queryFn: () => api.naiveAnswer(input!), enabled: enabled && input !== null });

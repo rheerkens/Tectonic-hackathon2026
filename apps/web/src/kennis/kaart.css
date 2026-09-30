@@ -1,0 +1,13 @@
+.kk { margin-top: 32px; }
+.kk-table { width: 100%; border-collapse: separate; border-spacing: 6px; table-layout: fixed; }
+.kk-table th { text-align: left; font-size: 13px; color: var(--muted); font-weight: 600; }
+.kk-cell { border-radius: var(--radius); padding: 0; height: 72px; vertical-align: top; border: 1px solid var(--border); }
+.kk-cell button { all: unset; box-sizing: border-box; display: flex; flex-direction: column; gap: 2px; width: 100%; height: 100%; padding: 8px 10px; cursor: pointer; }
+.kk-cell button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.kk-cell strong { font-size: 20px; }
+.kk-cell span { font-size: 12px; color: var(--muted); }
+.kk-cell--good { background: color-mix(in srgb, var(--success) 16%, var(--surface)); }
+.kk-cell--mid { background: color-mix(in srgb, var(--warning) 22%, var(--surface)); }
+.kk-cell--low { background: color-mix(in srgb, var(--danger) 14%, var(--surface)); }
+.kk-cell--gap { border-style: dashed; color: var(--muted); text-align: center; vertical-align: middle; font-size: 13px; }
+.kk-badge { font-style: normal; font-size: 11px; font-weight: 700; color: var(--accent-strong); background: var(--accent-soft); border-radius: 999px; padding: 1px 8px; align-self: flex-start; margin-top: auto; }
