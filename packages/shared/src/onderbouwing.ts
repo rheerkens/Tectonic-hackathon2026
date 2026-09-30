@@ -57,8 +57,12 @@ const STATUS_LABELS: Record<AnswerStatus, string> = {
 const STOP = new Set([
   'de', 'het', 'een', 'van', 'voor', 'en', 'is', 'welke', 'wat', 'hoe', 'wie', 'wanneer', 'tot', 'mag', 'moet', 'kan', 'geldt', 'op', 'aan', 'te', 'bij', 'met', 'in', 'om', 'dat', 'die', 'er', 'we', 'ik', 'ze', 'mijn', 'ons',
   'the', 'what', 'when', 'how', 'is', 'are', 'for', 'of', 'a', 'an',
+  // chatty fillers ("Kun je mij vertellen ...", "... door te geven")
+  'door', 'kun', 'kunt', 'vertellen', 'weten', 'weet', 'even', 'precies', 'exact', 'geven',
 ]);
-const tokens = (text: string) => text.toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length > 2 && !STOP.has(w));
+/** Lower-case, accents stripped ("België" is "belgie"), split on anything that is not a letter or digit. */
+const words = (text: string) => text.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '').split(/[^a-z0-9]+/);
+const tokens = (text: string) => words(text).filter((w) => w.length > 2 && !STOP.has(w));
 /** Prefix match, so "aanleveren" finds "aanleverdatum". ponytail: no stemming or embeddings; swap in vector search if the corpus outgrows it. */
 const PREFIX = 6;
 const stem = (w: string) => w.slice(0, PREFIX);
@@ -66,6 +70,43 @@ const stem = (w: string) => w.slice(0, PREFIX);
 function overlap(question: string[], s: Source): number {
   const hay = new Set(tokens(`${s.title} ${s.topic} ${s.keywords} ${s.claim} ${s.value}`).map(stem));
   return question.filter((w) => hay.has(stem(w))).length;
+}
+
+/**
+ * Words that appear in almost any payroll question or claim ("maand", "uitbetalen", "procedure", month names) and
+ * say nothing about the topic. Without this, "de dertiende maand" matched loonmutaties because a claim says "van de maand".
+ */
+const GENERIC = new Set([
+  'maand', 'maanden', 'jaar', 'jaren', 'week', 'weken', 'dag', 'dagen', 'uur', 'datum', 'periode', 'volgende', 'vorige', 'deze', 'huidige',
+  'januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december',
+  'regel', 'regels', 'procedure', 'procedures', 'afspraak', 'afspraken', 'klant', 'klanten', 'werknemer', 'werknemers',
+  'uitbetalen', 'uitbetaald', 'uitbetaling', 'betalen', 'betaald', 'betaling', 'binnen', 'uiterlijk', 'lang', 'veel',
+  'worden', 'wordt', 'werd', 'zijn', 'heeft', 'hebben', 'moeten', 'mogen', 'kunnen', 'niet', 'geen', 'ook', 'nog', 'naar', 'over', 'uit', 'dit', 'onze', 'alle', 'per', 'mij', 'jij', 'gelden', 'geldig', 'waarom', 'hoezo', 'dan', 'eens', 'graag',
+  'belgie', 'belgische', 'nederland', 'nederlandse', 'nederlands',
+]);
+
+/**
+ * The words of a question that carry its subject: no stop words, no generic words, no digits, and nothing that is
+ * context instead of topic (country, the chat's client, the clients of the sources). "Atlas" selects a client, not a topic.
+ */
+export function subjectWords(question: string, sources: Array<Pick<Source, 'client'>>, ctx?: Pick<Context, 'client'>): string[] {
+  const context = new Set(tokens([ctx?.client, ...sources.map((s) => s.client)].filter(Boolean).join(' ')));
+  const seen = new Set<string>();
+  return tokens(question).filter((w) => {
+    if (GENERIC.has(w) || context.has(w) || /^\d+$/.test(w) || seen.has(stem(w))) return false;
+    seen.add(stem(w));
+    return true;
+  });
+}
+
+/**
+ * How well a source backs the subject words of the question: a word in the title, topic or keywords counts 1 (curated),
+ * one that only occurs in the claim or value text counts 0.5 (incidental).
+ */
+function evidence(subject: string[], s: Source): number {
+  const curated = new Set(tokens(`${s.title} ${s.topic} ${s.keywords}`).map(stem));
+  const prose = new Set(tokens(`${s.claim} ${s.value}`).map(stem));
+  return subject.reduce((sum, w) => sum + (curated.has(stem(w)) ? 1 : prose.has(stem(w)) ? 0.5 : 0), 0);
 }
 
 const VERDICT_RANK: Record<Verdict['kind'], number> = { exception: 0, general: 1, unconfirmed: 2, expired: 3, superseded: 4, 'other-client': 5, 'other-country': 6 };
@@ -76,11 +117,12 @@ const VERDICT_RANK: Record<Verdict['kind'], number> = { exception: 0, general: 1
  * then the higher onderbouwing wins.
  */
 export function assess(question: string, sources: Source[], projectNames: Map<string, string>, ctx: Context): AskResult {
-  const q = tokens(question);
+  const subject = subjectWords(question, sources, ctx);
   const byTopic = new Map<string, number>();
-  for (const s of sources) byTopic.set(s.topic, Math.max(byTopic.get(s.topic) ?? 0, overlap(q, s)));
+  for (const s of sources) byTopic.set(s.topic, Math.max(byTopic.get(s.topic) ?? 0, evidence(subject, s)));
   const [topic, hits] = [...byTopic].sort((a, b) => b[1] - a[1])[0] ?? [null, 0];
-  if (!topic || hits === 0) return { topic: null, status: 'geen', statusLabel: STATUS_LABELS.geen, best: null, sources: [] };
+  // A topic must back a curated word and MORE than half of what the question is about: one stray word is not a match.
+  if (!topic || hits < 1 || hits <= subject.length / 2) return { topic: null, status: 'geen', statusLabel: STATUS_LABELS.geen, best: null, sources: [] };
 
   const rated: AssessedSource[] = sources
     .filter((s) => s.topic === topic)

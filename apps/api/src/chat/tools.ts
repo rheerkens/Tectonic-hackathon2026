@@ -15,6 +15,7 @@ import {
 } from '@tectonic/shared';
 import { z } from 'zod';
 import { serializeSource } from '../serializers.ts';
+import { contextLabel } from './fallback.ts';
 
 /**
  * Everything a chat request may touch: the caller's visible sources and nothing else. Tools only
@@ -94,6 +95,8 @@ export interface ToolOutcome {
   isError: boolean;
   /** Set by a successful assess_trust; the route reports the last one as the answer's trust. */
   assessment: AskResult | null;
+  /** The context that assessment was rated for (the chat context with the tool's overrides). */
+  context: ChatContext | null;
 }
 
 const NOT_FOUND = (code: string) => `Bron ${code} niet gevonden`;
@@ -102,15 +105,16 @@ const NOT_FOUND = (code: string) => `Bron ${code} niet gevonden`;
 export function executeTool(env: ChatEnv, id: string, name: string, input: unknown): ToolOutcome {
   const started = performance.now();
   const rawArgs = input !== null && typeof input === 'object' && !Array.isArray(input) ? (input as Record<string, unknown>) : {};
-  const finish = (status: 'ok' | 'error', args: Record<string, unknown>, summary: string, sourceCodes: string[], error: string | null, content: unknown, assessment: AskResult | null = null): ToolOutcome => ({
+  const finish = (status: 'ok' | 'error', args: Record<string, unknown>, summary: string, sourceCodes: string[], error: string | null, content: unknown, assessment: AskResult | null = null, context: ChatContext | null = null): ToolOutcome => ({
     call: { id, name: name as ChatToolName, args, status, summary, sourceCodes, error, durationMs: Math.round(performance.now() - started) },
     content: typeof content === 'string' ? content : JSON.stringify(content),
     isError: status === 'error',
     assessment,
+    context,
   });
 
   if (!(CHAT_TOOL_NAMES as readonly string[]).includes(name)) {
-    return { call: null, content: `Onbekende tool "${name}". Beschikbaar: ${CHAT_TOOL_NAMES.join(', ')}.`, isError: true, assessment: null };
+    return { call: null, content: `Onbekende tool "${name}". Beschikbaar: ${CHAT_TOOL_NAMES.join(', ')}.`, isError: true, assessment: null, context: null };
   }
   const toolName = name as ChatToolName;
   const parsed = CHAT_TOOL_ARGS[toolName].safeParse(rawArgs);
@@ -127,16 +131,15 @@ export function executeTool(env: ChatEnv, id: string, name: string, input: unkno
       const list = found.sources.map((s) => ({ code: s.code, title: s.title, country: s.country, client: s.client, status: s.status, disputed: s.disputed }));
       const summary = list.length
         ? `Zocht kennis over "${query}": ${plural(list.length, 'bron', 'bronnen')} (${codes(list).join(', ')})`
-        : `Zocht kennis over "${query}": geen bronnen gevonden`;
+        : `Zocht kennis over "${query}": geen bronnen gevonden in de teams waar je toegang toe hebt`;
       return finish('ok', { query }, summary, codes(list), null, { topic: found.topic, sources: list });
     }
     case 'assess_trust': {
       const a = parsed.data as z.infer<(typeof CHAT_TOOL_ARGS)['assess_trust']>;
       // Omitted = chat context; an explicit null client means "no specific client".
-      const ctx = { country: a.country ?? context.country, client: a.client === undefined ? context.client : a.client, period: a.period ?? context.period };
+      const ctx: ChatContext = { country: a.country ?? context.country, client: a.client === undefined ? context.client : a.client, period: a.period ?? context.period };
       const result = assess(a.question, env.sources, env.names, ctx);
-      const label = [ctx.country, ctx.client, ctx.period].filter(Boolean).join(' / ');
-      const summary = `Beoordeelde vertrouwen voor ${label}: ${result.statusLabel}${result.best ? ` (${result.best.code}, ${result.best.onderbouwing.score})` : ''}`;
+      const summary = `Beoordeelde vertrouwen voor ${contextLabel(ctx)}: ${result.statusLabel}${result.best ? ` (${result.best.code}, onderbouwing ${result.best.onderbouwing.score}/100)` : ''}`;
       const view = {
         context: ctx,
         topic: result.topic,
@@ -145,7 +148,7 @@ export function executeTool(env: ChatEnv, id: string, name: string, input: unkno
         best: result.best ? compact(result.best) : null,
         otherSources: result.sources.filter((s) => s !== result.best).map(compact),
       };
-      return finish('ok', { question: a.question, ...ctx }, summary, codes(result.sources), null, view, result);
+      return finish('ok', { question: a.question, ...ctx }, summary, codes(result.sources), null, view, result, ctx);
     }
     case 'get_source': {
       const { code } = parsed.data as z.infer<(typeof CHAT_TOOL_ARGS)['get_source']>;

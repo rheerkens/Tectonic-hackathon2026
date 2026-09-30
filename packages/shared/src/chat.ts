@@ -84,6 +84,8 @@ export const ChatResultSchema = z.object({
   /** How well the answer is backed, from the trust assessment it rests on ('geen' = abstained / knowledge gap). */
   status: AnswerStatusSchema,
   statusLabel: z.string(),
+  /** The context the answer was rated for: the chat context, unless the question itself asked for another country, client or period. */
+  context: ChatContextSchema,
   /** 'llm' = model with tool calling; 'fallback' = no key or model failure, deterministic tools only. */
   mode: z.enum(['llm', 'fallback']),
   toolCalls: ChatToolCallSchema.array(),
