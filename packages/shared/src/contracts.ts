@@ -1,26 +1,5 @@
 import { z } from 'zod';
-import {
-  AddMemberInputSchema,
-  AskInputSchema,
-  AskResultSchema,
-  CreateSourceInputSchema,
-  FlagSourceInputSchema,
-  SourcesOverviewSchema,
-  SourceWithTrustSchema,
-  CreateProjectInputSchema,
-  CreateTaskInputSchema,
-  HealthSchema,
-  MeSchema,
-  OkSchema,
-  ProjectDetailSchema,
-  ProjectMemberSchema,
-  ProjectSchema,
-  ProjectSummarySchema,
-  TaskSchema,
-  UpdateProjectInputSchema,
-  UpdateTaskInputSchema,
-  UserSchema,
-} from './schemas.ts';
+import { AccessSchema, AskInputSchema, AskResultSchema, HealthSchema, MeSchema, OkSchema, UserSchema } from './schemas.ts';
 
 export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
@@ -60,24 +39,12 @@ export const api = {
   me: route('GET', '/api/me', { response: MeSchema }),
   listUsers: route('GET', '/api/users', { response: UserSchema.array() }),
 
-  listProjects: route('GET', '/api/projects', { response: ProjectSummarySchema.array() }),
-  createProject: route('POST', '/api/projects', { body: CreateProjectInputSchema, response: ProjectSummarySchema }),
-  getProject: route('GET', '/api/projects/:projectId', { response: ProjectDetailSchema }),
-  updateProject: route('PATCH', '/api/projects/:projectId', { body: UpdateProjectInputSchema, response: ProjectSchema }),
-  deleteProject: route('DELETE', '/api/projects/:projectId', { response: OkSchema }),
-
-  addMember: route('POST', '/api/projects/:projectId/members', { body: AddMemberInputSchema, response: ProjectMemberSchema }),
-  removeMember: route('DELETE', '/api/projects/:projectId/members/:userId', { response: OkSchema }),
-
-  createTask: route('POST', '/api/projects/:projectId/tasks', { body: CreateTaskInputSchema, response: TaskSchema }),
-  updateTask: route('PATCH', '/api/projects/:projectId/tasks/:taskId', { body: UpdateTaskInputSchema, response: TaskSchema }),
-  deleteTask: route('DELETE', '/api/projects/:projectId/tasks/:taskId', { response: OkSchema }),
-
-  listSources: route('GET', '/api/projects/:projectId/sources', { response: SourcesOverviewSchema }),
-  createSource: route('POST', '/api/projects/:projectId/sources', { body: CreateSourceInputSchema, response: SourceWithTrustSchema }),
-  ask: route('POST', '/api/projects/:projectId/ask', { body: AskInputSchema, response: AskResultSchema }),
-  verifySource: route('POST', '/api/projects/:projectId/sources/:sourceId/verify', { response: SourceWithTrustSchema }),
-  flagSource: route('POST', '/api/projects/:projectId/sources/:sourceId/flag', { body: FlagSourceInputSchema, response: SourceWithTrustSchema }),
+  /** The teams I belong to, the clients in the sources I may see, and example questions. */
+  access: route('GET', '/api/access', { response: AccessSchema }),
+  /** Answers a question from the sources the caller may see, for a country, client and period. */
+  ask: route('POST', '/api/ask', { body: AskInputSchema, response: AskResultSchema }),
+  /** The source owner (or the team owner, for an ownerless source) confirms a source is approved. */
+  approveSource: route('POST', '/api/sources/:sourceId/approve', { response: OkSchema }),
 } as const;
 
 export type ApiContracts = typeof api;

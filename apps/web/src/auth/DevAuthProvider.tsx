@@ -69,7 +69,7 @@ function IdentityPicker({ onChoose }: { onChoose: (id: string) => void }) {
       <div className="identity-card">
         <div className="brand">
           <span className="brand-mark" aria-hidden="true" />
-          <span>Tectonic Board</span>
+          <span>SD Trust</span>
         </div>
         <h1>Who are you today?</h1>
         <p className="muted">

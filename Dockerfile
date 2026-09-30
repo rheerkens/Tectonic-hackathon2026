@@ -7,12 +7,9 @@ WORKDIR /app
 COPY package.json bun.lock bunfig.toml ./
 COPY apps/api/package.json apps/api/
 COPY apps/web/package.json apps/web/
-COPY apps/desktop/package.json apps/desktop/
 COPY packages/shared/package.json packages/shared/
 COPY packages/db/package.json packages/db/
 COPY tools/dev/package.json tools/dev/
-COPY tools/e2e/package.json tools/e2e/
-COPY tools/video/package.json tools/video/
 RUN bun install --frozen-lockfile
 
 COPY . .

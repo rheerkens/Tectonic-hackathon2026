@@ -27,7 +27,7 @@ export function ClerkAuthProvider({ children }: { children: ReactNode }) {
           <div className="identity-card identity-card--clerk">
             <div className="brand">
               <span className="brand-mark" aria-hidden="true" />
-              <span>Tectonic Board</span>
+              <span>SD Trust</span>
             </div>
             <SignIn routing="hash" />
           </div>

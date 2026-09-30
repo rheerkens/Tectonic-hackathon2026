@@ -11,8 +11,6 @@ import { createLogger, type Logger } from './log.ts';
 import { createRealtime, type Realtime, type SocketData } from './realtime.ts';
 import { knowledgeRoutes } from './routes/knowledge.ts';
 import { healthRoutes } from './routes/health.ts';
-import { projectRoutes } from './routes/projects.ts';
-import { taskRoutes } from './routes/tasks.ts';
 import { userRoutes } from './routes/users.ts';
 import { createStaticHandler } from './static.ts';
 
@@ -83,8 +81,6 @@ export function createApp(deps: { config: AppConfig; db: Database; log?: Logger;
 
   app.route('/', healthRoutes(ctx));
   app.route('/', userRoutes(ctx));
-  app.route('/', projectRoutes(ctx));
-  app.route('/', taskRoutes(ctx));
   app.route('/', knowledgeRoutes(ctx));
 
   app.get(WS_PATH, (c) => realtime.upgrade(c.req.raw, c.env));

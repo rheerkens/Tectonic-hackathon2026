@@ -152,7 +152,7 @@ export async function launch(options: LaunchOptions = {}): Promise<void> {
     const handle = createDb(postgres.url, { max: 2 });
     const seeded = await seedDatabase(handle.db);
     await handle.close();
-    log('pg', `ready on 127.0.0.1:${ports.postgres} ${seeded.seeded ? `(seeded ${seeded.projects} projects, ${seeded.tasks} tasks)` : '(existing data kept)'}`);
+    log('pg', `ready on 127.0.0.1:${ports.postgres} ${seeded.seeded ? `(seeded ${seeded.projects} teams, ${seeded.sources} sources)` : '(existing data kept)'}`);
 
     // 4. API.
     const childEnv = {

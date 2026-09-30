@@ -1,4 +1,4 @@
-# Trust Lens
+# SD Trust
 
 **From "I found something" to "I understand why I can rely on it."**
 
@@ -39,7 +39,7 @@ We focus on **one role, one workflow, one trust signal**, as the brief asks:
 
 The four "inspiration areas" of the brief map onto the product:
 
-| Brief | In Trust Lens |
+| Brief | In SD Trust |
 |---|---|
 | **Trust**: is information relevant and reliable? | Confidence score with a factor-by-factor explanation |
 | **Detect**: conflicting, duplicated, missing or outdated knowledge | Contradictions, outdated and ownerless sources, knowledge gaps, per question and portfolio-wide |
@@ -142,7 +142,7 @@ bun run dev --reset-db   # needed once after pulling schema or seed changes
 bun run check            # typecheck + tests + build
 bun run test:e2e         # Playwright, two browser sessions
 ```
-Demo identities (`?as=`): **ada** (inherits the portfolio), **grace** (BE payroll expert), **margaret** (NL), **alan** (compliance). Start with the **Vandeputte Logistics** portfolio, which opens on the Trust Lens; the **Board** tab is the starter's task board.
+Demo identities (`?as=`): **ada** (inherits the portfolio), **grace** (BE payroll expert), **margaret** (NL), **alan** (compliance). Start with the **Vandeputte Logistics** portfolio, which opens on the SD Trust; the **Board** tab is the starter's task board.
 
 ## 10. Demo script
 1. As Ada, ask *"When is the 13th month paid?"* (BE). Confidence is medium. Show why: two sources disagree, one is outdated and ownerless.

@@ -1,10 +1,9 @@
-import { MEMBER_ROLES, SOURCE_KINDS, TASK_PRIORITIES, TASK_STATUSES } from '@tectonic/shared';
-import { boolean, doublePrecision, index, integer, pgEnum, pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { MEMBER_ROLES, SOURCE_KINDS, SOURCE_STATUSES } from '@tectonic/shared';
+import { boolean, date, index, integer, pgEnum, pgTable, primaryKey, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 
-export const taskStatusEnum = pgEnum('task_status', TASK_STATUSES);
-export const taskPriorityEnum = pgEnum('task_priority', TASK_PRIORITIES);
 export const memberRoleEnum = pgEnum('member_role', MEMBER_ROLES);
 export const sourceKindEnum = pgEnum('source_kind', SOURCE_KINDS);
+export const sourceStatusEnum = pgEnum('source_status', SOURCE_STATUSES);
 
 const timestamps = {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
@@ -20,6 +19,7 @@ export const users = pgTable('users', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
+/** A team ("Payroll België", "Klantteam Atlas"). Membership is what gives access to its sources. */
 export const projects = pgTable('projects', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
@@ -46,53 +46,38 @@ export const projectMembers = pgTable(
   (t) => [primaryKey({ columns: [t.projectId, t.userId] }), index('project_members_user_idx').on(t.userId)],
 );
 
-export const tasks = pgTable(
-  'tasks',
+/** One piece of knowledge (agreement, procedure, manual, chat) that can answer a question. */
+export const sources = pgTable(
+  'sources',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    projectId: uuid('project_id')
-      .notNull()
-      .references(() => projects.id, { onDelete: 'cascade' }),
-    title: text('title').notNull(),
-    description: text('description').notNull().default(''),
-    status: taskStatusEnum('status').notNull().default('backlog'),
-    priority: taskPriorityEnum('priority').notNull().default('medium'),
-    assigneeId: text('assignee_id').references(() => users.id, { onDelete: 'set null' }),
-    position: doublePrecision('position').notNull().default(0),
-    version: integer('version').notNull().default(1),
-    createdById: text('created_by_id')
-      .notNull()
-      .references(() => users.id),
-    ...timestamps,
-  },
-  (t) => [index('tasks_project_status_position_idx').on(t.projectId, t.status, t.position)],
-);
-
-/** A piece of organisational knowledge (policy, chat, wiki page, ...) inside a client portfolio (project). */
-export const knowledgeSources = pgTable(
-  'knowledge_sources',
-  {
-    id: uuid('id').primaryKey().defaultRandom(),
+    code: text('code').notNull(),
     projectId: uuid('project_id')
       .notNull()
       .references(() => projects.id, { onDelete: 'cascade' }),
     title: text('title').notNull(),
     kind: sourceKindEnum('kind').notNull(),
+    version: integer('version'),
     topic: text('topic').notNull(),
-    country: text('country').notNull().default('ALL'),
+    keywords: text('keywords').notNull().default(''),
+    country: text('country').notNull(),
+    client: text('client'),
+    value: text('value').notNull(),
     claim: text('claim').notNull(),
-    content: text('content').notNull().default(''),
+    quote: text('quote').notNull().default(''),
+    validFrom: date('valid_from', { mode: 'string' }).notNull(),
+    validTo: date('valid_to', { mode: 'string' }),
+    status: sourceStatusEnum('status').notNull().default('unconfirmed'),
     ownerId: text('owner_id').references(() => users.id, { onDelete: 'set null' }),
-    verifiedById: text('verified_by_id').references(() => users.id, { onDelete: 'set null' }),
-    flaggedOutdated: boolean('flagged_outdated').notNull().default(false),
-    reviewedAt: timestamp('reviewed_at', { withTimezone: true }).notNull().defaultNow(),
+    approvedById: text('approved_by_id').references(() => users.id, { onDelete: 'set null' }),
+    traceable: boolean('traceable').notNull().default(true),
+    supersededBy: text('superseded_by'),
     ...timestamps,
   },
-  (t) => [index('knowledge_sources_project_idx').on(t.projectId, t.topic)],
+  (t) => [uniqueIndex('sources_code_idx').on(t.code), index('sources_project_topic_idx').on(t.projectId, t.topic)],
 );
 
 export type UserRow = typeof users.$inferSelect;
 export type ProjectRow = typeof projects.$inferSelect;
 export type ProjectMemberRow = typeof projectMembers.$inferSelect;
-export type TaskRow = typeof tasks.$inferSelect;
-export type KnowledgeSourceRow = typeof knowledgeSources.$inferSelect;
+export type SourceRow = typeof sources.$inferSelect;

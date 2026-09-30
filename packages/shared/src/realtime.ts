@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AuthSourceSchema, ProjectSchema, TaskSchema } from './schemas.ts';
+import { AuthSourceSchema, ProjectSchema } from './schemas.ts';
 
 export const WS_PATH = '/ws';
 
@@ -14,9 +14,6 @@ export type ClientMessage = z.infer<typeof ClientMessageSchema>;
 
 /** Domain events, always published *after* the change was persisted. */
 export const RealtimeEventSchema = z.discriminatedUnion('kind', [
-  z.object({ kind: z.literal('task.created'), task: TaskSchema }),
-  z.object({ kind: z.literal('task.updated'), task: TaskSchema }),
-  z.object({ kind: z.literal('task.deleted'), taskId: z.uuid() }),
   z.object({ kind: z.literal('project.updated'), project: ProjectSchema }),
   z.object({ kind: z.literal('project.deleted') }),
   z.object({ kind: z.literal('members.changed') }),
