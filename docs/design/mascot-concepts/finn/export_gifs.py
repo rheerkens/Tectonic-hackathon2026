@@ -1,12 +1,13 @@
 """Assemble existing Finn drawings into transparent GIFs; requires Pillow.
 
-No new art is generated. Uses manifest registration and playback timing.
+Uses legacy sprite registration plus the approved fluid animation overrides.
 Called by build_preview.py, or run directly after rebuilding the manifest.
 """
 from pathlib import Path
 import base64
 import html
 import json
+import shutil
 import zipfile
 
 from PIL import Image
@@ -75,8 +76,27 @@ def export(manifest):
         encode([frames[i] for i in sequence], durations, path, state['loop'])
         poster = PUBLIC / f'{name}.png'
         frames[state['staticFrame']].save(poster)
+        width = height = SIZE
+        fluid = PUBLIC.parent / 'finn-fluid'
+        if state['id'] in ('welcome', 'listening', 'thinking', 'answer'):
+            source = fluid / f"{state['id']}.gif"
+            data = source.read_bytes()
+            # Remove the review loop extension for production one-shot gestures.
+            extension = b'\x21\xff\x0bNETSCAPE2.0\x03\x01\x00\x00\x00'
+            assert data.count(extension) == 1, source
+            path.write_bytes(data if state['loop'] else data.replace(extension, b'', 1))
+            shutil.copyfile(fluid / f"{state['id']}.png", poster)
+            with Image.open(path) as encoded:
+                width, height = encoded.size
+                assert (encoded.info.get('loop') == 0) == state['loop']
+                durations = []
+                for index in range(encoded.n_frames):
+                    encoded.seek(index)
+                    durations.append(encoded.info['duration'])
+                    assert encoded.convert('RGBA').getpixel((0, 0))[3] == 0
+            sequence = next(item['sequence'] for item in json.loads((fluid / 'animations.json').read_text()) if item['id'] == state['id'])
         entries.append({'id':state['id'], 'name':state['name'], 'src':f'/mascots/finn/{path.name}',
-                        'poster':f'/mascots/finn/{poster.name}', 'width':SIZE, 'height':SIZE,
+                        'poster':f'/mascots/finn/{poster.name}', 'width':width, 'height':height,
                         'loop':state['loop'], 'durationMs':sum(durations), 'sourceSequence':sequence,
                         'frameDurationsMs':durations, 'nextState':state['nextState']})
         gif = 'data:image/gif;base64,' + base64.b64encode(path.read_bytes()).decode()
@@ -85,11 +105,13 @@ def export(manifest):
         kind = 'Continuous loop' if state['loop'] else 'Plays once · replay to review'
         cards.append(f'''<article><h2>{title}</h2><img width="256" height="256" alt="Finn: {title}" src="{still}" data-gif="{gif}" data-poster="{still}"><p>{kind} · {sum(durations)/1000:g}s</p><div><button type="button">Replay</button> <a href="{gif}" download="{path.name}">Download GIF</a></div></article>''')
         print(f'{path.relative_to(ROOT.parents[3])}: {len(sequence)} frames, {sum(durations)} ms, {path.stat().st_size:,} bytes')
-    metadata = {'size':SIZE, 'transparency':'GIF binary alpha', 'animations':entries}
+    metadata = {'size':None, 'transparency':'GIF binary alpha', 'animations':entries}
     (PUBLIC / 'animations.json').write_text(json.dumps(metadata, indent=2)+'\n')
     (PUBLIC / 'README.md').write_text('''# Finn GIF assets
 
-Eight transparent 256×256 GIFs, assembled from the approved Finn sprite sheets.
+Eight transparent GIFs. Welcome, listening, thinking and answer use the approved
+384×384 fluid animations; idle, verified, uncertain and retry remain 256×256.
+Read each animation’s width and height from `animations.json`.
 Use `/mascots/finn/finn-idle.gif` in the web app (Vite serves this folder).
 
 ```html
@@ -99,7 +121,7 @@ Use `/mascots/finn/finn-idle.gif` in the web app (Vite serves this folder).
 </picture>
 ```
 
-Idle blinks immediately, then rests for six seconds; thinking loops only its core gesture.
+Idle blinks immediately, then rests for six seconds; thinking loops its fluid gesture.
 The other six GIFs play once and hold their final frame. `animations.json` lists
 filenames, duration, loop behavior, posters, and suggested next state. Use the duration
 to change back to idle for welcome, answer, or verified; GIF has no completion event.
@@ -108,12 +130,14 @@ Use the matching PNG for reduced motion or a paused state. Do not infer verifica
 from Finn's decorative folder checkmark. A verified gesture requires explicit app status.
 
 GIF has 256 colours and binary transparency, so edges are harder than the source PNGs.
-The original PNG sheets remain the best source for a canvas sprite player.
+The original PNG sheets and fluid generation prompts are preserved in the design directory.
+The fluid review encodings are in the sibling `finn-fluid` folder. The exporter promotes
+those four GIFs and posters while preserving production loop/one-shot behavior.
 Rebuild from repo root with `python3 docs/design/mascot-concepts/finn/build_preview.py`
 (Pillow required). Prompts and source art live in that same design directory.
 ''')
     page = '''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Finn · GIF animations</title><style>
-:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#fcfaf6;color:#252322;font:16px/1.5 system-ui,sans-serif}main{max-width:1160px;margin:auto;padding:32px 24px}h1{font-size:36px;margin:0 0 12px;letter-spacing:-.035em}h2{font-size:18px;margin:0}p{color:#68615b}a{color:#b90028;text-underline-offset:4px}nav{display:flex;gap:20px;flex-wrap:wrap;margin:20px 0}button{font:inherit;padding:8px 14px;background:#252322;color:white;border:0;border-radius:6px;cursor:pointer}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}article{padding:20px;border:1px solid #ded8ce;border-radius:12px;background:#fff}article img{display:block;width:100%;height:auto;max-width:256px;margin:12px auto;background:#f2ece0;border-radius:8px}article p{font-size:13px}article div{display:flex;gap:16px;align-items:center}article a{font-size:13px}:focus-visible{outline:3px solid #b90028;outline-offset:3px}</style><main><h1>Finn, ready to drop into the app.</h1><p>Eight transparent GIFs, 256 × 256 pixels. Idle blinks first, then rests; thinking loops continuously. Other gestures play once.</p><nav><button id="motion" type="button">Pause all</button><a href="finn-gifs.zip" download>Download all GIFs + static PNGs</a><a href="preview.html">Open sprite player</a></nav><p id="status" aria-live="polite"></p><section class="grid">''' + ''.join(cards) + '''</section></main><script>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#fcfaf6;color:#252322;font:16px/1.5 system-ui,sans-serif}main{max-width:1160px;margin:auto;padding:32px 24px}h1{font-size:36px;margin:0 0 12px;letter-spacing:-.035em}h2{font-size:18px;margin:0}p{color:#68615b}a{color:#b90028;text-underline-offset:4px}nav{display:flex;gap:20px;flex-wrap:wrap;margin:20px 0}button{font:inherit;padding:8px 14px;background:#252322;color:white;border:0;border-radius:6px;cursor:pointer}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}article{padding:20px;border:1px solid #ded8ce;border-radius:12px;background:#fff}article img{display:block;width:100%;height:auto;max-width:256px;margin:12px auto;background:#f2ece0;border-radius:8px}article p{font-size:13px}article div{display:flex;gap:16px;align-items:center}article a{font-size:13px}:focus-visible{outline:3px solid #b90028;outline-offset:3px}</style><main><h1>Finn, ready to drop into the app.</h1><p>Eight transparent GIFs: four fluid 384 × 384 gestures and four 256 × 256 gestures. Idle blinks first, then rests; thinking loops continuously. Other gestures play once.</p><nav><button id="motion" type="button">Pause all</button><a href="finn-gifs.zip" download>Download all GIFs + static PNGs</a><a href="preview.html">Open sprite player</a></nav><p id="status" aria-live="polite"></p><section class="grid">''' + ''.join(cards) + '''</section></main><script>
 const images=[...document.querySelectorAll('article img')], preference=matchMedia('(prefers-reduced-motion: reduce)');
 let paused=preference.matches;
 function play(img){if(img.objectUrl)URL.revokeObjectURL(img.objectUrl);if(!img.gifBlob){const bytes=Uint8Array.from(atob(img.dataset.gif.split(',')[1]),char=>char.charCodeAt(0));img.gifBlob=new Blob([bytes],{type:'image/gif'})}img.objectUrl=URL.createObjectURL(img.gifBlob);img.src=img.objectUrl;}

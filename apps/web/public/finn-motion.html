@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Finn · Bewegingsstudie</title>
+  <link rel="icon" href="/favicon.svg">
+  <style>
+    :root { color-scheme:light; --ink:#192d46; --muted:#5d7086; --paper:#f8f6f1; --line:#e4ded3; --coral:#ee6558; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font:15px/1.6 system-ui,sans-serif; }
+    button,a { -webkit-tap-highlight-color:transparent; }
+    button { font:inherit; cursor:pointer; }
+    a { color:var(--ink); text-underline-offset:4px; }
+    :focus-visible { outline:3px solid var(--coral); outline-offset:4px; }
+    header { display:flex; align-items:center; justify-content:space-between; padding:22px 40px; border-bottom:1px solid var(--line); }
+    .identity { display:flex; align-items:center; gap:12px; font-weight:700; }
+    .identity img { width:30px; height:30px; }
+    .edition { font-size:12px; color:var(--muted); }
+    main { max-width:1176px; margin:auto; padding:38px 32px 28px; }
+    .intro { display:flex; gap:28px; justify-content:space-between; align-items:flex-end; margin-bottom:24px; }
+    .eyebrow { font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+    h1 { margin:8px 0 10px; font-size:clamp(28px,4vw,40px); line-height:1.15; letter-spacing:-.045em; font-weight:650; }
+    .intro p { margin:0; color:var(--muted); max-width:64ch; }
+    .size { flex:none; font-size:12px; padding-bottom:3px; text-align:right; color:var(--muted); }
+    .size strong { display:block; color:var(--ink); font-size:22px; font-weight:600; letter-spacing:-.04em; }
+    .controls { display:flex; align-items:center; justify-content:space-between; gap:16px; margin:28px 0 18px; flex-wrap:wrap; }
+    .states { display:flex; gap:5px; flex-wrap:wrap; }
+    .states button { padding:8px 17px; border:1px solid transparent; border-radius:999px; color:var(--muted); background:transparent; font-size:14px; }
+    .states button:hover { background:#eeebe5; color:var(--ink); }
+    .states button[aria-pressed=true] { background:var(--ink); color:var(--paper); }
+    .transport { display:flex; gap:8px; }
+    .transport button { display:flex; align-items:center; gap:6px; padding:7px 12px; border:1px solid var(--line); border-radius:8px; background:transparent; color:var(--ink); font-size:12px; }
+    .transport button:hover { background:#eeebe5; }
+    .comparison { display:grid; grid-template-columns:1fr 1fr; overflow:hidden; border:1px solid var(--line); border-radius:24px; background:#fefdfb; }
+    .stage { position:relative; min-width:0; padding:22px 26px 18px; }
+    .stage + .stage { border-left:1px solid var(--line); background:#ffffff; }
+    .stage-header { display:flex; justify-content:space-between; gap:8px; align-items:center; }
+    .stage-header h2 { margin:0; font-size:14px; font-weight:600; }
+    .tag { font-size:10px; letter-spacing:.04em; color:var(--muted); }
+    .tag-new { background:#e7efe9; color:#316c53; padding:3px 8px; border-radius:99px; }
+    .scene { height:409px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; }
+    .bubble { position:relative; z-index:1; min-height:44px; max-width:280px; margin:0 0 -4px; padding:10px 18px; border:1px solid var(--line); border-radius:14px; background:#ffffff; color:var(--ink); font-size:13px; text-align:center; }
+    .bubble::after { position:absolute; content:""; bottom:-6px; left:calc(50% - 6px); width:10px; height:10px; transform:rotate(45deg); background:#ffffff; border-bottom:1px solid var(--line); border-right:1px solid var(--line); }
+    .old-bubble { visibility:hidden; }
+    .sprite { display:block; flex:none; width:330px; height:330px; object-fit:contain; }
+    .old-sprite { width:332px; height:332px; }
+    .caption { margin-top:-7px; margin-bottom:4px; display:flex; align-items:center; gap:6px; font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); }
+    .caption i { width:6px; height:6px; border-radius:50%; background:#d99014; }
+    .stage-footer { margin:8px 0 0; font-size:12px; color:var(--muted); text-align:center; }
+    .bottom { display:flex; justify-content:space-between; align-items:flex-start; gap:24px; margin-top:20px; }
+    .description { max-width:64ch; margin:0; font-size:13px; color:var(--muted); }
+    .downloads { display:flex; gap:18px; flex:none; font-size:12px; padding-top:1px; }
+    .foot { margin:32px 0 0; padding-top:16px; border-top:1px solid var(--line); display:flex; justify-content:space-between; gap:20px; font-size:11px; color:var(--muted); }
+    .foot p { margin:0; }
+    #load-error { color:#a93833; }
+    @media(max-width:760px) {
+      header { padding:16px 20px; } header > .edition { display:none; } .identity { white-space:nowrap; } main { padding:26px 16px; } .intro { align-items:flex-start; gap:12px; } .size { display:none; }
+      .comparison { grid-template-columns:1fr; } .stage:first-child { order:2; } .stage + .stage { border-left:0; border-bottom:1px solid var(--line); }
+      .stage { padding:20px 10px 16px; } .scene { height:390px; } .sprite { max-width:none; }
+      .bottom,.foot { flex-direction:column; gap:14px; } .states button { padding:8px 11px; }
+    }
+    @media(prefers-reduced-motion:reduce) { * { scroll-behavior:auto; } }
+  </style>
+</head>
+<body>
+  <header><div class="identity"><img src="/favicon.svg" alt="">Finn <span class="edition">/ Bewegingsstudie</span></div><span class="edition">Nieuwe animaties · 04 gebaren</span></header>
+  <main>
+    <div class="intro"><div><span class="eyebrow">Meer expressie, vloeiender beweging</span><h1>Finn komt tot leven.</h1><p>Grotere gebaren, een nieuwsgierige blik en een rustige terugkeer. Bekijk het verschil op de grootte uit je screenshot.</p></div><div class="size"><strong>275 px</strong>karakterhoogte · schaal 1:1</div></div>
+    <div class="controls">
+      <nav class="states" aria-label="Kies een animatie"><button data-state="welcome" aria-pressed="true">Zwaaien</button><button data-state="listening" aria-pressed="false">Luisteren</button><button data-state="thinking" aria-pressed="false">Nadenken</button><button data-state="answer" aria-pressed="false">Antwoord</button></nav>
+      <div class="transport"><button id="pause" type="button">Pauzeer</button><button id="replay" type="button">↻ Opnieuw</button><button id="sequence" type="button" aria-pressed="false">Speel alle vier</button></div>
+    </div>
+    <section class="comparison" aria-label="Vergelijking van de animaties">
+      <article class="stage"><div class="stage-header"><h2>Vorige versie</h2><span class="tag">BESTAANDE GIF</span></div><div class="scene"><div class="bubble old-bubble" aria-hidden="true">Hoi! Waar kan ik je mee helpen?</div><img id="old" class="sprite old-sprite" width="332" height="332" src="/mascots/finn-fluid/previous/finn-welcome.png" alt="Finn met de vorige animatie"><div class="caption">Vorige beweging</div></div><p class="stage-footer">Dezelfde weergavegrootte, ter vergelijking.</p></article>
+      <article class="stage"><div class="stage-header"><h2>Nieuwe versie</h2><span class="tag tag-new">30 FPS</span></div><div class="scene"><div class="bubble" id="bubble">Hoi! Waar kan ik je mee helpen?</div><img id="new" class="sprite" width="330" height="330" src="/mascots/finn-fluid/welcome.png" alt="Finn met een vloeiende zwaaibeweging"><div class="caption"><i></i><span id="state-label">Zwaait naar je</span></div></div><p class="stage-footer" id="details">Nieuwe poses met vloeiende tussenframes.</p></article>
+    </section>
+    <div class="bottom"><p class="description" id="description" aria-live="polite">Een brede zwaai, een kleine beweging in de schouders en een ontspannen terugkeer.</p><div class="downloads"><a id="download-gif" href="/mascots/finn-fluid/welcome.gif" download>Download GIF ↓</a><a id="download-webp" href="/mascots/finn-fluid/welcome.webp" download>Download WebP ↓</a><a href="/mascots/finn-fluid/finn-fluid.zip" download>Alle vier ↓</a></div></div>
+    <p id="load-error" role="alert" hidden></p>
+    <div class="foot"><p>De gebaren herhalen hier om ze rustig te kunnen beoordelen. Pauzeer om Finn stil te zetten.</p><p>Transparante achtergrond · GIF + WebP</p></div>
+  </main>
+  <script>
+    const content = {
+      welcome: { label:'Zwaait naar je', bubble:'Hoi! Waar kan ik je mee helpen?', description:'Een brede zwaai, een kleine beweging in de schouders en een ontspannen terugkeer.' },
+      listening: { label:'Luistert aandachtig', bubble:'Vertel maar. Ik luister.', description:'Finn leunt naar je toe, houdt zijn hand bij zijn oor en knikt aandachtig mee.' },
+      thinking: { label:'Denkt met je mee', bubble:'Even kijken wat de bronnen zeggen…', description:'De hand gaat naar zijn kin. Zijn blik dwaalt even af, voordat hij weer naar je kijkt.' },
+      answer: { label:'Laat het antwoord zien', bubble:'Kijk, dit heb ik voor je gevonden.', description:'Een open hand presenteert het antwoord, gevolgd door een kleine knik. Dit gebaar betekent niet dat de inhoud geverifieerd is.' }
+    };
+    const preference=matchMedia('(prefers-reduced-motion: reduce)');
+    const $=id=>document.getElementById(id);
+    let selected='welcome', paused=preference.matches, all=false, metadata=[], oldTimer, sequenceTimer, serial=0;
+    const urls=new Map();
+    async function fresh(url) {
+      if(!urls.has(url)) urls.set(url,fetch(url).then(r=>{if(!r.ok)throw Error('De animatie kon niet laden. Vernieuw de pagina.');return r.blob();}));
+      return URL.createObjectURL(await urls.get(url));
+    }
+    async function display() {
+      const mine=++serial, data=content[selected];
+      clearInterval(oldTimer); clearTimeout(sequenceTimer);
+      for(const button of document.querySelectorAll('[data-state]'))button.setAttribute('aria-pressed',String(button.dataset.state===selected));
+      $('pause').textContent=paused?'Afspelen':'Pauzeer'; $('sequence').setAttribute('aria-pressed',String(all));
+      $('bubble').textContent=data.bubble; $('state-label').textContent=data.label; $('description').textContent=data.description;
+      $('new').alt='Finn: '+data.label.toLowerCase();
+      const meta=metadata.find(m=>m.id===selected);
+      $('details').textContent=paused?'Gepauzeerd.':meta?`${meta.frames} frames · ${(meta.durationMs/1000).toLocaleString('nl',{maximumFractionDigits:1})} seconden · transparant`:'Nieuwe poses met vloeiende tussenframes.';
+      $('download-gif').href=`/mascots/finn-fluid/${selected}.gif`; $('download-webp').href=`/mascots/finn-fluid/${selected}.webp`;
+      for(const id of ['old','new'])if($(id).dataset.objectUrl){URL.revokeObjectURL($(id).dataset.objectUrl);delete $(id).dataset.objectUrl;}
+      if(paused){$('new').src=`/mascots/finn-fluid/${selected}.png`;$('old').src=`/mascots/finn-fluid/previous/finn-${selected}.png`;return;}
+      try {
+        const [newUrl,oldUrl]=await Promise.all([fresh(`/mascots/finn-fluid/${selected}.webp`),fresh(`/mascots/finn-fluid/previous/finn-${selected}.gif`)]);
+        if(mine!==serial){URL.revokeObjectURL(newUrl);URL.revokeObjectURL(oldUrl);return;}
+        $('new').src=newUrl;$('new').dataset.objectUrl=newUrl;$('old').src=oldUrl;$('old').dataset.objectUrl=oldUrl;
+        // One-shot legacy GIFs restart only after their original motion has finished.
+        if(selected!=='thinking')oldTimer=setInterval(async()=>{const next=await fresh(`/mascots/finn-fluid/previous/finn-${selected}.gif`);if(mine!==serial){URL.revokeObjectURL(next);return;}URL.revokeObjectURL($('old').dataset.objectUrl);$('old').src=next;$('old').dataset.objectUrl=next;},meta?.durationMs??3600);
+        if(all)sequenceTimer=setTimeout(()=>{const ids=Object.keys(content);selected=ids[(ids.indexOf(selected)+1)%ids.length];display();},(meta?.durationMs??4000)*2);
+      }catch(error){$('load-error').hidden=false;$('load-error').textContent=error.message;}
+    }
+    for(const button of document.querySelectorAll('[data-state]'))button.onclick=()=>{selected=button.dataset.state;all=false;display();};
+    $('pause').onclick=()=>{paused=!paused;display();};
+    $('replay').onclick=()=>{paused=false;display();};
+    $('sequence').onclick=()=>{all=!all;if(all)paused=false;display();};
+    preference.addEventListener('change',e=>{paused=e.matches;display();});
+    document.addEventListener('visibilitychange',()=>{if(document.hidden){clearInterval(oldTimer);clearTimeout(sequenceTimer);}else display();});
+    fetch('/mascots/finn-fluid/animations.json').then(r=>r.json()).then(data=>{metadata=data;display();}).catch(()=>display());
+  </script>
+</body>
+</html>

@@ -35,8 +35,12 @@ To rebuild: `python3 docs/design/mascot-concepts/finn/build_preview.py` (require
 
 ## Ready-to-use GIFs
 
-Open [gifs.html](gifs.html) for the standalone GIF gallery or download [finn-gifs.zip](finn-gifs.zip). Production assets are in [`apps/web/public/mascots/finn`](../../../../apps/web/public/mascots/finn/README.md): eight transparent 256×256 GIFs, matching static PNGs for reduced motion, and `animations.json` with timings. Use `/mascots/finn/finn-idle.gif` in the app.
+Open [gifs.html](gifs.html) for the standalone GIF gallery or download [finn-gifs.zip](finn-gifs.zip). Production assets are in [`apps/web/public/mascots/finn`](../../../../apps/web/public/mascots/finn/README.md): eight transparent GIFs (384×384 for the four new fluid gestures, 256×256 for the other four), matching static PNGs for reduced motion, and `animations.json` with timings. Use `/mascots/finn/finn-idle.gif` in the app.
 
 Idle previously held its first pose for six seconds, which looked paused. Its first blink now starts immediately; later cycles retain the quiet rest. The player labels that rest explicitly. Thinking exports its repeating core frames only. The other six GIFs play once; the app can switch to idle using the durations in `animations.json`. The GIF gallery has replay and pause controls.
 
 `export_gifs.py` deterministically encodes the existing sprite drawings with a shared palette per animation, binary transparency, and full-frame disposal to prevent trails. GIF colour and alpha limits make edges harder than the source PNGs. Run `build_preview.py` to rebuild the preview, GIFs, gallery, and ZIPs together. No new image generation is used for these exports.
+
+## Approved fluid animations
+
+Welcome, listening, thinking and answer now use the [fluid animation artwork and interpolation pipeline](fluid/README.md). The canonical GIF URLs remain unchanged, with updated posters, dimensions and playback durations. The other four gestures are preserved. Open `/finn-motion.html` on the web server to compare the previous and approved animations at the screenshot’s character height.
