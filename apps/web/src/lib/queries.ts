@@ -51,6 +51,15 @@ export function useNaiveAnswer(input: AskInput | null, enabled: boolean) {
   return useQuery({ queryKey: [...keys.asks, 'naive', input], queryFn: () => api.naiveAnswer(input!), enabled: enabled && input !== null });
 }
 
+export function useDisputeSource() {
+  const api = useApiClient();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (v: { sourceId: string; disputed: boolean }) => api.disputeSource(v.sourceId, { disputed: v.disputed }),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: keys.asks }),
+  });
+}
+
 export function useApproveSource() {
   const api = useApiClient();
   const qc = useQueryClient();
