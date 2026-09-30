@@ -2,7 +2,7 @@
 
 ## Done in the repo
 - `bun audit` (run 2026-09-30): fixed the high finding by pinning `@clerk/clerk-react` to `5.61.10` (auth bypass advisory GHSA-w24r-5266-9c3c, affected <=5.61.5).
-- Remaining: 1 moderate, `esbuild <=0.24.2` (GHSA-67mh-4wv8-2f99) pulled in by `drizzle-kit` (dev-only, `db:generate`). It is not in the runtime or production build; no fix upstream (drizzle-kit 0.31.11 is latest). Do not run the drizzle-kit dev server against untrusted sites.
+- Resolved (#59): `esbuild <=0.24.2` (GHSA-67mh-4wv8-2f99) came in via `drizzle-kit` > `@esbuild-kit/core-utils` (esbuild 0.18.20). Fixed with a root `overrides` entry pinning `esbuild` to `0.28.2`; `bun audit` now reports no vulnerabilities and `db:generate` still works. Drop the override once drizzle-kit no longer depends on `@esbuild-kit`.
 - Secret grep over tracked files: no real secrets, only the `sk_test_…` placeholder in `docs/auth.md`.
 
 ## Still manual (needs the Aikido login)
