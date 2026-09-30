@@ -1,5 +1,5 @@
 import { sources } from '@tectonic/db';
-import { AskInputSchema, CheckInputSchema, DisputeInputSchema, SupersedeInputSchema, assess, naiveAnswer, scoreSource, verdictFor, roleAtLeast, type Access, type CheckResult } from '@tectonic/shared';
+import { AskInputSchema, CheckInputSchema, DisputeInputSchema, SupersedeInputSchema, assess, naiveAnswer, scoreSource, verdictFor, roleAtLeast, statesDifferentValue, type Access, type CheckResult } from '@tectonic/shared';
 import { and, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
@@ -59,11 +59,8 @@ export function knowledgeRoutes(ctx: AppContext) {
     return c.json(assess(question, serializeVisible(rows), names, { country, client, period }));
   });
 
-  // ponytail: the claim's digits must all appear in the source value ('25 oktober' vs '22 oktober 2026'); no date parsing, so '25 okt' also conflicts.
-  const statesOtherValue = (claim: string, best?: { code: string; value: string | null } | null) => {
-    const digits = claim.match(/\d+/g);
-    return best?.value && digits && !digits.every((d) => best.value!.includes(d)) ? { code: best.code, value: best.value } : null;
-  };
+  const statesOtherValue = (claim: string, best?: { code: string; value: string | null } | null) =>
+    best?.value && statesDifferentValue(claim, best.value) ? { code: best.code, value: best.value } : null;
 
   // Claims are one per sentence (see claims.ts); matching is keyword overlap via assess.
   router.post('/api/check', jsonBody(CheckInputSchema), async (c) => {
