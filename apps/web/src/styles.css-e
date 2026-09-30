@@ -560,7 +560,7 @@ textarea:focus {
 }
 .chip--role-owner {
   color: #545871;
-  background: color-mix(in srgb, #545871 16%, transparent);
+  background: color-mix(in srgb, #8b5cf6 16%, transparent);
 }
 .chip--role-editor {
   color: #343b4b;
@@ -573,20 +573,20 @@ textarea:focus {
 @media (prefers-color-scheme: dark) {
   .chip--priority-low,
   .chip--role-viewer {
-    color: #b3b6c6;
+    color: #cbd5e1;
   }
   .chip--priority-medium,
   .chip--role-editor {
-    color: #aab0d0;
+    color: #93c5fd;
   }
   .chip--priority-high {
-    color: #f7c65a;
+    color: #fcd34d;
   }
   .chip--priority-urgent {
-    color: #ff8fa3;
+    color: #fca5a5;
   }
   .chip--role-owner {
-    color: #aab0d0;
+    color: #c4b5fd;
   }
 }
 
