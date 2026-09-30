@@ -58,7 +58,7 @@ const STOP = new Set([
   'de', 'het', 'een', 'van', 'voor', 'en', 'is', 'welke', 'wat', 'hoe', 'wie', 'wanneer', 'tot', 'mag', 'moet', 'kan', 'geldt', 'op', 'aan', 'te', 'bij', 'met', 'in', 'om', 'dat', 'die', 'er', 'we', 'ik', 'ze', 'mijn', 'ons',
   'the', 'what', 'when', 'how', 'is', 'are', 'for', 'of', 'a', 'an',
   // chatty fillers ("Kun je mij vertellen ...", "... door te geven")
-  'door', 'kun', 'kunt', 'vertellen', 'weten', 'weet', 'even', 'precies', 'exact', 'geven',
+  'door', 'kun', 'kunt', 'vertellen', 'weten', 'weet', 'even', 'precies', 'exact', 'geven', 'zich',
 ]);
 /** Lower-case, accents stripped ("België" is "belgie"), split on anything that is not a letter or digit. */
 const words = (text: string) => text.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '').split(/[^a-z0-9]+/);
@@ -73,32 +73,43 @@ function overlap(question: string[], s: Source): number {
 }
 
 /**
- * Words that appear in almost any payroll question or claim ("maand", "uitbetalen", "procedure", month names, the
- * synonyms every topic lists such as "deadline" or "termijn") and say nothing about WHICH topic is meant. Without
- * this, "de dertiende maand" matched loonmutaties because a claim says "van de maand". Compared by stem.
+ * Time and place: they set the period or country, never the topic. Without this, "de dertiende maand" matched
+ * loonmutaties because a claim says "van de maand". Compared by stem.
  */
-const GENERIC = new Set(
+const CONTEXT_WORDS = new Set(
   [
     'maand', 'maanden', 'jaar', 'jaren', 'week', 'weken', 'dag', 'dagen', 'uur', 'datum', 'periode', 'volgende', 'vorige', 'deze', 'huidige',
     'januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december',
-    'regel', 'regels', 'procedure', 'procedures', 'afspraak', 'afspraken', 'klant', 'klanten', 'werknemer', 'werknemers',
-    'termijn', 'termijnen', 'deadline', 'aanleveren', 'aanleverdatum', 'inleveren', 'doorgeven', 'doorgegeven', 'melden', 'uiterlijk',
-    'uitbetalen', 'uitbetaald', 'uitbetaling', 'betalen', 'betaald', 'betaling', 'binnen', 'lang', 'veel', 'hoeveel', 'welk', 'toepassen', 'bestellen', 'heb', 'hebt', 'nodig', 'zit',
-    'worden', 'wordt', 'werd', 'zijn', 'heeft', 'hebben', 'moeten', 'mogen', 'kunnen', 'niet', 'geen', 'ook', 'nog', 'naar', 'over', 'uit', 'dit', 'onze', 'alle', 'per', 'mij', 'jij', 'gelden', 'geldig', 'waarom', 'hoezo', 'dan', 'eens', 'graag',
     'belgie', 'belgische', 'nederland', 'nederlandse', 'nederlands',
   ].map(stem),
 );
 
 /**
- * The words of a question that carry its subject: no stop words, no generic words, no digits, and nothing that is
- * context instead of topic (country, the chat's client, the clients of the sources). "Atlas" selects a client, not a topic.
+ * Words that appear in almost any payroll question or claim ("uitbetalen", "procedure", the synonyms every topic lists
+ * such as "deadline" or "termijn") and say little about WHICH topic is meant: "Mag ik maaltijdcheques uitbetalen?" is
+ * about maaltijdcheques, not eindejaarspremie. They only count when the question has nothing more specific
+ * ("Wat is de aanleverdatum voor Atlas?"). Compared by stem.
  */
-export function subjectWords(question: string, sources: Array<Pick<Source, 'client'>>, ctx?: Pick<Context, 'client'>): string[] {
+const GENERIC = new Set(
+  [
+    'regel', 'regels', 'procedure', 'procedures', 'afspraak', 'afspraken', 'klant', 'klanten', 'werknemer', 'werknemers',
+    'termijn', 'termijnen', 'deadline', 'aanleveren', 'aanleverdatum', 'inleveren', 'doorgeven', 'doorgegeven', 'melden', 'uiterlijk',
+    'uitbetalen', 'uitbetaald', 'uitbetaling', 'betalen', 'betaald', 'betaling', 'binnen', 'lang', 'snel', 'veel', 'hoeveel', 'welk', 'toepassen', 'bestellen', 'heb', 'hebt', 'nodig', 'zit',
+    'worden', 'wordt', 'werd', 'zijn', 'heeft', 'hebben', 'moeten', 'mogen', 'kunnen', 'niet', 'geen', 'ook', 'nog', 'naar', 'over', 'uit', 'dit', 'onze', 'alle', 'per', 'mij', 'jij', 'gelden', 'geldig', 'waarom', 'hoezo', 'dan', 'eens', 'graag',
+  ].map(stem),
+);
+
+/**
+ * The words of a question that carry its subject: no stop words, no generic words, no digits, and nothing that is
+ * context instead of topic (time, country, the chat's client, the clients of the sources). "Atlas" selects a client, not a topic.
+ * `withGeneric` keeps the generic words, for a question that has no more specific subject.
+ */
+export function subjectWords(question: string, sources: Array<Pick<Source, 'client'>>, ctx?: Pick<Context, 'client'>, withGeneric = false): string[] {
   const context = new Set(tokens([ctx?.client, ...sources.map((s) => s.client)].filter(Boolean).join(' ')).map(stem));
   const seen = new Set<string>();
   return tokens(question).filter((w) => {
     const k = stem(w);
-    if (GENERIC.has(k) || context.has(k) || /^\d+$/.test(w) || seen.has(k)) return false;
+    if (CONTEXT_WORDS.has(k) || (!withGeneric && GENERIC.has(k)) || context.has(k) || /^\d+$/.test(w) || seen.has(k)) return false;
     seen.add(k);
     return true;
   });
@@ -122,7 +133,9 @@ const VERDICT_RANK: Record<Verdict['kind'], number> = { exception: 0, general: 1
  * then the higher onderbouwing wins.
  */
 export function assess(question: string, sources: Source[], projectNames: Map<string, string>, ctx: Context): AskResult {
-  const subject = subjectWords(question, sources, ctx);
+  const specific = subjectWords(question, sources, ctx);
+  // Only generic words ("Tot wanneer mag Atlas aanleveren?"): match on those; the rules below still ask for a curated word.
+  const subject = specific.length > 0 ? specific : subjectWords(question, sources, ctx, true);
   const topics = new Map<string, Source[]>();
   for (const s of sources) topics.set(s.topic, [...(topics.get(s.topic) ?? []), s]);
   const scored = [...topics].map(([name, list]) => [name, evidence(subject, list)] as const).sort((a, b) => b[1] - a[1]);
