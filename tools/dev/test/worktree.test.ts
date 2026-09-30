@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { mkdtempSync } from 'node:fs';
+import { mkdtempSync, realpathSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { hashPath, listWorktreeRoots, localDir, resolveWorktree } from '../src/worktree.ts';
@@ -12,7 +12,7 @@ async function run(cmd: string[], cwd: string) {
 
 describe('worktree isolation', () => {
   test('each worktree resolves to its own root, id and .local directory', async () => {
-    const dir = mkdtempSync(path.join(os.tmpdir(), 'tectonic-wt-'));
+    const dir = realpathSync(mkdtempSync(path.join(os.tmpdir(), 'tectonic-wt-')));
     const main = path.join(dir, 'main');
     await run(['git', 'init', '-q', '-b', 'main', main], dir);
     await run(['git', '-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-q', '--allow-empty', '-m', 'init'], main);

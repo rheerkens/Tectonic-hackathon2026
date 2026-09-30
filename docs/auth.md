@@ -13,12 +13,11 @@ Defined once in `packages/shared/src/demo-users.ts` and used by the seed, the te
 
 | id | name | seeded roles |
 |---|---|---|
-| `demo_ada` | Ada Lovelace | owner of Launch Website, editor elsewhere |
-| `demo_grace` | Grace Hopper | owner of Mobile App, editor elsewhere |
-| `demo_margaret` | Margaret Hamilton | owner of Hackathon Ops, **viewer** of Launch Website |
-| `demo_alan` | Alan Turing | editor of Mobile App only (not a member of the others) |
+| `demo_wanne` | Wanne Van Camp | editor of Payroll België and Klantteam Atlas |
+| `demo_roy` | Roy Heerkens | owner of Payroll België and Klantteam Atlas |
+| `demo_sebastien` | Sebastien De Couvreur | editor of Payroll België |
 
-Pick one in the UI, or add `?as=grace` to the URL. Identity is kept in `sessionStorage`, so each browser tab can be a different person.
+Pick one in the UI, or add `?as=roy` to the URL. Identity is kept in `sessionStorage`, so each browser tab can be a different person.
 
 ## Server-side enforcement
 
