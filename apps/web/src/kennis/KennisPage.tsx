@@ -45,7 +45,7 @@ function Logo() {
   return (
     <div className="kn-logo">
       <svg width="38" height="38" viewBox="0 0 32 32" aria-hidden="true">
-        <path d="M3 5h26l-7 9h-5.5v13h-6V14H10z" fill="#2c3c8f" />
+        <path d="M6 4h6L6 28H0z" fill="#545871" transform="translate(2 0)" /><path d="M15 4h6L15 28H9z" fill="#e80137" transform="translate(2 0)" /><path d="M24 4h6L24 28H18z" fill="#f7a901" transform="translate(2 0)" />
       </svg>
       <div>
         <div className="kn-logo-name">SD Trust</div>
