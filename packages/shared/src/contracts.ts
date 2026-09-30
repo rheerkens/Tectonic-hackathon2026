@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ChatInputSchema, ChatResultSchema } from './chat.ts';
 import { AccessSchema, AssessedSourceSchema, AskInputSchema, AskResultSchema, CheckInputSchema, CheckResultSchema, DisputeInputSchema, HealthSchema, MeSchema, NaiveAnswerSchema, OkSchema, UserSchema } from './schemas.ts';
 
 export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
@@ -49,6 +50,8 @@ export const api = {
   check: route('POST', '/api/check', { body: CheckInputSchema, response: CheckResultSchema }),
   /** A plain assistant's answer: ignores country, client, period and status, shows no confidence. For the side-by-side demo. */
   naiveAnswer: route('POST', '/api/naive-answer', { body: AskInputSchema, response: NaiveAnswerSchema }),
+  /** Chat with tool calling: the model looks up, rates and cites sources the caller may see. Deterministic without an LLM key. */
+  chat: route('POST', '/api/chat', { body: ChatInputSchema, response: ChatResultSchema }),
   /** The source owner (or the team owner, for an ownerless source) confirms a source is approved. */
   approveSource: route('POST', '/api/sources/:sourceId/approve', { response: OkSchema }),
   /** Any editor disputes a source (`disputed: true`); only its owner (or the team owner, if ownerless) resolves it (`false`). */
