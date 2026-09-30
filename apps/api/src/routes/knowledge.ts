@@ -120,7 +120,7 @@ export function knowledgeRoutes(ctx: AppContext) {
     const { supersededBy } = c.req.valid('json');
     const [source] = await db.select().from(sources).where(eq(sources.id, c.req.param('sourceId'))).limit(1);
     const role = source ? await getProjectRole(db, source.projectId, principal.userId) : null;
-    if (!source || !role) throw notFound('Source');
+    if (!source || !role || !(await userCanSeeSource(db, source, principal.userId))) throw notFound('Source');
     if (!roleAtLeast(role, 'editor')) throw forbidden('Your role cannot supersede sources');
     // The newer version must be one the caller may see, on the same topic, and not itself replaced (no cycles).
     const { rows } = await visibleSources(principal.userId);
@@ -134,8 +134,8 @@ export function knowledgeRoutes(ctx: AppContext) {
       .set({ status: 'superseded', supersededBy: next.code, updatedAt: new Date() })
       .where(and(eq(sources.id, source.id), eq(sources.projectId, source.projectId)));
     // The newer source may live in another team: tell both.
-    realtime.publish(source.projectId, { kind: 'sources.changed' }, principal.userId);
-    if (next.projectId !== source.projectId) realtime.publish(next.projectId, { kind: 'sources.changed' }, principal.userId);
+    realtime.publish(source.projectId, { kind: 'sources.changed' }, principal.userId, source.audienceProjectIds);
+    if (next.projectId !== source.projectId) realtime.publish(next.projectId, { kind: 'sources.changed' }, principal.userId, next.audienceProjectIds);
     return c.json({ ok: true as const });
   });
 
