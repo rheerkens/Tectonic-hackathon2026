@@ -18,6 +18,7 @@ Tectonic Hackathon 2026 · SD Worx challenge *"Unlock the Knowledge Within: Find
 9. [Run it, try it, test it](#9-run-it-try-it-test-it)
 10. [Demo script](#10-demo-script)
 11. [Roadmap and what is unfinished](#11-roadmap-and-what-is-unfinished)
+12. [Design prototype](#12-design-prototype)
 
 ## 1. The problem
 Large organisations hold a huge amount of knowledge, but people only act on it with confidence if they can tell whether it is *reliable, current and relevant to this customer or situation*. In practice the same question returns:
@@ -163,6 +164,39 @@ Known limits:
 - Question matching is keyword overlap, with no embeddings or LLM.
 - Only two markets (BE, NL); sources come from the seed, with no importer for real documents, Teams or e-mail.
 - Two `tools/dev` worktree-launcher tests fail on macOS (`/private` path); they fail without our changes too.
+
+## 12. Design prototype
+The target look and flow of the product. It is a prototype (Dutch UI, branded "Tectonic, Kennis met onderbouwing") and **not yet what the app looks like**; the current build is described in §3.
+
+![Design prototype: Kennis zoeken](docs/design/prototype.png)
+
+**Scenario in the mock:** Ada, a payroll consultant, asks *"Tot wanneer mag Atlas loonmutaties aanleveren?"* for Belgium, client Atlas, October 2026.
+
+**Layout**
+- **Left:** workspace navigation (*Kennis zoeken*, *Bronnen*, *Experts*) and **"Mijn toegang"**: the teams the user belongs to (*Payroll België*, *Klantteam Atlas*) with a "Toegang gecontroleerd" note. A footer states "Demo met fictieve gegevens".
+- **Centre:** breadcrumb (Atlas / Payroll / Oktober 2026), the question, and **context chips** (*België*, *Atlas*, *Oktober 2026*). Below it the answer card: an **"Onderbouwd"** status badge, the answer in large type (*22 oktober 2026*), one sentence of explanation, its validity and who confirmed it ("Bevestigd door Grace"), a **quote from the source**, and a "Bekijk bron" button.
+- **"Waarom deze bron?"** table: every candidate source (S1 to S5) with a short categorical verdict instead of a number, e.g. *Geldige uitzondering* (green), *Algemene datum: 20 oktober*, *Vervangen* (an old procedure), *Niet bevestigd* (orange, a Teams chat), *Ander land*. Footnote: *"Een geldig document is niet automatisch van toepassing."*
+- **Right panel:** the selected source (*Klantafspraak Atlas*, S4, **version 2**) with an **Onderbouwing score 100/100** split in four checks: *Bevoegd goedgekeurd* 40, *Eigenaar bekend* 20, *Geldig voor deze periode* 20, *Bron herleidbaar* 20. Below: the responsible person (Grace, owner of the client agreement), validity (1 to 31 October 2026), access ("Payroll België én Klantteam Atlas") and a **"Vraag verduidelijking"** button.
+
+**Design principles visible in the mock**
+- The score measures the **substantiation, not the chance that the answer is true**. The panel says so explicitly.
+- A valid document is **not automatically applicable**: the context (country, client, period) decides which source applies.
+- A specific **exception can override the general rule** (the approved Atlas exception beats the general 20 October deadline).
+- Every source gets a **plain-language verdict**, so the reason is readable without interpreting numbers.
+- **Access is part of trust**: who may see a source is shown and checked.
+
+**Where today's build differs from the prototype** (input for the tickets, not decisions)
+| Prototype | Current build |
+|---|---|
+| Context = country + **client** + **period** | Context = country only |
+| Score = *authorised* 40, *owner known* 20, *valid for this period* 20, *traceable* 20 | Score = up to date 30, owner 20, source type 20, fits market 30 |
+| Per-source **verdict labels** (exception, superseded, unconfirmed, other country) | Per-source numeric score and tone reasons |
+| **Versions** and *Vervangen* (superseded) sources | No versions or supersession |
+| **Validity period** on a source | Review date and half-life only |
+| Specific exception beats general rule | Highest score wins |
+| Access shown and checked per source | Project-level membership only |
+| "Vraag verduidelijking" | Pre-filled e-mail to the owner |
+| Dutch UI, light design system | English UI |
 
 ---
 

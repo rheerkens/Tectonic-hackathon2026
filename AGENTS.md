@@ -25,6 +25,10 @@
 - Keep the dev auth bypass local: `AUTH_MODE=dev-bypass` is refused by the server in production/Railway. Do not weaken `apps/api/src/config.ts`.
 - Vite runs under Bun (`bunx --bun vite`), the API is `apps/api/src/index.ts`, everything is TypeScript with `verbatimModuleSyntax` and explicit `.ts`/`.tsx` import extensions.
 
+## Product and design
+
+- What we are building and why: `README.md` (Trust Lens, SD Worx challenge). The target look and flow is the prototype in `docs/design/prototype.png`, described in README §12. It includes a list of where the current build differs.
+
 ## Layout
 
 `apps/web` (React), `apps/api` (Hono), `apps/desktop` (Tauri), `packages/shared` (contracts), `packages/db` (Drizzle), `tools/dev` (launcher), `tools/e2e` (browser tests), `tools/video` (walkthrough recorder), `docs/` (auth, worktrees, testing, railway, mobile-desktop), `.claude/skills/` (repo-local skills).
