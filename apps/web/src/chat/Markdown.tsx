@@ -9,6 +9,8 @@ export interface CitationLookup {
   /** Which codes can be opened (known sources); other codes render as plain, inert text. */
   has(code: string): boolean;
   title(code: string): string;
+  /** The verdict label when the source does NOT support the answer (superseded, other country, ...); undefined when it does. */
+  offLabel(code: string): string | undefined;
   isOpen(code: string): boolean;
   toggle(code: string): void;
   /** The id of the open source card, for aria-controls. */
@@ -28,17 +30,19 @@ export function CitationChip({ code, cite }: { code: string; cite: CitationLooku
     );
   }
   const open = cite.isOpen(key);
+  const off = cite.offLabel(key);
   return (
     <button
       type="button"
-      className={`ch-cite${open ? ' is-open' : ''}`}
+      className={`ch-cite${open ? ' is-open' : ''}${off ? ' ch-cite--off' : ''}`}
       aria-expanded={open}
       aria-controls={open ? cite.panelId(key) : undefined}
-      aria-label={`Bron ${key}: ${cite.title(key)}`}
-      title={cite.title(key)}
+      aria-label={off ? `Bron ${key}: ${cite.title(key)}. ${off}, ondersteunt het antwoord niet` : `Bron ${key}: ${cite.title(key)}`}
+      title={off ? `${cite.title(key)} (${off}: geldt niet voor dit antwoord)` : cite.title(key)}
       onClick={() => cite.toggle(key)}
     >
       {key}
+      {off && <span className="ch-cite-note"> · {off}</span>}
     </button>
   );
 }

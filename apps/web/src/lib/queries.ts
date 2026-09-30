@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { AskInput, ChatInput } from '@tectonic/shared';
 import { createContext, useContext, useMemo } from 'react';
 import { useSession } from '../auth/context.ts';
-import { ApiError, createApiClient, type ApiClient } from './api.ts';
+import { createApiClient, type ApiClient } from './api.ts';
 
 export const ApiContext = createContext<ApiClient | null>(null);
 
@@ -84,19 +84,5 @@ export function useApproveSource() {
  */
 export function useChat() {
   const api = useApiClient();
-  return useMutation({
-    mutationFn: async (body: ChatInput) => {
-      try {
-        return await api.chat(body);
-      } catch (error) {
-        // DEV ONLY: while POST /api/chat does not exist yet (U1 #20) the dev server answers 404 and we wrap /api/ask instead.
-        // `import.meta.env.DEV` is a build-time constant, so this branch (and the dynamic import) is removed from production builds.
-        if (import.meta.env.DEV && error instanceof ApiError && error.status === 404) {
-          const { mockChat } = await import('../chat/mock.ts');
-          return mockChat(api, body);
-        }
-        throw error;
-      }
-    },
-  });
+  return useMutation({ mutationFn: (body: ChatInput) => api.chat(body) });
 }

@@ -17,8 +17,8 @@
 .ch-tool:hover:not(:disabled) { background: var(--accent-soft); }
 .ch-tool:disabled { opacity: .45; cursor: default; }
 .ch-tool[aria-pressed="true"] { background: var(--accent-soft); }
-.ch-context { flex: none; margin: 0; padding: 12px 18px 10px; gap: 8px; }
-.ch-context select { max-width: none; flex: 1 1 100px; min-height: 0; }
+.ch-context { flex: none; flex-wrap: nowrap; margin: 0; padding: 12px 18px 10px; gap: 6px; }
+.ch-context select { max-width: none; flex: 1 1 0; min-width: 0; min-height: 0; padding: 7px 10px; font-size: 13px; text-overflow: ellipsis; }
 
 /* conversation */
 .ch-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 16px 18px 12px; border-top: 1px solid var(--kn-line); overscroll-behavior: contain; }
@@ -49,12 +49,17 @@
 .ch-cite { display: inline-flex; align-items: center; min-height: 22px; padding: 0 7px; border: 1px solid var(--kn-line); border-radius: 8px; background: var(--accent-soft); color: var(--accent-ink); font: inherit; font-size: 12px; font-weight: 700; line-height: 1; cursor: pointer; transition: background-color 180ms, border-color 180ms; }
 .ch-cite:hover { border-color: var(--accent-ink); }
 .ch-cite.is-open { background: var(--kn-primary); border-color: var(--kn-primary); color: var(--on-accent); }
+.ch-cite--off { border-color: var(--brand-amber); background: color-mix(in srgb, var(--brand-amber) 16%, var(--surface)); color: var(--text); }
+.ch-cite-note { margin-left: 4px; font-weight: 600; }
 .ch-cite--unknown { border-style: dashed; background: transparent; color: var(--kn-muted); cursor: default; }
 
 .ch-sources { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
 .ch-label { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--kn-muted); }
 .ch-source-pill { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; padding: 4px 12px; border: 1px solid var(--kn-line); border-radius: 999px; background: var(--bg); color: var(--text); font: inherit; font-size: 13px; cursor: pointer; text-align: left; transition: background-color 180ms, border-color 180ms; }
 .ch-source-pill:hover { background: var(--accent-soft); }
+.ch-source-pill--off { border-style: dashed; border-color: var(--brand-amber); background: color-mix(in srgb, var(--brand-amber) 10%, var(--surface)); }
+.ch-source-pill--off .kn-tick { width: 18px; height: 18px; font-size: 11px; }
+.ch-pill-note { font-weight: 600; white-space: nowrap; }
 .ch-source-pill.is-open { border-color: var(--accent-ink); background: var(--accent-soft); }
 
 /* an opened source */
@@ -62,6 +67,7 @@
 .ch-source-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
 .ch-source-head h4 { flex: 1; min-width: 12ch; margin: 0; font-size: 15px; }
 .ch-source-code { color: var(--accent-ink); font-weight: 800; }
+.ch-off-note { margin: 10px 0 0; padding: 6px 10px; border-left: 3px solid var(--brand-amber); border-radius: 0 8px 8px 0; background: color-mix(in srgb, var(--brand-amber) 14%, var(--surface)); font-size: 13px; font-weight: 600; }
 .ch-source-value { margin: 10px 0 2px; font-size: 24px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; overflow-wrap: anywhere; }
 .ch-source-claim { margin: 0 0 10px; color: var(--text); }
 .ch-quote { margin: 8px 0 12px; font-size: 14px; }
@@ -147,7 +153,7 @@
 /* composer */
 .ch-composer-box { display: flex; align-items: flex-end; gap: 8px; padding: 8px 8px 8px 16px; border: 1px solid color-mix(in srgb, var(--text) 35%, var(--surface)); border-radius: 22px; background: var(--surface); }
 .ch-composer-box:focus-within { border-color: var(--accent-ink); outline: 2px solid var(--accent-ink); outline-offset: 1px; }
-.ch-composer textarea, .ch-composer textarea:focus, .ch-composer textarea:focus-visible { flex: 1; width: auto; min-width: 0; min-height: 28px; max-height: 200px; padding: 6px 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; outline: none; resize: none; font-size: 15px; line-height: 1.45; color: var(--text); }
+.ch-panel .ch-composer textarea, .ch-panel .ch-composer textarea:focus, .ch-panel .ch-composer textarea:focus-visible { flex: 1; width: auto; min-width: 0; min-height: 28px; max-height: 200px; padding: 6px 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; outline: none; resize: none; font-size: 15px; line-height: 1.45; color: var(--text); }
 .ch-composer textarea::placeholder { color: var(--kn-muted); opacity: 1; }
 .ch-send { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: var(--kn-primary); color: var(--on-accent); cursor: pointer; transition: background-color 180ms, transform 180ms cubic-bezier(.16,1,.3,1); }
 .ch-send:hover:not(:disabled) { background: var(--accent-strong); }
@@ -167,7 +173,8 @@
   .kn-chat-panel.ch-panel, .kn-chat-panel.ch-panel.is-expanded { inset: 8px; width: auto; height: auto; max-height: none; border-radius: 20px; }
   .ch-expand { display: none; }
   .ch-head { padding: 12px 10px 10px 14px; }
-  .ch-context { padding: 10px 14px 8px; }
+  .ch-context { padding: 10px 14px 8px; flex-wrap: wrap; }
+  .ch-context select { flex-basis: 30%; }
   .ch-scroll { padding: 12px 14px 10px; }
   .ch-dock { padding: 6px 14px 12px; }
   .ch-msg--user { max-width: 92%; }

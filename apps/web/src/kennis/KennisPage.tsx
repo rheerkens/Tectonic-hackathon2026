@@ -4,7 +4,6 @@ import { useSession } from '../auth/context.ts';
 import { Avatar } from '../components/Avatar.tsx';
 import { Brand } from '../components/Brand.tsx';
 import { UserMenu } from '../components/UserMenu.tsx';
-import { ChatPanel } from '../chat/ChatPanel.tsx';
 import { ConnectionStatus } from '../components/ConnectionStatus.tsx';
 import { ErrorState } from '../components/States.tsx';
 import { useToasts } from '../components/Toasts.tsx';
@@ -15,6 +14,7 @@ import { CheckPanel } from './CheckPanel.tsx';
 import { DisputeControls } from './DisputeControls.tsx';
 import { ContextSelects, Icon, STATUS_TONE, Tick, VERDICT_TONE, dateLabel, monthLabel, type AskContext } from './ui.tsx';
 import './kennis.css';
+import { ChatPanel } from '../chat/ChatPanel.tsx'; // after kennis.css: the chat styles extend the launcher/panel rules defined there
 
 /** Counts up to `target` when it changes (skipped for reduced motion). */
 function useCountUp(target: number, ms = 600): number {

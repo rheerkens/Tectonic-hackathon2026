@@ -1,6 +1,6 @@
 import { COUNTRY_LABELS, type AssessedSource, type ChatContext } from '@tectonic/shared';
 import { useEffect, useId, useMemo, useState } from 'react';
-import { Icon, StatusBadge, Tick, VERDICT_TONE, monthLabel } from '../kennis/ui.tsx';
+import { Icon, StatusBadge, Tick, VERDICT_TONE, isSupporting, monthLabel } from '../kennis/ui.tsx';
 import { Markdown, type CitationLookup } from './Markdown.tsx';
 import { SourceCard, type UserLookup } from './SourceCard.tsx';
 import { ToolTrace } from './ToolTrace.tsx';
@@ -89,6 +89,10 @@ export function AssistantMessage({ entry, userName }: { entry: AssistantEntry; u
     () => ({
       has: (code) => byCode.has(code),
       title: (code) => byCode.get(code)?.title ?? code,
+      offLabel: (code) => {
+        const s = byCode.get(code);
+        return s && !isSupporting(s.verdict) ? s.verdict.label : undefined;
+      },
       isOpen: (code) => openCode === code,
       toggle: (code) => setOpenCode((cur) => (cur === code ? null : code)),
       panelId: (code) => `${baseId}-src-${code}`,
@@ -125,11 +129,14 @@ export function AssistantMessage({ entry, userName }: { entry: AssistantEntry; u
         <div className="ch-sources" data-testid="ch-sources">
           <span className="ch-label">Bronnen</span>
           {result.citations.map((s) => {
-            const open = openCode === s.code.toUpperCase();
+            const code = s.code.toUpperCase();
+            const open = openCode === code;
+            const off = !isSupporting(s.verdict);
             return (
-              <button key={s.id} type="button" className={`ch-source-pill${open ? ' is-open' : ''}`} aria-expanded={open} aria-controls={open ? `${baseId}-src-${s.code.toUpperCase()}` : undefined} onClick={() => cite.toggle(s.code.toUpperCase())}>
-                <Icon name={s.kind === 'chat' ? 'chat' : 'file'} size={15} />
+              <button key={s.id} type="button" className={`ch-source-pill${open ? ' is-open' : ''}${off ? ' ch-source-pill--off' : ''}`} aria-expanded={open} aria-controls={open ? `${baseId}-src-${code}` : undefined} onClick={() => cite.toggle(code)}>
+                {off ? <Tick tone={VERDICT_TONE[s.verdict.kind]} /> : <Icon name={s.kind === 'chat' ? 'chat' : 'file'} size={15} />}
                 <span className="kn-src-id">{s.code}</span> {s.title}
+                {off && <span className="ch-pill-note"> · {s.verdict.label}</span>}
               </button>
             );
           })}

@@ -1,5 +1,5 @@
 import { COUNTRY_LABELS, type AssessedSource, type SourceStatus } from '@tectonic/shared';
-import { Icon, Tick, VERDICT_TONE, dateLabel } from '../kennis/ui.tsx';
+import { Icon, Tick, VERDICT_TONE, dateLabel, isSupporting } from '../kennis/ui.tsx';
 
 export type UserLookup = (id: string | null) => string | undefined;
 
@@ -24,6 +24,11 @@ export function SourceCard({ source, userName, id }: { source: AssessedSource; u
         </span>
       </header>
 
+      {!isSupporting(source.verdict) && (
+        <p className="ch-off-note" role="note">
+          Deze bron ondersteunt het antwoord niet: {source.verdict.label.toLowerCase()}.
+        </p>
+      )}
       <p className="ch-source-value">{source.value}</p>
       {source.claim && <p className="ch-source-claim">{source.claim}</p>}
       {source.quote && (

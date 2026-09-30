@@ -140,6 +140,7 @@ export function ChatPanel({ context, onContextChange }: { context: ChatContext; 
         aria-busy={pending}
         data-testid="chat-panel"
         onToggle={(e) => {
+          if (e.target !== e.currentTarget) return; // <details> inside the panel fire toggle events too
           const isOpen = e.newState === 'open';
           setOpen(isOpen);
           // The browser returns focus to the launcher; make sure it does even when the panel was closed by a click elsewhere.

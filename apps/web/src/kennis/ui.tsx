@@ -53,6 +53,9 @@ export const VERDICT_TONE: Record<Verdict['kind'], Tone> = {
   'other-country': 'muted',
 };
 
+/** Only an exception or the general rule backs an answer; expired, superseded, other-client/-country and unconfirmed sources do not. */
+export const isSupporting = (verdict: Verdict) => verdict.kind === 'exception' || verdict.kind === 'general';
+
 export const STATUS_TONE: Record<AnswerStatus, 'good' | 'warn' | 'muted'> = { onderbouwd: 'good', deels: 'warn', onvoldoende: 'warn', geen: 'muted' };
 
 /** The coloured status pill of an answer ("Onderbouwd", "Deels onderbouwd", ...). */
