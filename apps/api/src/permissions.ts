@@ -53,3 +53,8 @@ export async function userCanSeeSource(db: Database, source: Pick<SourceRow, 'pr
   const roles = await Promise.all([source.projectId, ...source.audienceProjectIds].map((id) => getProjectRole(db, id, userId)));
   return roles.every((r) => r !== null);
 }
+
+/** The accountable owner of a source, or the team owner for an ownerless one. Approve, resolve-dispute and supersede share this rule. */
+export function isSourceOwner(source: Pick<SourceRow, 'ownerId'>, userId: string, role: MemberRole): boolean {
+  return source.ownerId === userId || (role === 'owner' && source.ownerId === null);
+}

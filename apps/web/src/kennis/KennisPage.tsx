@@ -212,7 +212,7 @@ function Panel({ source, all, users, canApprove, canDispute, canResolve, country
         <Icon name="calendar" /> {dateLabel(source.validFrom)} {source.validTo ? `t/m ${dateLabel(source.validTo)}` : 'en doorlopend'}
       </p>
       <hr />
-      <VersionChain source={source} all={all} canEdit={canDispute} />
+      <VersionChain source={source} all={all} canEdit={canResolve} />
       <TimeTravel key={source.id} source={source} country={country} client={client} />
       <h3 className="kn-h3">Toegang</h3>
       <p className="kn-line">
