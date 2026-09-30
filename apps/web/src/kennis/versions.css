@@ -1,0 +1,8 @@
+.kn-versions { margin: 8px 0; padding: 0; list-style: none; border-left: 2px solid var(--border); }
+.kn-versions li { display: flex; gap: 8px; align-items: baseline; justify-content: space-between; padding: 4px 0 4px 12px; font-size: 14px; color: var(--text); }
+.kn-versions li.is-current { border-left: 2px solid var(--accent); margin-left: -2px; font-weight: 600; }
+.kn-versions li.is-old { color: var(--muted); }
+.kn-versions-tag { font-size: 12px; color: var(--muted); }
+.kn-versions-note { margin: 4px 0; font-size: 14px; color: var(--muted); }
+.kn-versions-form select { width: 100%; min-height: 44px; margin-top: 8px; padding: 0 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); font: inherit; }
+.kn-versions-form .kn-btn--outline { margin-top: 8px; }
