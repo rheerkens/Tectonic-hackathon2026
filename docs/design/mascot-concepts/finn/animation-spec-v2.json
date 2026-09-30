@@ -1,0 +1,586 @@
+{
+  "version": 2,
+  "character": "Finn",
+  "generationMode": "built-in image_gen",
+  "reference": "finn-idle.png",
+  "notes": [
+    "96 newly generated source frames, twelve per state; each source PNG has four columns and three rows.",
+    "Genuinely generated in-between drawings; original four-frame sheets are preserved separately.",
+    "Transitions use entry, core, and return-to-rest frames. Thinking loops only the core pose.",
+    "Idle timing deliberately holds still, and reuses progressive eyelid frames to avoid an unintended wink.",
+    "Welcome plays once per browser-tab session. No sound or automatic chat opening.",
+    "Use static representative frames for reduced motion. Verified gestures are reserved for verified results.",
+    "Generated frame-to-frame drawing variation remains; preview at the intended chat-button size."
+  ],
+  "states": [
+    {
+      "id": "idle",
+      "name": "Calm idle",
+      "trigger": "Chat is available; no active request.",
+      "behavior": "A blink shortly after activation, then a quiet six-second rest between blinks.",
+      "loop": true,
+      "frameDurations": [
+        6000,
+        180,
+        60,
+        60,
+        60,
+        70,
+        60,
+        60,
+        60,
+        110,
+        180,
+        180
+      ],
+      "sequence": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        3,
+        2,
+        9,
+        10,
+        11,
+        0
+      ],
+      "detail": "Twelve almost identical neutral rest frames with a single smooth blink. 1 eyes open; 2 eyes open; 3 eyelids 20% lowered; 4 eyelids 45% lowered; 5 eyelids 75% lowered; 6 eyes fully closed; 7 eyes 75% closed; 8 eyes 45% closed; 9 eyelids 20% lowered; 10 eyes fully open; 11 eyes open; 12 identical to 1. ALL BODY PIXELS/POSES effectively unchanged, right hand stays at pocket throughout, no nod, no breathing changes, only eyelids move. Transparent background.",
+      "prompt": "Use case: identity-preserve. Produce a new, smoothly animated sprite sheet of Finn, the EXACT cartoon payroll consultant in the provided identity reference. Reference is a four-frame IDENTITY/STYLE guide; the new deliverable must have TWELVE frames, not four.\nCharacter lock: identical warm-skinned adult male nerd, round charcoal glasses, dark brown quiff, red cardigan, cream shirt, dark trousers, cream sneakers with golden soles, golden payroll folder with ivory shield/check emblem ALWAYS held in the arm on VIEWER LEFT. Tiny blue collar pin only. Match reference rendering precisely. No changes to clothes, hair design, body proportions, lighting, camera or perspective. Keep mouth closed with gentle warm smile unless specified. Head/folder/legs/torso remain unchanged except specifically requested motion.\nFORMAT: one landscape transparent PNG SPRITE SHEET, exactly 4 COLUMNS \u00d7 3 ROWS = 12 complete full-body Finns. Prefer high resolution 2048\u00d71536. Frame order row-major: top row 1 2 3 4, middle row 5 6 7 8, bottom row 9 10 11 12. Every cell has exactly the same dimensions and same transparent margins. Character at identical scale and center, feet at same 90%-height baseline within each cell, head near 12%-height line. Leave at least 8% CLEAR transparent padding on all sides of each character and between rows. No parts may cross cell boundaries. Actual ALPHA transparency, no checkerboard, no visible grid, no border, no captions, no numbers, no ground shadow, no extra objects.\nANIMATION QUALITY IS THE MAIN GOAL: these are consecutive in-between drawings for fluid 12fps motion, not twelve unrelated poses. Use very small incremental changes between successive frames. Feet, shoes, folder, torso, glasses and hairstyle must be registered consistently, never wobble, change size or drift. Move only the required arm/head/eyelids. One head, two arms, two legs per frame. NO duplicated hands, no floating props, no ghost limbs, no motion lines. First and last frame use the SAME rest pose: viewer-right hand at cardigan pocket, left arm hugging folder, face forward. The middle six frames are the core gesture. Make transitions natural and gentle, not frantic. Red/yellow/cream dominant, blue only pin.\nAnimation plan, frames 1 through 12: Twelve almost identical neutral rest frames with a single smooth blink. 1 eyes open; 2 eyes open; 3 eyelids 20% lowered; 4 eyelids 45% lowered; 5 eyelids 75% lowered; 6 eyes fully closed; 7 eyes 75% closed; 8 eyes 45% closed; 9 eyelids 20% lowered; 10 eyes fully open; 11 eyes open; 12 identical to 1. ALL BODY PIXELS/POSES effectively unchanged, right hand stays at pocket throughout, no nod, no breathing changes, only eyelids move. Transparent background.",
+      "file": "finn-idle-v2.png",
+      "nextState": null,
+      "staticFrame": 0,
+      "sample": "Ask me a payroll question whenever you\u2019re ready.",
+      "grid": {
+        "columns": 4,
+        "rows": 3
+      },
+      "reviewSequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "loopSequence": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        3,
+        2,
+        9,
+        10,
+        11,
+        0
+      ],
+      "exitSequence": [],
+      "restFrames": [
+        0,
+        1,
+        9,
+        10,
+        11
+      ]
+    },
+    {
+      "id": "welcome",
+      "name": "Welcome wave",
+      "trigger": "First page visit in a session, or deliberate greeting replay.",
+      "behavior": "One brief wave, then return to idle. Do not replay on every route change.",
+      "loop": false,
+      "frameDurations": [
+        120,
+        90,
+        90,
+        90,
+        90,
+        95,
+        95,
+        95,
+        95,
+        90,
+        90,
+        160
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        6,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "detail": "Twelve-frame smooth friendly welcome wave. Only VIEWER-RIGHT arm moves; viewer-left holds folder. 1 rest with hand at pocket; 2 hand lifted to waist; 3 halfway between waist and shoulder; 4 open hand at shoulder; 5 hand beside cheek, palm outward; 6 wrist tilted outward by 12 degrees; 7 wrist centered; 8 wrist tilted inward by 12 degrees; 9 hand begins to lower to shoulder; 10 hand halfway to waist; 11 hand near pocket; 12 exactly rest like 1. Keep elbow/body stable through wrist wave in 5-8. Warm CLOSED-MOUTH smile unchanged. Carefully drawn five-finger hand. Smooth small distances, no sudden pose jumps.",
+      "prompt": "Use case: identity-preserve. Produce a new, smoothly animated sprite sheet of Finn, the EXACT cartoon payroll consultant in the provided identity reference. Reference is a four-frame IDENTITY/STYLE guide; the new deliverable must have TWELVE frames, not four.\nCharacter lock: identical warm-skinned adult male nerd, round charcoal glasses, dark brown quiff, red cardigan, cream shirt, dark trousers, cream sneakers with golden soles, golden payroll folder with ivory shield/check emblem ALWAYS held in the arm on VIEWER LEFT. Tiny blue collar pin only. Match reference rendering precisely. No changes to clothes, hair design, body proportions, lighting, camera or perspective. Keep mouth closed with gentle warm smile unless specified. Head/folder/legs/torso remain unchanged except specifically requested motion.\nFORMAT: one landscape transparent PNG SPRITE SHEET, exactly 4 COLUMNS \u00d7 3 ROWS = 12 complete full-body Finns. Prefer high resolution 2048\u00d71536. Frame order row-major: top row 1 2 3 4, middle row 5 6 7 8, bottom row 9 10 11 12. Every cell has exactly the same dimensions and same transparent margins. Character at identical scale and center, feet at same 90%-height baseline within each cell, head near 12%-height line. Leave at least 8% CLEAR transparent padding on all sides of each character and between rows. No parts may cross cell boundaries. Actual ALPHA transparency, no checkerboard, no visible grid, no border, no captions, no numbers, no ground shadow, no extra objects.\nANIMATION QUALITY IS THE MAIN GOAL: these are consecutive in-between drawings for fluid 12fps motion, not twelve unrelated poses. Use very small incremental changes between successive frames. Feet, shoes, folder, torso, glasses and hairstyle must be registered consistently, never wobble, change size or drift. Move only the required arm/head/eyelids. One head, two arms, two legs per frame. NO duplicated hands, no floating props, no ghost limbs, no motion lines. First and last frame use the SAME rest pose: viewer-right hand at cardigan pocket, left arm hugging folder, face forward. The middle six frames are the core gesture. Make transitions natural and gentle, not frantic. Red/yellow/cream dominant, blue only pin.\nAnimation plan, frames 1 through 12: Twelve-frame smooth friendly welcome wave. Only VIEWER-RIGHT arm moves; viewer-left holds folder. 1 rest with hand at pocket; 2 hand lifted to waist; 3 halfway between waist and shoulder; 4 open hand at shoulder; 5 hand beside cheek, palm outward; 6 wrist tilted outward by 12 degrees; 7 wrist centered; 8 wrist tilted inward by 12 degrees; 9 hand begins to lower to shoulder; 10 hand halfway to waist; 11 hand near pocket; 12 exactly rest like 1. Keep elbow/body stable through wrist wave in 5-8. Warm CLOSED-MOUTH smile unchanged. Carefully drawn five-finger hand. Smooth small distances, no sudden pose jumps.",
+      "file": "finn-welcome-v2.png",
+      "nextState": "idle",
+      "staticFrame": 5,
+      "sample": "Hi, I\u2019m Finn. What can I help you check?",
+      "grid": {
+        "columns": 4,
+        "rows": 3
+      },
+      "reviewSequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "loopSequence": null,
+      "exitSequence": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "restFrames": [
+        0,
+        11
+      ]
+    },
+    {
+      "id": "listening",
+      "name": "Listening",
+      "trigger": "User opens the chat or is composing a question.",
+      "behavior": "Small acknowledging nod on entry, then hold an attentive pose.",
+      "loop": false,
+      "frameDurations": [
+        180,
+        90,
+        90,
+        90,
+        90,
+        120,
+        120,
+        90,
+        90,
+        90,
+        90,
+        180
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "detail": "Twelve-frame tiny acknowledging head nod, keeping BOTH arms, folder, feet and torso totally still in the rest pose. 1 neutral head; 2 chin lowers 1 degree; 3 lowers 2 degrees; 4 lowers 3 degrees; 5 lowers 4 degrees; 6 bottom of nod at 5 degrees; 7 same bottom pose with attentive eyes; 8 rises to 4 degrees; 9 rises to 3 degrees; 10 rises to 2 degrees; 11 rises to 1 degree; 12 exactly neutral like 1. Kind eyes stay OPEN and focused at user, no blinking. No whole-body bending, no change in head size.",
+      "prompt": "Use case: identity-preserve. Produce a new, smoothly animated sprite sheet of Finn, the EXACT cartoon payroll consultant in the provided identity reference. Reference is a four-frame IDENTITY/STYLE guide; the new deliverable must have TWELVE frames, not four.\nCharacter lock: identical warm-skinned adult male nerd, round charcoal glasses, dark brown quiff, red cardigan, cream shirt, dark trousers, cream sneakers with golden soles, golden payroll folder with ivory shield/check emblem ALWAYS held in the arm on VIEWER LEFT. Tiny blue collar pin only. Match reference rendering precisely. No changes to clothes, hair design, body proportions, lighting, camera or perspective. Keep mouth closed with gentle warm smile unless specified. Head/folder/legs/torso remain unchanged except specifically requested motion.\nFORMAT: one landscape transparent PNG SPRITE SHEET, exactly 4 COLUMNS \u00d7 3 ROWS = 12 complete full-body Finns. Prefer high resolution 2048\u00d71536. Frame order row-major: top row 1 2 3 4, middle row 5 6 7 8, bottom row 9 10 11 12. Every cell has exactly the same dimensions and same transparent margins. Character at identical scale and center, feet at same 90%-height baseline within each cell, head near 12%-height line. Leave at least 8% CLEAR transparent padding on all sides of each character and between rows. No parts may cross cell boundaries. Actual ALPHA transparency, no checkerboard, no visible grid, no border, no captions, no numbers, no ground shadow, no extra objects.\nANIMATION QUALITY IS THE MAIN GOAL: these are consecutive in-between drawings for fluid 12fps motion, not twelve unrelated poses. Use very small incremental changes between successive frames. Feet, shoes, folder, torso, glasses and hairstyle must be registered consistently, never wobble, change size or drift. Move only the required arm/head/eyelids. One head, two arms, two legs per frame. NO duplicated hands, no floating props, no ghost limbs, no motion lines. First and last frame use the SAME rest pose: viewer-right hand at cardigan pocket, left arm hugging folder, face forward. The middle six frames are the core gesture. Make transitions natural and gentle, not frantic. Red/yellow/cream dominant, blue only pin.\nAnimation plan, frames 1 through 12: Twelve-frame tiny acknowledging head nod, keeping BOTH arms, folder, feet and torso totally still in the rest pose. 1 neutral head; 2 chin lowers 1 degree; 3 lowers 2 degrees; 4 lowers 3 degrees; 5 lowers 4 degrees; 6 bottom of nod at 5 degrees; 7 same bottom pose with attentive eyes; 8 rises to 4 degrees; 9 rises to 3 degrees; 10 rises to 2 degrees; 11 rises to 1 degree; 12 exactly neutral like 1. Kind eyes stay OPEN and focused at user, no blinking. No whole-body bending, no change in head size.",
+      "file": "finn-listening-v2.png",
+      "nextState": null,
+      "staticFrame": 7,
+      "sample": "Tell me which client and period you\u2019re working with.",
+      "grid": {
+        "columns": 4,
+        "rows": 3
+      },
+      "reviewSequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "loopSequence": null,
+      "exitSequence": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "restFrames": [
+        0,
+        11
+      ]
+    },
+    {
+      "id": "thinking",
+      "name": "Checking sources",
+      "trigger": "A question was submitted and the answer is being prepared.",
+      "behavior": "Slow thoughtful loop during the request; stop immediately when it resolves.",
+      "loop": true,
+      "frameDurations": [
+        120,
+        90,
+        90,
+        220,
+        220,
+        220,
+        220,
+        300,
+        90,
+        90,
+        90,
+        120
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "detail": "Twelve-frame thoughtful pose with gentle entry/exit. Only viewer-right hand moves to chin. 1 neutral hand at pocket; 2 hand raised toward chest; 3 hand halfway from chest to chin; 4 fingertip touching chin, thoughtful face; 5 identical pose eyes subtly glance toward folder; 6 eyes move slightly further toward folder; 7 eyes slowly return toward viewer; 8 thoughtful pose matches 4, fingertip at chin; 9 hand starts lowering from chin; 10 hand at chest; 11 hand near waist; 12 neutral like 1. Frames 4-8 form a seamless small eye-glance loop with an entirely stationary thinking hand. No sleepy half-closed eyes. Gentle thoughtful eyebrows, not anxious.",
+      "prompt": "Use case: identity-preserve. Produce a new, smoothly animated sprite sheet of Finn, the EXACT cartoon payroll consultant in the provided identity reference. Reference is a four-frame IDENTITY/STYLE guide; the new deliverable must have TWELVE frames, not four.\nCharacter lock: identical warm-skinned adult male nerd, round charcoal glasses, dark brown quiff, red cardigan, cream shirt, dark trousers, cream sneakers with golden soles, golden payroll folder with ivory shield/check emblem ALWAYS held in the arm on VIEWER LEFT. Tiny blue collar pin only. Match reference rendering precisely. No changes to clothes, hair design, body proportions, lighting, camera or perspective. Keep mouth closed with gentle warm smile unless specified. Head/folder/legs/torso remain unchanged except specifically requested motion.\nFORMAT: one landscape transparent PNG SPRITE SHEET, exactly 4 COLUMNS \u00d7 3 ROWS = 12 complete full-body Finns. Prefer high resolution 2048\u00d71536. Frame order row-major: top row 1 2 3 4, middle row 5 6 7 8, bottom row 9 10 11 12. Every cell has exactly the same dimensions and same transparent margins. Character at identical scale and center, feet at same 90%-height baseline within each cell, head near 12%-height line. Leave at least 8% CLEAR transparent padding on all sides of each character and between rows. No parts may cross cell boundaries. Actual ALPHA transparency, no checkerboard, no visible grid, no border, no captions, no numbers, no ground shadow, no extra objects.\nANIMATION QUALITY IS THE MAIN GOAL: these are consecutive in-between drawings for fluid 12fps motion, not twelve unrelated poses. Use very small incremental changes between successive frames. Feet, shoes, folder, torso, glasses and hairstyle must be registered consistently, never wobble, change size or drift. Move only the required arm/head/eyelids. One head, two arms, two legs per frame. NO duplicated hands, no floating props, no ghost limbs, no motion lines. First and last frame use the SAME rest pose: viewer-right hand at cardigan pocket, left arm hugging folder, face forward. The middle six frames are the core gesture. Make transitions natural and gentle, not frantic. Red/yellow/cream dominant, blue only pin.\nAnimation plan, frames 1 through 12: Twelve-frame thoughtful pose with gentle entry/exit. Only viewer-right hand moves to chin. 1 neutral hand at pocket; 2 hand raised toward chest; 3 hand halfway from chest to chin; 4 fingertip touching chin, thoughtful face; 5 identical pose eyes subtly glance toward folder; 6 eyes move slightly further toward folder; 7 eyes slowly return toward viewer; 8 thoughtful pose matches 4, fingertip at chin; 9 hand starts lowering from chin; 10 hand at chest; 11 hand near waist; 12 neutral like 1. Frames 4-8 form a seamless small eye-glance loop with an entirely stationary thinking hand. No sleepy half-closed eyes. Gentle thoughtful eyebrows, not anxious.",
+      "file": "finn-thinking-v2.png",
+      "nextState": null,
+      "staticFrame": 3,
+      "sample": "I\u2019m checking the sources for this question.",
+      "grid": {
+        "columns": 4,
+        "rows": 3
+      },
+      "reviewSequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "loopSequence": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "exitSequence": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "restFrames": [
+        0,
+        11
+      ]
+    },
+    {
+      "id": "answer",
+      "name": "Here is the answer",
+      "trigger": "An answer is ready to read.",
+      "behavior": "One open-palm gesture toward the answer, then return to idle.",
+      "loop": false,
+      "frameDurations": [
+        100,
+        83,
+        83,
+        83,
+        100,
+        180,
+        260,
+        100,
+        83,
+        83,
+        83,
+        140
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "detail": "Twelve-frame smoothly presenting the answer with viewer-right palm. 1 neutral; 2 right hand leaves pocket; 3 hand opens near waist; 4 forearm moves slightly outward; 5 forearm halfway extended, palm up; 6 forearm fully extended a SHORT distance to viewer-right, palm up; 7 hold this subtle open-palm pose; 8 draw forearm inward slightly; 9 draw inward halfway; 10 hand approaches waist; 11 hand approaches pocket; 12 exactly neutral like 1. Keep the gesture compact enough to remain inside cell; no arm straight out, no pointing finger, no thumbs up. Face remains the same gentle smile, no face or torso motion.",
+      "prompt": "Use case: identity-preserve. Produce a new, smoothly animated sprite sheet of Finn, the EXACT cartoon payroll consultant in the provided identity reference. Reference is a four-frame IDENTITY/STYLE guide; the new deliverable must have TWELVE frames, not four.\nCharacter lock: identical warm-skinned adult male nerd, round charcoal glasses, dark brown quiff, red cardigan, cream shirt, dark trousers, cream sneakers with golden soles, golden payroll folder with ivory shield/check emblem ALWAYS held in the arm on VIEWER LEFT. Tiny blue collar pin only. Match reference rendering precisely. No changes to clothes, hair design, body proportions, lighting, camera or perspective. Keep mouth closed with gentle warm smile unless specified. Head/folder/legs/torso remain unchanged except specifically requested motion.\nFORMAT: one landscape transparent PNG SPRITE SHEET, exactly 4 COLUMNS \u00d7 3 ROWS = 12 complete full-body Finns. Prefer high resolution 2048\u00d71536. Frame order row-major: top row 1 2 3 4, middle row 5 6 7 8, bottom row 9 10 11 12. Every cell has exactly the same dimensions and same transparent margins. Character at identical scale and center, feet at same 90%-height baseline within each cell, head near 12%-height line. Leave at least 8% CLEAR transparent padding on all sides of each character and between rows. No parts may cross cell boundaries. Actual ALPHA transparency, no checkerboard, no visible grid, no border, no captions, no numbers, no ground shadow, no extra objects.\nANIMATION QUALITY IS THE MAIN GOAL: these are consecutive in-between drawings for fluid 12fps motion, not twelve unrelated poses. Use very small incremental changes between successive frames. Feet, shoes, folder, torso, glasses and hairstyle must be registered consistently, never wobble, change size or drift. Move only the required arm/head/eyelids. One head, two arms, two legs per frame. NO duplicated hands, no floating props, no ghost limbs, no motion lines. First and last frame use the SAME rest pose: viewer-right hand at cardigan pocket, left arm hugging folder, face forward. The middle six frames are the core gesture. Make transitions natural and gentle, not frantic. Red/yellow/cream dominant, blue only pin.\nAnimation plan, frames 1 through 12: Twelve-frame smoothly presenting the answer with viewer-right palm. 1 neutral; 2 right hand leaves pocket; 3 hand opens near waist; 4 forearm moves slightly outward; 5 forearm halfway extended, palm up; 6 forearm fully extended a SHORT distance to viewer-right, palm up; 7 hold this subtle open-palm pose; 8 draw forearm inward slightly; 9 draw inward halfway; 10 hand approaches waist; 11 hand approaches pocket; 12 exactly neutral like 1. Keep the gesture compact enough to remain inside cell; no arm straight out, no pointing finger, no thumbs up. Face remains the same gentle smile, no face or torso motion.",
+      "file": "finn-answer-v2.png",
+      "nextState": "idle",
+      "staticFrame": 5,
+      "sample": "Here\u2019s what I found, with the source behind it.",
+      "grid": {
+        "columns": 4,
+        "rows": 3
+      },
+      "reviewSequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "loopSequence": null,
+      "exitSequence": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "restFrames": [
+        0,
+        11
+      ]
+    },
+    {
+      "id": "verified",
+      "name": "Verified result",
+      "trigger": "The app explicitly reports that the result is verified or well substantiated.",
+      "behavior": "One modest approving nod and thumbs-up. Never use for unverified answers.",
+      "loop": false,
+      "frameDurations": [
+        100,
+        90,
+        90,
+        90,
+        150,
+        110,
+        150,
+        240,
+        90,
+        90,
+        90,
+        130
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "detail": "Twelve-frame restrained approving thumbs-up. 1 neutral right hand at pocket; 2 hand lifts to waist; 3 hand lifts toward lower chest while curling fingers; 4 thumb partially raised; 5 clear small thumbs-up beside chest; 6 hold thumbs-up with head dipping just 2 degrees; 7 hold thumb with head returning neutral; 8 hold small thumbs-up neutral head; 9 thumb relaxes and hand lowers a little; 10 hand midway toward waist; 11 hand near pocket; 12 exact rest like 1. No celebration effects, no jumping, no new smile, just modest approval. Body and folder completely still.",
+      "prompt": "Use case: identity-preserve. Produce a new, smoothly animated sprite sheet of Finn, the EXACT cartoon payroll consultant in the provided identity reference. Reference is a four-frame IDENTITY/STYLE guide; the new deliverable must have TWELVE frames, not four.\nCharacter lock: identical warm-skinned adult male nerd, round charcoal glasses, dark brown quiff, red cardigan, cream shirt, dark trousers, cream sneakers with golden soles, golden payroll folder with ivory shield/check emblem ALWAYS held in the arm on VIEWER LEFT. Tiny blue collar pin only. Match reference rendering precisely. No changes to clothes, hair design, body proportions, lighting, camera or perspective. Keep mouth closed with gentle warm smile unless specified. Head/folder/legs/torso remain unchanged except specifically requested motion.\nFORMAT: one landscape transparent PNG SPRITE SHEET, exactly 4 COLUMNS \u00d7 3 ROWS = 12 complete full-body Finns. Prefer high resolution 2048\u00d71536. Frame order row-major: top row 1 2 3 4, middle row 5 6 7 8, bottom row 9 10 11 12. Every cell has exactly the same dimensions and same transparent margins. Character at identical scale and center, feet at same 90%-height baseline within each cell, head near 12%-height line. Leave at least 8% CLEAR transparent padding on all sides of each character and between rows. No parts may cross cell boundaries. Actual ALPHA transparency, no checkerboard, no visible grid, no border, no captions, no numbers, no ground shadow, no extra objects.\nANIMATION QUALITY IS THE MAIN GOAL: these are consecutive in-between drawings for fluid 12fps motion, not twelve unrelated poses. Use very small incremental changes between successive frames. Feet, shoes, folder, torso, glasses and hairstyle must be registered consistently, never wobble, change size or drift. Move only the required arm/head/eyelids. One head, two arms, two legs per frame. NO duplicated hands, no floating props, no ghost limbs, no motion lines. First and last frame use the SAME rest pose: viewer-right hand at cardigan pocket, left arm hugging folder, face forward. The middle six frames are the core gesture. Make transitions natural and gentle, not frantic. Red/yellow/cream dominant, blue only pin.\nAnimation plan, frames 1 through 12: Twelve-frame restrained approving thumbs-up. 1 neutral right hand at pocket; 2 hand lifts to waist; 3 hand lifts toward lower chest while curling fingers; 4 thumb partially raised; 5 clear small thumbs-up beside chest; 6 hold thumbs-up with head dipping just 2 degrees; 7 hold thumb with head returning neutral; 8 hold small thumbs-up neutral head; 9 thumb relaxes and hand lowers a little; 10 hand midway toward waist; 11 hand near pocket; 12 exact rest like 1. No celebration effects, no jumping, no new smile, just modest approval. Body and folder completely still.",
+      "file": "finn-verified-v2.png",
+      "nextState": "idle",
+      "staticFrame": 6,
+      "sample": "This result has been verified for the selected context.",
+      "grid": {
+        "columns": 4,
+        "rows": 3
+      },
+      "reviewSequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "loopSequence": null,
+      "exitSequence": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "restFrames": [
+        0,
+        11
+      ]
+    },
+    {
+      "id": "uncertain",
+      "name": "Let\u2019s check",
+      "trigger": "Sources conflict, confidence is low, or a clarification is needed.",
+      "behavior": "A thoughtful gesture, then hold. Pair with text explaining what needs checking.",
+      "loop": false,
+      "frameDurations": [
+        110,
+        90,
+        90,
+        110,
+        130,
+        130,
+        160,
+        220,
+        90,
+        90,
+        90,
+        110
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "detail": "Twelve-frame gentle request for clarification. 1 neutral; 2 right hand leaves pocket slightly; 3 palm turns up near waist, elbow stays close; 4 hand lifts slightly, thoughtful face; 5 small palm-up pose, one eyebrow rises a little; 6 same compact pose, head tilts 2 degrees; 7 same pose, head tilts 3 degrees; 8 held thoughtful pose, mild questioning eyebrow; 9 head begins returning upright and hand lowers; 10 head nearly upright, hand near waist; 11 hand near pocket; 12 exactly neutral like 1. Calm honest uncertainty, tiny closed-mouth smile becomes neutral thoughtfully from frame 4 then returns by 12. No shrugging both arms, no panic. Keep movement very small.",
+      "prompt": "Use case: identity-preserve. Produce a new, smoothly animated sprite sheet of Finn, the EXACT cartoon payroll consultant in the provided identity reference. Reference is a four-frame IDENTITY/STYLE guide; the new deliverable must have TWELVE frames, not four.\nCharacter lock: identical warm-skinned adult male nerd, round charcoal glasses, dark brown quiff, red cardigan, cream shirt, dark trousers, cream sneakers with golden soles, golden payroll folder with ivory shield/check emblem ALWAYS held in the arm on VIEWER LEFT. Tiny blue collar pin only. Match reference rendering precisely. No changes to clothes, hair design, body proportions, lighting, camera or perspective. Keep mouth closed with gentle warm smile unless specified. Head/folder/legs/torso remain unchanged except specifically requested motion.\nFORMAT: one landscape transparent PNG SPRITE SHEET, exactly 4 COLUMNS \u00d7 3 ROWS = 12 complete full-body Finns. Prefer high resolution 2048\u00d71536. Frame order row-major: top row 1 2 3 4, middle row 5 6 7 8, bottom row 9 10 11 12. Every cell has exactly the same dimensions and same transparent margins. Character at identical scale and center, feet at same 90%-height baseline within each cell, head near 12%-height line. Leave at least 8% CLEAR transparent padding on all sides of each character and between rows. No parts may cross cell boundaries. Actual ALPHA transparency, no checkerboard, no visible grid, no border, no captions, no numbers, no ground shadow, no extra objects.\nANIMATION QUALITY IS THE MAIN GOAL: these are consecutive in-between drawings for fluid 12fps motion, not twelve unrelated poses. Use very small incremental changes between successive frames. Feet, shoes, folder, torso, glasses and hairstyle must be registered consistently, never wobble, change size or drift. Move only the required arm/head/eyelids. One head, two arms, two legs per frame. NO duplicated hands, no floating props, no ghost limbs, no motion lines. First and last frame use the SAME rest pose: viewer-right hand at cardigan pocket, left arm hugging folder, face forward. The middle six frames are the core gesture. Make transitions natural and gentle, not frantic. Red/yellow/cream dominant, blue only pin.\nAnimation plan, frames 1 through 12: Twelve-frame gentle request for clarification. 1 neutral; 2 right hand leaves pocket slightly; 3 palm turns up near waist, elbow stays close; 4 hand lifts slightly, thoughtful face; 5 small palm-up pose, one eyebrow rises a little; 6 same compact pose, head tilts 2 degrees; 7 same pose, head tilts 3 degrees; 8 held thoughtful pose, mild questioning eyebrow; 9 head begins returning upright and hand lowers; 10 head nearly upright, hand near waist; 11 hand near pocket; 12 exactly neutral like 1. Calm honest uncertainty, tiny closed-mouth smile becomes neutral thoughtfully from frame 4 then returns by 12. No shrugging both arms, no panic. Keep movement very small.",
+      "file": "finn-uncertain-v2.png",
+      "nextState": null,
+      "staticFrame": 5,
+      "sample": "These sources disagree. Let\u2019s check which one applies.",
+      "grid": {
+        "columns": 4,
+        "rows": 3
+      },
+      "reviewSequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "loopSequence": null,
+      "exitSequence": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "restFrames": [
+        0,
+        11
+      ]
+    },
+    {
+      "id": "retry",
+      "name": "Something went wrong",
+      "trigger": "A request fails or the connection drops.",
+      "behavior": "One small apologetic gesture, then hold. Keep a visible retry action in the UI.",
+      "loop": false,
+      "frameDurations": [
+        110,
+        90,
+        90,
+        110,
+        150,
+        150,
+        160,
+        220,
+        90,
+        90,
+        90,
+        110
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "detail": "Twelve-frame gentle apology. 1 neutral; 2 right hand lifts out of pocket; 3 open hand moves up to lower chest; 4 open right palm rests over upper chest; 5 hand holds at chest, head begins a tiny nod; 6 head lowers 3 degrees, expression softly apologetic; 7 head returns halfway; 8 head upright, hand still at chest, reassuring face; 9 hand begins lowering; 10 hand lowers to waist; 11 hand near pocket; 12 exactly rest like 1. No sad dramatics, no tears, no closed eyes, no alarm icons, no other new objects. Folder and legs perfectly unchanged.",
+      "prompt": "Use case: identity-preserve. Produce a new, smoothly animated sprite sheet of Finn, the EXACT cartoon payroll consultant in the provided identity reference. Reference is a four-frame IDENTITY/STYLE guide; the new deliverable must have TWELVE frames, not four.\nCharacter lock: identical warm-skinned adult male nerd, round charcoal glasses, dark brown quiff, red cardigan, cream shirt, dark trousers, cream sneakers with golden soles, golden payroll folder with ivory shield/check emblem ALWAYS held in the arm on VIEWER LEFT. Tiny blue collar pin only. Match reference rendering precisely. No changes to clothes, hair design, body proportions, lighting, camera or perspective. Keep mouth closed with gentle warm smile unless specified. Head/folder/legs/torso remain unchanged except specifically requested motion.\nFORMAT: one landscape transparent PNG SPRITE SHEET, exactly 4 COLUMNS \u00d7 3 ROWS = 12 complete full-body Finns. Prefer high resolution 2048\u00d71536. Frame order row-major: top row 1 2 3 4, middle row 5 6 7 8, bottom row 9 10 11 12. Every cell has exactly the same dimensions and same transparent margins. Character at identical scale and center, feet at same 90%-height baseline within each cell, head near 12%-height line. Leave at least 8% CLEAR transparent padding on all sides of each character and between rows. No parts may cross cell boundaries. Actual ALPHA transparency, no checkerboard, no visible grid, no border, no captions, no numbers, no ground shadow, no extra objects.\nANIMATION QUALITY IS THE MAIN GOAL: these are consecutive in-between drawings for fluid 12fps motion, not twelve unrelated poses. Use very small incremental changes between successive frames. Feet, shoes, folder, torso, glasses and hairstyle must be registered consistently, never wobble, change size or drift. Move only the required arm/head/eyelids. One head, two arms, two legs per frame. NO duplicated hands, no floating props, no ghost limbs, no motion lines. First and last frame use the SAME rest pose: viewer-right hand at cardigan pocket, left arm hugging folder, face forward. The middle six frames are the core gesture. Make transitions natural and gentle, not frantic. Red/yellow/cream dominant, blue only pin.\nAnimation plan, frames 1 through 12: Twelve-frame gentle apology. 1 neutral; 2 right hand lifts out of pocket; 3 open hand moves up to lower chest; 4 open right palm rests over upper chest; 5 hand holds at chest, head begins a tiny nod; 6 head lowers 3 degrees, expression softly apologetic; 7 head returns halfway; 8 head upright, hand still at chest, reassuring face; 9 hand begins lowering; 10 hand lowers to waist; 11 hand near pocket; 12 exactly rest like 1. No sad dramatics, no tears, no closed eyes, no alarm icons, no other new objects. Folder and legs perfectly unchanged.",
+      "file": "finn-retry-v2.png",
+      "nextState": null,
+      "staticFrame": 7,
+      "sample": "I couldn\u2019t complete that request. Please try again.",
+      "grid": {
+        "columns": 4,
+        "rows": 3
+      },
+      "reviewSequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "loopSequence": null,
+      "exitSequence": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "restFrames": [
+        0,
+        11
+      ]
+    }
+  ]
+}

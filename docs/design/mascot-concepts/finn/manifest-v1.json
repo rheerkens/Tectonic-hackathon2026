@@ -1,0 +1,863 @@
+{
+  "version": 1,
+  "character": "Finn",
+  "generationMode": "built-in image_gen",
+  "reference": "../01-finn-trusted-consultant-trust.png",
+  "notes": [
+    "Eight animation states, four source frames per state, read left-to-right then top-to-bottom.",
+    "Welcome plays once per browser-tab session; no greeting on every route change.",
+    "Reduced motion uses a representative static frame, with text carrying state.",
+    "Verified is reserved for explicit verification, not merely a completed response.",
+    "Do not auto-open the chat, play sounds, or repeatedly wave for attention.",
+    "Source sheets are generated animation drafts. Trim/pivot metadata stabilizes playback; use the preview to review visual consistency."
+  ],
+  "render": {
+    "canvasSize": 512,
+    "baseline": 466,
+    "characterHeight": 424
+  },
+  "states": [
+    {
+      "id": "idle",
+      "name": "Calm idle",
+      "trigger": "Chat is available; no active request.",
+      "behavior": "A quiet blink every 6\u20139 seconds, with stillness between blinks.",
+      "loop": true,
+      "frameDurations": [
+        6000,
+        90,
+        110,
+        140
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "file": "finn-idle.png",
+      "nextState": null,
+      "staticFrame": 0,
+      "sample": "Ask me a payroll question whenever you\u2019re ready.",
+      "sheetSize": [
+        1254,
+        1254
+      ],
+      "frames": [
+        {
+          "cell": [
+            0,
+            0,
+            643,
+            634
+          ],
+          "bounds": [
+            212,
+            17,
+            527,
+            625
+          ],
+          "pivot": [
+            385.0,
+            623
+          ],
+          "characterHeight": 604
+        },
+        {
+          "cell": [
+            643,
+            0,
+            611,
+            634
+          ],
+          "bounds": [
+            117,
+            17,
+            432,
+            624
+          ],
+          "pivot": [
+            290.5,
+            622
+          ],
+          "characterHeight": 603
+        },
+        {
+          "cell": [
+            0,
+            634,
+            643,
+            620
+          ],
+          "bounds": [
+            212,
+            10,
+            526,
+            617
+          ],
+          "pivot": [
+            384.5,
+            615
+          ],
+          "characterHeight": 603
+        },
+        {
+          "cell": [
+            643,
+            634,
+            611,
+            620
+          ],
+          "bounds": [
+            117,
+            10,
+            432,
+            617
+          ],
+          "pivot": [
+            290.5,
+            615
+          ],
+          "characterHeight": 603
+        }
+      ]
+    },
+    {
+      "id": "welcome",
+      "name": "Welcome wave",
+      "trigger": "First page visit in a session, or deliberate greeting replay.",
+      "behavior": "One brief wave, then return to idle. Do not replay on every route change.",
+      "loop": false,
+      "frameDurations": [
+        220,
+        190,
+        190,
+        260
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        1,
+        2,
+        3
+      ],
+      "file": "finn-welcome.png",
+      "nextState": "idle",
+      "staticFrame": 0,
+      "sample": "Hi, I\u2019m Finn. What can I help you check?",
+      "sheetSize": [
+        1254,
+        1254
+      ],
+      "frames": [
+        {
+          "cell": [
+            0,
+            0,
+            660,
+            621
+          ],
+          "bounds": [
+            189,
+            18,
+            543,
+            608
+          ],
+          "pivot": [
+            353.0,
+            606
+          ],
+          "characterHeight": 586
+        },
+        {
+          "cell": [
+            660,
+            0,
+            594,
+            621
+          ],
+          "bounds": [
+            117,
+            18,
+            452,
+            608
+          ],
+          "pivot": [
+            280.0,
+            606
+          ],
+          "characterHeight": 586
+        },
+        {
+          "cell": [
+            0,
+            621,
+            650,
+            633
+          ],
+          "bounds": [
+            189,
+            15,
+            526,
+            609
+          ],
+          "pivot": [
+            354.0,
+            607
+          ],
+          "characterHeight": 590
+        },
+        {
+          "cell": [
+            650,
+            621,
+            604,
+            633
+          ],
+          "bounds": [
+            125,
+            14,
+            486,
+            609
+          ],
+          "pivot": [
+            290.5,
+            607
+          ],
+          "characterHeight": 591
+        }
+      ]
+    },
+    {
+      "id": "listening",
+      "name": "Listening",
+      "trigger": "User opens the chat or is composing a question.",
+      "behavior": "Small acknowledging nod on entry, then hold an attentive pose.",
+      "loop": false,
+      "frameDurations": [
+        380,
+        220,
+        260,
+        480
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "file": "finn-listening.png",
+      "nextState": null,
+      "staticFrame": 3,
+      "sample": "Tell me which client and period you\u2019re working with.",
+      "sheetSize": [
+        1254,
+        1254
+      ],
+      "frames": [
+        {
+          "cell": [
+            0,
+            0,
+            651,
+            627
+          ],
+          "bounds": [
+            191,
+            16,
+            497,
+            621
+          ],
+          "pivot": [
+            359.0,
+            619
+          ],
+          "characterHeight": 601
+        },
+        {
+          "cell": [
+            651,
+            0,
+            603,
+            627
+          ],
+          "bounds": [
+            148,
+            37,
+            451,
+            621
+          ],
+          "pivot": [
+            313.5,
+            619
+          ],
+          "characterHeight": 580
+        },
+        {
+          "cell": [
+            0,
+            627,
+            650,
+            627
+          ],
+          "bounds": [
+            192,
+            25,
+            500,
+            611
+          ],
+          "pivot": [
+            360.5,
+            609
+          ],
+          "characterHeight": 582
+        },
+        {
+          "cell": [
+            650,
+            627,
+            604,
+            627
+          ],
+          "bounds": [
+            146,
+            7,
+            455,
+            612
+          ],
+          "pivot": [
+            315.5,
+            610
+          ],
+          "characterHeight": 601
+        }
+      ]
+    },
+    {
+      "id": "thinking",
+      "name": "Checking sources",
+      "trigger": "A question was submitted and the answer is being prepared.",
+      "behavior": "Slow thoughtful loop during the request; stop immediately when it resolves.",
+      "loop": true,
+      "frameDurations": [
+        750,
+        650,
+        750,
+        650
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "file": "finn-thinking.png",
+      "nextState": null,
+      "staticFrame": 0,
+      "sample": "I\u2019m checking the sources for this question.",
+      "sheetSize": [
+        1254,
+        1254
+      ],
+      "frames": [
+        {
+          "cell": [
+            0,
+            0,
+            650,
+            628
+          ],
+          "bounds": [
+            218,
+            9,
+            536,
+            623
+          ],
+          "pivot": [
+            391.0,
+            621
+          ],
+          "characterHeight": 610
+        },
+        {
+          "cell": [
+            650,
+            0,
+            604,
+            628
+          ],
+          "bounds": [
+            114,
+            11,
+            432,
+            623
+          ],
+          "pivot": [
+            287.0,
+            621
+          ],
+          "characterHeight": 608
+        },
+        {
+          "cell": [
+            0,
+            628,
+            650,
+            626
+          ],
+          "bounds": [
+            218,
+            7,
+            536,
+            620
+          ],
+          "pivot": [
+            391.5,
+            618
+          ],
+          "characterHeight": 609
+        },
+        {
+          "cell": [
+            650,
+            628,
+            604,
+            626
+          ],
+          "bounds": [
+            114,
+            6,
+            432,
+            620
+          ],
+          "pivot": [
+            287.0,
+            618
+          ],
+          "characterHeight": 610
+        }
+      ]
+    },
+    {
+      "id": "answer",
+      "name": "Here is the answer",
+      "trigger": "An answer is ready to read.",
+      "behavior": "One open-palm gesture toward the answer, then return to idle.",
+      "loop": false,
+      "frameDurations": [
+        220,
+        300,
+        500,
+        260
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "file": "finn-answer.png",
+      "nextState": "idle",
+      "staticFrame": 2,
+      "sample": "Here\u2019s what I found, with the source behind it.",
+      "sheetSize": [
+        1254,
+        1254
+      ],
+      "frames": [
+        {
+          "cell": [
+            0,
+            0,
+            672,
+            631
+          ],
+          "bounds": [
+            199,
+            18,
+            567,
+            628
+          ],
+          "pivot": [
+            375.0,
+            626
+          ],
+          "characterHeight": 606
+        },
+        {
+          "cell": [
+            672,
+            0,
+            582,
+            631
+          ],
+          "bounds": [
+            105,
+            18,
+            534,
+            628
+          ],
+          "pivot": [
+            278.5,
+            626
+          ],
+          "characterHeight": 606
+        },
+        {
+          "cell": [
+            0,
+            631,
+            704,
+            623
+          ],
+          "bounds": [
+            201,
+            4,
+            633,
+            617
+          ],
+          "pivot": [
+            375.5,
+            615
+          ],
+          "characterHeight": 609
+        },
+        {
+          "cell": [
+            704,
+            631,
+            550,
+            623
+          ],
+          "bounds": [
+            71,
+            6,
+            441,
+            615
+          ],
+          "pivot": [
+            247.0,
+            613
+          ],
+          "characterHeight": 605
+        }
+      ]
+    },
+    {
+      "id": "verified",
+      "name": "Verified result",
+      "trigger": "The app explicitly reports that the result is verified or well substantiated.",
+      "behavior": "One modest approving nod and thumbs-up. Never use for unverified answers.",
+      "loop": false,
+      "frameDurations": [
+        260,
+        330,
+        420,
+        340
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "file": "finn-verified.png",
+      "nextState": "idle",
+      "staticFrame": 2,
+      "sample": "This result has been verified for the selected context.",
+      "sheetSize": [
+        1254,
+        1254
+      ],
+      "frames": [
+        {
+          "cell": [
+            0,
+            0,
+            647,
+            633
+          ],
+          "bounds": [
+            177,
+            21,
+            512,
+            632
+          ],
+          "pivot": [
+            353.5,
+            630
+          ],
+          "characterHeight": 607
+        },
+        {
+          "cell": [
+            647,
+            0,
+            607,
+            633
+          ],
+          "bounds": [
+            136,
+            20,
+            475,
+            632
+          ],
+          "pivot": [
+            312.0,
+            630
+          ],
+          "characterHeight": 608
+        },
+        {
+          "cell": [
+            0,
+            633,
+            657,
+            621
+          ],
+          "bounds": [
+            185,
+            1,
+            530,
+            608
+          ],
+          "pivot": [
+            359.0,
+            606
+          ],
+          "characterHeight": 603
+        },
+        {
+          "cell": [
+            657,
+            633,
+            597,
+            621
+          ],
+          "bounds": [
+            127,
+            8,
+            466,
+            608
+          ],
+          "pivot": [
+            302.0,
+            606
+          ],
+          "characterHeight": 596
+        }
+      ]
+    },
+    {
+      "id": "uncertain",
+      "name": "Let\u2019s check",
+      "trigger": "Sources conflict, confidence is low, or a clarification is needed.",
+      "behavior": "A thoughtful gesture, then hold. Pair with text explaining what needs checking.",
+      "loop": false,
+      "frameDurations": [
+        330,
+        420,
+        420,
+        600
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "file": "finn-uncertain.png",
+      "nextState": null,
+      "staticFrame": 3,
+      "sample": "These sources disagree. Let\u2019s check which one applies.",
+      "sheetSize": [
+        1254,
+        1254
+      ],
+      "frames": [
+        {
+          "cell": [
+            0,
+            0,
+            675,
+            629
+          ],
+          "bounds": [
+            210,
+            21,
+            583,
+            627
+          ],
+          "pivot": [
+            383.5,
+            625
+          ],
+          "characterHeight": 602
+        },
+        {
+          "cell": [
+            675,
+            0,
+            579,
+            629
+          ],
+          "bounds": [
+            92,
+            24,
+            459,
+            627
+          ],
+          "pivot": [
+            259.5,
+            625
+          ],
+          "characterHeight": 599
+        },
+        {
+          "cell": [
+            0,
+            629,
+            689,
+            625
+          ],
+          "bounds": [
+            237,
+            3,
+            609,
+            604
+          ],
+          "pivot": [
+            407.0,
+            602
+          ],
+          "characterHeight": 597
+        },
+        {
+          "cell": [
+            689,
+            629,
+            565,
+            625
+          ],
+          "bounds": [
+            80,
+            3,
+            465,
+            605
+          ],
+          "pivot": [
+            253.0,
+            603
+          ],
+          "characterHeight": 598
+        }
+      ]
+    },
+    {
+      "id": "retry",
+      "name": "Something went wrong",
+      "trigger": "A request fails or the connection drops.",
+      "behavior": "One small apologetic gesture, then hold. Keep a visible retry action in the UI.",
+      "loop": false,
+      "frameDurations": [
+        300,
+        360,
+        440,
+        600
+      ],
+      "sequence": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "file": "finn-retry.png",
+      "nextState": null,
+      "staticFrame": 3,
+      "sample": "I couldn\u2019t complete that request. Please try again.",
+      "sheetSize": [
+        1254,
+        1254
+      ],
+      "frames": [
+        {
+          "cell": [
+            0,
+            0,
+            637,
+            623
+          ],
+          "bounds": [
+            220,
+            10,
+            523,
+            620
+          ],
+          "pivot": [
+            385.0,
+            618
+          ],
+          "characterHeight": 606
+        },
+        {
+          "cell": [
+            637,
+            0,
+            617,
+            623
+          ],
+          "bounds": [
+            115,
+            22,
+            413,
+            620
+          ],
+          "pivot": [
+            277.5,
+            618
+          ],
+          "characterHeight": 594
+        },
+        {
+          "cell": [
+            0,
+            623,
+            639,
+            631
+          ],
+          "bounds": [
+            221,
+            14,
+            527,
+            619
+          ],
+          "pivot": [
+            386.5,
+            617
+          ],
+          "characterHeight": 601
+        },
+        {
+          "cell": [
+            639,
+            623,
+            615,
+            631
+          ],
+          "bounds": [
+            112,
+            3,
+            417,
+            617
+          ],
+          "pivot": [
+            279.0,
+            615
+          ],
+          "characterHeight": 610
+        }
+      ]
+    }
+  ]
+}

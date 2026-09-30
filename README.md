@@ -2,6 +2,8 @@
 
 [SDtrust branding, logo's en gebruiksrichtlijnen](docs/branding/README.md)
 
+[Scenariokaart, 32 bronnen, dossiermapping en uitvoeringsbewijs voor issues 13 en 18](docs/scenarios.md)
+
 **From "I found something" to "I understand why I can rely on it."**
 
 Tectonic Hackathon 2026 · SD Worx challenge *"Unlock the Knowledge Within: Find it. Understand it. Trust it."*
@@ -73,7 +75,7 @@ What the seeded data answers (Wanne, *Tot wanneer mag Atlas loonmutaties aanleve
 | Nederland, Atlas, oktober 2026 | **18 oktober**, onderbouwd | S5 is the Dutch procedure; the Belgian sources show as *Ander land* |
 | België, Atlas, november 2026 | *Geen onderbouwd antwoord* | The Atlas agreement is only valid in October and the general rule is about October as well, so nothing backs November (fixed in #63) |
 | *Binnen welke termijn moet een ziekmelding doorgegeven worden?* (BE) | **Binnen 24 uur**, onderbouwd | S6 is approved; S7 (48 uur, Teams) is *Niet bevestigd* |
-| A question about anything else | *Geen onderbouwd antwoord* | No topic matches |
+| Additional corpus topics | Process sources for leave, indexation, overtime, holiday pay, meal vouchers and more | See the [scenario and corpus register](docs/scenarios.md); keyword matching can still select an irrelevant topic |
 
 ## 4. How the onderbouwing score works
 Implemented in [`packages/shared/src/onderbouwing.ts`](packages/shared/src/onderbouwing.ts), shared by the API and the UI. The score is the sum of four checks, each all-or-nothing:
