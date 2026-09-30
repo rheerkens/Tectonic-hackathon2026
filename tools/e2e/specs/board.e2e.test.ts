@@ -75,20 +75,20 @@ describe('project chat', () => {
     });
 
     releaseAccess();
-    await page.getByRole('button', { name: 'Open project chat' }).click();
-    const panel = page.getByRole('region', { name: 'Project chat' });
+    await page.getByRole('button', { name: 'Projectchat openen' }).click();
+    const panel = page.getByRole('region', { name: 'Projectchat' });
     await panel.waitFor();
-    await page.getByRole('textbox', { name: 'Message' }).fill(turn.message);
-    await page.getByRole('button', { name: 'Send' }).click();
+    await page.getByRole('textbox', { name: 'Bericht', exact: true }).fill(turn.message);
+    await page.getByRole('button', { name: 'Verstuur' }).click();
     await page.getByText(turn.reply).waitFor();
-    await panel.getByRole('button', { name: /Knowledge sources/ }).click();
+    await panel.getByRole('button', { name: /Kennisbronnen/ }).click();
     await page.getByText('Payroll run: ready').waitFor();
 
     await page.reload();
-    await page.getByRole('button', { name: 'Open project chat' }).click();
+    await page.getByRole('button', { name: 'Projectchat openen' }).click();
     await page.getByText(turn.reply).waitFor();
-    await page.getByRole('button', { name: 'Close chat' }).click();
-    expect(await page.getByRole('region', { name: 'Project chat' }).count()).toBe(0);
+    await page.getByRole('button', { name: 'Chat sluiten', exact: true }).click();
+    expect(await page.getByRole('region', { name: 'Projectchat' }).count()).toBe(0);
   }, 90_000);
 
   test('keeps an active reply when closed and reopened', async () => {
@@ -120,14 +120,14 @@ describe('project chat', () => {
     });
 
     releaseAccess();
-    await page.getByRole('button', { name: 'Open project chat' }).click();
-    await page.getByRole('textbox', { name: 'Message' }).fill(turn.message);
-    await page.getByRole('button', { name: 'Send' }).click();
+    await page.getByRole('button', { name: 'Projectchat openen' }).click();
+    await page.getByRole('textbox', { name: 'Bericht', exact: true }).fill(turn.message);
+    await page.getByRole('button', { name: 'Verstuur' }).click();
     await postStarted;
     const historyCountDuringRequest = historyRequests;
-    await page.getByRole('button', { name: 'Close chat' }).click();
-    await page.getByRole('button', { name: 'Open project chat' }).click();
-    const panel = page.getByRole('region', { name: 'Project chat' });
+    await page.getByRole('button', { name: 'Chat sluiten', exact: true }).click();
+    await page.getByRole('button', { name: 'Projectchat openen' }).click();
+    const panel = page.getByRole('region', { name: 'Projectchat' });
     await panel.getByText(turn.message).waitFor();
     expect(historyRequests).toBe(historyCountDuringRequest);
     releasePost();
@@ -173,13 +173,13 @@ describe('project chat', () => {
     });
 
     releaseAccess();
-    await page.getByRole('button', { name: 'Open project chat' }).click();
-    await page.getByRole('textbox', { name: 'Message' }).fill(turn.message);
-    await page.getByRole('button', { name: 'Send' }).click();
+    await page.getByRole('button', { name: 'Projectchat openen' }).click();
+    await page.getByRole('textbox', { name: 'Bericht', exact: true }).fill(turn.message);
+    await page.getByRole('button', { name: 'Verstuur' }).click();
     await postStarted;
     cancelRequested = true;
     await page.getByRole('button', { name: 'Stop' }).click();
-    await page.getByText('Response stopped.').waitFor();
+    await page.getByText('Antwoord gestopt.').waitFor();
     releasePost();
     await page.getByText(turn.reply).waitFor();
     expect(staleHistorySent).toBe(true);

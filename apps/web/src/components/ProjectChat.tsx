@@ -204,29 +204,29 @@ export function ProjectChat({ teams }: ProjectChatProps) {
 
   return (
     <div className="project-chat-launcher">
-      {open && <section className="project-chat" aria-label="Project chat">
+      {open && <section className="project-chat" aria-label="Projectchat">
       <div className="chat-toolbar">
-        <div className="chat-title"><span className="chat-assistant-mark" aria-hidden="true"><AssistantIcon /></span><h2>Knowledge assistant</h2></div>
-        <button type="button" className="chat-close" aria-label="Close chat" onClick={close}>×</button>
+        <div className="chat-title"><span className="chat-assistant-mark" aria-hidden="true"><AssistantIcon /></span><h2>Kennisassistent</h2></div>
+        <button type="button" className="chat-close" aria-label="Chat sluiten" onClick={close}>×</button>
       </div>
-      <ol className="chat-timeline" ref={timeline} onScroll={handleScroll} aria-live="polite" aria-label="Chat messages">
-        {loadingHistory && entries.length === 0 && <li className="chat-empty muted">Loading your conversation…</li>}
-        {!loadingHistory && entries.length === 0 && <li className="chat-empty"><strong>What would you like to know?</strong><span className="muted">Ask about the knowledge sources you have access to.</span></li>}
+      <ol className="chat-timeline" ref={timeline} onScroll={handleScroll} aria-live="polite" aria-label="Chatberichten">
+        {loadingHistory && entries.length === 0 && <li className="chat-empty muted">Je gesprek wordt geladen…</li>}
+        {!loadingHistory && entries.length === 0 && <li className="chat-empty"><strong>Wat wil je weten?</strong><span className="muted">Stel een vraag over de kennisbronnen waar je toegang toe hebt.</span></li>}
         {entries.map((turn) => <ChatTurnView key={turn.id} turn={turn} expanded={expanded} onToggle={(id) => setExpanded((old) => ({ ...old, [id]: !old[id] }))} />)}
       </ol>
-      {error && <div className="chat-error" role="alert"><span>{error}</span><button type="button" className="kn-btn chat-action" onClick={() => void (message.trim() && status?.available ? send() : reload())}>Retry</button></div>}
-      {status && !status.available && <p className="chat-notice muted" role="status">{status.message} Your conversation remains available above.</p>}
+      {error && <div className="chat-error" role="alert"><span>{error}</span><button type="button" className="kn-btn chat-action" onClick={() => void (message.trim() && status?.available ? send() : reload())}>Opnieuw proberen</button></div>}
+      {status && !status.available && <p className="chat-notice muted" role="status">{status.message} Je gesprek blijft hierboven beschikbaar.</p>}
       <form className="chat-composer" onSubmit={(event) => void send(event)}>
-        <label className="sr-only" htmlFor="project-chat-message">Message</label>
+        <label className="sr-only" htmlFor="project-chat-message">Bericht</label>
         <textarea ref={composer}
-          id="project-chat-message" aria-label="Message" placeholder="Ask about your knowledge sources…" value={message}
+          id="project-chat-message" aria-label="Bericht" placeholder="Stel een vraag over je kennisbronnen…" value={message}
           onChange={(event) => setMessage(event.target.value)} onKeyDown={handleKeyDown} rows={2} maxLength={8000}
           disabled={status?.available !== true || sending}
         />
-        {sending ? <button type="button" className="kn-btn chat-action chat-action--quiet" onClick={stop}>Stop</button> : <button type="submit" className="kn-btn chat-action" disabled={!message.trim() || status?.available !== true}>Send</button>}
+        {sending ? <button type="button" className="kn-btn chat-action chat-action--quiet" onClick={stop}>Stop</button> : <button type="submit" className="kn-btn chat-action" disabled={!message.trim() || status?.available !== true}>Verstuur</button>}
       </form>
       </section>}
-      <button ref={launcher} type="button" className="chat-launch-button" aria-label={open ? 'Close project chat' : 'Open project chat'} aria-expanded={open} disabled={teams.length === 0} title={teams.length === 0 ? 'No team is available for chat' : undefined} onClick={() => {
+      <button ref={launcher} type="button" className="chat-launch-button" aria-label={open ? 'Projectchat sluiten' : 'Projectchat openen'} aria-expanded={open} disabled={teams.length === 0} title={teams.length === 0 ? 'Geen team beschikbaar voor de chat' : undefined} onClick={() => {
         if (open) close(); else {
           setOpen(true);
           if (!controller.current) void reload();
@@ -240,28 +240,30 @@ export function ProjectChat({ teams }: ProjectChatProps) {
 
 function ChatTurnView({ turn, expanded, onToggle }: { turn: ChatEntry; expanded: Record<string, boolean>; onToggle: (id: string) => void }) {
   return <li className="chat-turn">
-    <div className="chat-message chat-message--user"><span className="chat-message-label">You</span><p>{turn.message}</p></div>
-    <div className="chat-message chat-message--assistant"><span className="chat-message-label">Assistant</span><Suspense fallback={<p>{turn.reply || 'Thinking…'}</p>}><ChatMarkdown text={turn.reply || (turn.status === 'cancelled' ? 'Response stopped.' : turn.status === 'running' ? 'Thinking…' : 'No reply was returned.')} /></Suspense>
-      {turn.status === 'failed' && <span className="chat-turn-status">This response failed.</span>}
+    <div className="chat-message chat-message--user"><span className="chat-message-label">Jij</span><p>{turn.message}</p></div>
+    <div className="chat-message chat-message--assistant"><span className="chat-message-label">Assistent</span><Suspense fallback={<p>{turn.reply || 'Aan het denken…'}</p>}><ChatMarkdown text={turn.reply || (turn.status === 'cancelled' ? 'Antwoord gestopt.' : turn.status === 'running' ? 'Aan het denken…' : 'Er kwam geen antwoord terug.')} /></Suspense>
+      {turn.status === 'failed' && <span className="chat-turn-status">Dit antwoord is mislukt.</span>}
     </div>
-    {turn.tools.length > 0 && <div className="chat-tools"><span className="chat-message-label">Knowledge lookups</span>
+    {turn.tools.length > 0 && <div className="chat-tools"><span className="chat-message-label">Opzoekingen in de kennisbank</span>
       {turn.tools.map((tool) => <div className="chat-tool" key={tool.id}>
         <button type="button" aria-expanded={Boolean(expanded[tool.id])} onClick={() => onToggle(tool.id)}>
-          <span>{toolDisplayName(tool.name)}</span><span className="muted">{tool.status}</span>
+          <span>{toolDisplayName(tool.name)}</span><span className="muted">{TOOL_STATUS[tool.status] ?? tool.status}</span>
         </button>
-        {expanded[tool.id] && <pre>{tool.result ?? (tool.status === 'running' ? 'Running…' : 'No result returned.')}</pre>}
+        {expanded[tool.id] && <pre>{tool.result ?? (tool.status === 'running' ? 'Bezig…' : 'Geen resultaat.')}</pre>}
       </div>)}
     </div>}
   </li>;
 }
 
+const TOOL_STATUS: Record<string, string> = { running: 'bezig', completed: 'klaar', failed: 'mislukt' };
+
 function toolDisplayName(name: string): string {
   const builtInNames: Record<string, string> = {
-    list_teams: 'Accessible teams',
-    get_team: 'Team details',
-    list_sources: 'Knowledge sources',
-    get_project: 'Project details',
-    list_tasks: 'Task list',
+    list_teams: 'Toegankelijke teams',
+    get_team: 'Teamdetails',
+    list_sources: 'Kennisbronnen',
+    get_project: 'Projectdetails',
+    list_tasks: 'Takenlijst',
   };
   return builtInNames[name] ?? name.replace(/[_-]+/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
@@ -280,5 +282,5 @@ function AssistantIcon() {
 }
 
 function errorMessage(cause: unknown): string {
-  return cause instanceof ApiError ? cause.message : cause instanceof Error ? cause.message : 'The chat request failed.';
+  return cause instanceof ApiError ? cause.message : cause instanceof Error ? cause.message : 'De chatvraag is mislukt.';
 }
