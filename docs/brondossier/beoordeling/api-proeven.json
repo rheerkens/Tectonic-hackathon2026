@@ -1,0 +1,1938 @@
+{
+  "capturedAt": "2026-09-30T18:34:50.963Z",
+  "results": [
+    {
+      "id": "1-general",
+      "user": "demo_wanne",
+      "context": {
+        "country": "BE",
+        "client": "Atlas",
+        "period": "2026-10"
+      },
+      "question": "Tot wanneer mag Atlas loonmutaties voor oktober 2026 aanleveren?",
+      "mode": "fallback",
+      "status": "onderbouwd",
+      "answer": "**20 oktober** [S1]\n\nLoonmutaties worden uiterlijk op 20 oktober van de maand aangeleverd.\n\nBron: \"Loonmutaties moeten uiterlijk op de 20e van de maand binnen zijn.\"\n\n**Onderbouwd**: onderbouwing 100/100 voor België, klant Atlas, oktober 2026. Dit is de geldende algemene regel voor deze situatie.\n- Bevoegd goedgekeurd: ja (40/40)\n- Eigenaar bekend: ja (20/20)\n- Geldig voor deze periode: ja (20/20)\n- Bron herleidbaar: ja (20/20)\n\n**Andere bronnen over dit onderwerp**\n- [S2] Oude procedure België (15 oktober): vervangen\n- [S5] Procedure Nederland (18 oktober): ander land",
+      "best": "S1",
+      "citations": [
+        "S1",
+        "S2",
+        "S5"
+      ],
+      "toolCalls": [
+        {
+          "id": "fb-1",
+          "name": "find_knowledge",
+          "args": {
+            "query": "Tot wanneer mag Atlas loonmutaties voor oktober 2026 aanleveren?"
+          },
+          "status": "ok",
+          "summary": "Zocht kennis over \"Tot wanneer mag Atlas loonmutaties voor oktober 2026 aanleveren?\": 3 bronnen (S1, S2, S5)",
+          "sourceCodes": [
+            "S1",
+            "S2",
+            "S5"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-2",
+          "name": "assess_trust",
+          "args": {
+            "question": "Tot wanneer mag Atlas loonmutaties voor oktober 2026 aanleveren?",
+            "country": "BE",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "summary": "Beoordeelde vertrouwen voor BE / Atlas / 2026-10: Onderbouwd (S1, 100)",
+          "sourceCodes": [
+            "S1",
+            "S2",
+            "S5"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-3",
+          "name": "get_source",
+          "args": {
+            "code": "S1"
+          },
+          "status": "ok",
+          "summary": "Las bron S1: Algemene procedure België (20 oktober)",
+          "sourceCodes": [
+            "S1"
+          ],
+          "error": null,
+          "durationMs": 0
+        }
+      ],
+      "sources": [
+        {
+          "code": "S1",
+          "verdict": "general",
+          "value": "20 oktober",
+          "owner": "demo_sebastien",
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S2",
+          "verdict": "superseded",
+          "value": "15 oktober",
+          "owner": null,
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S5",
+          "verdict": "other-country",
+          "value": "18 oktober",
+          "owner": "demo_sebastien",
+          "approvedBy": "demo_sebastien"
+        }
+      ]
+    },
+    {
+      "id": "2-exception",
+      "user": "demo_wanne",
+      "context": {
+        "country": "BE",
+        "client": "Atlas",
+        "period": "2026-10"
+      },
+      "question": "Tot wanneer mag Atlas loonmutaties voor oktober 2026 aanleveren?",
+      "mode": "fallback",
+      "status": "onderbouwd",
+      "answer": "**22 oktober 2026** [S4]\n\nVoor Atlas geldt een goedgekeurde uitzondering op de algemene aanleverdatum van 20 oktober.\n\nBron: \"Atlas mag loonmutaties aanleveren tot en met 22 oktober 2026.\"\n\n**Onderbouwd**: onderbouwing 100/100 voor België, klant Atlas, oktober 2026. Dit is een geldige klantuitzondering en gaat voor de algemene regel.\n- Bevoegd goedgekeurd: ja (40/40)\n- Eigenaar bekend: ja (20/20)\n- Geldig voor deze periode: ja (20/20)\n- Bron herleidbaar: ja (20/20)\n\n**Andere bronnen over dit onderwerp**\n- [S1] Algemene procedure België (20 oktober): algemene regel, de klantuitzondering gaat voor\n- [S9] Mailketen Atlas: verzoek en vastlegging (Verzoek vastgelegd in S4): niet bevestigd\n- [S10] Atlasoverleg: opties en open acties (23 oktober was een voorstel): niet bevestigd\n- [S11] Teams Atlas: herinnering en correctie (Raadpleeg de vastgestelde afspraak): niet bevestigd\n- [S3] Teamsgesprek (25 oktober): niet bevestigd\n- [S2] Oude procedure België (15 oktober): vervangen\n- [S5] Procedure Nederland (18 oktober): ander land",
+      "best": "S4",
+      "citations": [
+        "S4",
+        "S1",
+        "S9",
+        "S10",
+        "S11",
+        "S3",
+        "S2",
+        "S5"
+      ],
+      "toolCalls": [
+        {
+          "id": "fb-1",
+          "name": "find_knowledge",
+          "args": {
+            "query": "Tot wanneer mag Atlas loonmutaties voor oktober 2026 aanleveren?"
+          },
+          "status": "ok",
+          "summary": "Zocht kennis over \"Tot wanneer mag Atlas loonmutaties voor oktober 2026 aanleveren?\": 8 bronnen (S4, S1, S9, S10, S11, S3, S2, S5)",
+          "sourceCodes": [
+            "S4",
+            "S1",
+            "S9",
+            "S10",
+            "S11",
+            "S3",
+            "S2",
+            "S5"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-2",
+          "name": "assess_trust",
+          "args": {
+            "question": "Tot wanneer mag Atlas loonmutaties voor oktober 2026 aanleveren?",
+            "country": "BE",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "summary": "Beoordeelde vertrouwen voor BE / Atlas / 2026-10: Onderbouwd (S4, 100)",
+          "sourceCodes": [
+            "S4",
+            "S1",
+            "S9",
+            "S10",
+            "S11",
+            "S3",
+            "S2",
+            "S5"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-3",
+          "name": "get_source",
+          "args": {
+            "code": "S4"
+          },
+          "status": "ok",
+          "summary": "Las bron S4: Klantafspraak Atlas (22 oktober 2026)",
+          "sourceCodes": [
+            "S4"
+          ],
+          "error": null,
+          "durationMs": 0
+        }
+      ],
+      "sources": [
+        {
+          "code": "S4",
+          "verdict": "exception",
+          "value": "22 oktober 2026",
+          "owner": "demo_roy",
+          "approvedBy": "demo_roy"
+        },
+        {
+          "code": "S1",
+          "verdict": "general",
+          "value": "20 oktober",
+          "owner": "demo_sebastien",
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S9",
+          "verdict": "unconfirmed",
+          "value": "Verzoek vastgelegd in S4",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S10",
+          "verdict": "unconfirmed",
+          "value": "23 oktober was een voorstel",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S11",
+          "verdict": "unconfirmed",
+          "value": "Raadpleeg de vastgestelde afspraak",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S3",
+          "verdict": "unconfirmed",
+          "value": "25 oktober",
+          "owner": null,
+          "approvedBy": null
+        },
+        {
+          "code": "S2",
+          "verdict": "superseded",
+          "value": "15 oktober",
+          "owner": null,
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S5",
+          "verdict": "other-country",
+          "value": "18 oktober",
+          "owner": "demo_sebastien",
+          "approvedBy": "demo_sebastien"
+        }
+      ]
+    },
+    {
+      "id": "2-paraphrase",
+      "user": "demo_wanne",
+      "context": {
+        "country": "BE",
+        "client": "Atlas",
+        "period": "2026-10"
+      },
+      "question": "Welke aanleverdatum geldt voor de Belgische loonmutaties van Atlas in oktober?",
+      "mode": "fallback",
+      "status": "onderbouwd",
+      "answer": "**22 oktober 2026** [S4]\n\nVoor Atlas geldt een goedgekeurde uitzondering op de algemene aanleverdatum van 20 oktober.\n\nBron: \"Atlas mag loonmutaties aanleveren tot en met 22 oktober 2026.\"\n\n**Onderbouwd**: onderbouwing 100/100 voor België, klant Atlas, oktober 2026. Dit is een geldige klantuitzondering en gaat voor de algemene regel.\n- Bevoegd goedgekeurd: ja (40/40)\n- Eigenaar bekend: ja (20/20)\n- Geldig voor deze periode: ja (20/20)\n- Bron herleidbaar: ja (20/20)\n\n**Andere bronnen over dit onderwerp**\n- [S1] Algemene procedure België (20 oktober): algemene regel, de klantuitzondering gaat voor\n- [S9] Mailketen Atlas: verzoek en vastlegging (Verzoek vastgelegd in S4): niet bevestigd\n- [S10] Atlasoverleg: opties en open acties (23 oktober was een voorstel): niet bevestigd\n- [S11] Teams Atlas: herinnering en correctie (Raadpleeg de vastgestelde afspraak): niet bevestigd\n- [S3] Teamsgesprek (25 oktober): niet bevestigd\n- [S2] Oude procedure België (15 oktober): vervangen\n- [S5] Procedure Nederland (18 oktober): ander land",
+      "best": "S4",
+      "citations": [
+        "S4",
+        "S1",
+        "S9",
+        "S10",
+        "S11",
+        "S3",
+        "S2",
+        "S5"
+      ],
+      "toolCalls": [
+        {
+          "id": "fb-1",
+          "name": "find_knowledge",
+          "args": {
+            "query": "Welke aanleverdatum geldt voor de Belgische loonmutaties van Atlas in oktober?"
+          },
+          "status": "ok",
+          "summary": "Zocht kennis over \"Welke aanleverdatum geldt voor de Belgische loonmutaties van Atlas in oktober?\": 8 bronnen (S4, S1, S9, S10, S11, S3, S2, S5)",
+          "sourceCodes": [
+            "S4",
+            "S1",
+            "S9",
+            "S10",
+            "S11",
+            "S3",
+            "S2",
+            "S5"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-2",
+          "name": "assess_trust",
+          "args": {
+            "question": "Welke aanleverdatum geldt voor de Belgische loonmutaties van Atlas in oktober?",
+            "country": "BE",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "summary": "Beoordeelde vertrouwen voor BE / Atlas / 2026-10: Onderbouwd (S4, 100)",
+          "sourceCodes": [
+            "S4",
+            "S1",
+            "S9",
+            "S10",
+            "S11",
+            "S3",
+            "S2",
+            "S5"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-3",
+          "name": "get_source",
+          "args": {
+            "code": "S4"
+          },
+          "status": "ok",
+          "summary": "Las bron S4: Klantafspraak Atlas (22 oktober 2026)",
+          "sourceCodes": [
+            "S4"
+          ],
+          "error": null,
+          "durationMs": 0
+        }
+      ],
+      "sources": [
+        {
+          "code": "S4",
+          "verdict": "exception",
+          "value": "22 oktober 2026",
+          "owner": "demo_roy",
+          "approvedBy": "demo_roy"
+        },
+        {
+          "code": "S1",
+          "verdict": "general",
+          "value": "20 oktober",
+          "owner": "demo_sebastien",
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S9",
+          "verdict": "unconfirmed",
+          "value": "Verzoek vastgelegd in S4",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S10",
+          "verdict": "unconfirmed",
+          "value": "23 oktober was een voorstel",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S11",
+          "verdict": "unconfirmed",
+          "value": "Raadpleeg de vastgestelde afspraak",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S3",
+          "verdict": "unconfirmed",
+          "value": "25 oktober",
+          "owner": null,
+          "approvedBy": null
+        },
+        {
+          "code": "S2",
+          "verdict": "superseded",
+          "value": "15 oktober",
+          "owner": null,
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S5",
+          "verdict": "other-country",
+          "value": "18 oktober",
+          "owner": "demo_sebastien",
+          "approvedBy": "demo_sebastien"
+        }
+      ]
+    },
+    {
+      "id": "2-nl",
+      "user": "demo_wanne",
+      "context": {
+        "country": "NL",
+        "client": "Atlas",
+        "period": "2026-10"
+      },
+      "question": "Tot wanneer mag Atlas loonmutaties voor oktober 2026 aanleveren?",
+      "mode": "fallback",
+      "status": "onderbouwd",
+      "answer": "**18 oktober** [S5]\n\nIn Nederland worden loonmutaties uiterlijk op 18 oktober aangeleverd.\n\nBron: \"Nederlandse klanten leveren loonmutaties aan tot de 18e.\"\n\n**Onderbouwd**: onderbouwing 100/100 voor Nederland, klant Atlas, oktober 2026. Dit is de geldende algemene regel voor deze situatie.\n- Bevoegd goedgekeurd: ja (40/40)\n- Eigenaar bekend: ja (20/20)\n- Geldig voor deze periode: ja (20/20)\n- Bron herleidbaar: ja (20/20)\n\n**Andere bronnen over dit onderwerp**\n- [S2] Oude procedure België (15 oktober): vervangen\n- [S1] Algemene procedure België (20 oktober): ander land\n- [S4] Klantafspraak Atlas (22 oktober 2026): ander land\n- [S9] Mailketen Atlas: verzoek en vastlegging (Verzoek vastgelegd in S4): ander land\n- [S10] Atlasoverleg: opties en open acties (23 oktober was een voorstel): ander land\n- [S11] Teams Atlas: herinnering en correctie (Raadpleeg de vastgestelde afspraak): ander land\n- [S3] Teamsgesprek (25 oktober): ander land",
+      "best": "S5",
+      "citations": [
+        "S5",
+        "S2",
+        "S1",
+        "S4",
+        "S9",
+        "S10",
+        "S11",
+        "S3"
+      ],
+      "toolCalls": [
+        {
+          "id": "fb-1",
+          "name": "find_knowledge",
+          "args": {
+            "query": "Tot wanneer mag Atlas loonmutaties voor oktober 2026 aanleveren?"
+          },
+          "status": "ok",
+          "summary": "Zocht kennis over \"Tot wanneer mag Atlas loonmutaties voor oktober 2026 aanleveren?\": 8 bronnen (S5, S2, S1, S4, S9, S10, S11, S3)",
+          "sourceCodes": [
+            "S5",
+            "S2",
+            "S1",
+            "S4",
+            "S9",
+            "S10",
+            "S11",
+            "S3"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-2",
+          "name": "assess_trust",
+          "args": {
+            "question": "Tot wanneer mag Atlas loonmutaties voor oktober 2026 aanleveren?",
+            "country": "NL",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "summary": "Beoordeelde vertrouwen voor NL / Atlas / 2026-10: Onderbouwd (S5, 100)",
+          "sourceCodes": [
+            "S5",
+            "S2",
+            "S1",
+            "S4",
+            "S9",
+            "S10",
+            "S11",
+            "S3"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-3",
+          "name": "get_source",
+          "args": {
+            "code": "S5"
+          },
+          "status": "ok",
+          "summary": "Las bron S5: Procedure Nederland (18 oktober)",
+          "sourceCodes": [
+            "S5"
+          ],
+          "error": null,
+          "durationMs": 0
+        }
+      ],
+      "sources": [
+        {
+          "code": "S5",
+          "verdict": "general",
+          "value": "18 oktober",
+          "owner": "demo_sebastien",
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S2",
+          "verdict": "superseded",
+          "value": "15 oktober",
+          "owner": null,
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S1",
+          "verdict": "other-country",
+          "value": "20 oktober",
+          "owner": "demo_sebastien",
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S4",
+          "verdict": "other-country",
+          "value": "22 oktober 2026",
+          "owner": "demo_roy",
+          "approvedBy": "demo_roy"
+        },
+        {
+          "code": "S9",
+          "verdict": "other-country",
+          "value": "Verzoek vastgelegd in S4",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S10",
+          "verdict": "other-country",
+          "value": "23 oktober was een voorstel",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S11",
+          "verdict": "other-country",
+          "value": "Raadpleeg de vastgestelde afspraak",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S3",
+          "verdict": "other-country",
+          "value": "25 oktober",
+          "owner": null,
+          "approvedBy": null
+        }
+      ]
+    },
+    {
+      "id": "2-illness",
+      "user": "demo_wanne",
+      "context": {
+        "country": "BE",
+        "client": "Atlas",
+        "period": "2026-10"
+      },
+      "question": "Binnen welke termijn moet een ziekmelding doorgegeven worden?",
+      "mode": "fallback",
+      "status": "onderbouwd",
+      "answer": "**Binnen 24 uur** [S6]\n\nEen ziekmelding wordt binnen 24 uur doorgegeven aan payroll.\n\nBron: \"Ziekmeldingen worden binnen 24 uur na de eerste ziektedag doorgegeven.\"\n\n**Onderbouwd**: onderbouwing 100/100 voor België, klant Atlas, oktober 2026. Dit is de geldende algemene regel voor deze situatie.\n- Bevoegd goedgekeurd: ja (40/40)\n- Eigenaar bekend: ja (20/20)\n- Geldig voor deze periode: ja (20/20)\n- Bron herleidbaar: ja (20/20)\n\n**Andere bronnen over dit onderwerp**\n- [S7] Teamsgesprek ziekmelding (Binnen 48 uur): niet bevestigd\n- [S32] Ziekmelding Nederland: interne ontvangstregistratie (Registreer ontvangst op dezelfde werkdag): ander land",
+      "best": "S6",
+      "citations": [
+        "S6",
+        "S7",
+        "S32"
+      ],
+      "toolCalls": [
+        {
+          "id": "fb-1",
+          "name": "find_knowledge",
+          "args": {
+            "query": "Binnen welke termijn moet een ziekmelding doorgegeven worden?"
+          },
+          "status": "ok",
+          "summary": "Zocht kennis over \"Binnen welke termijn moet een ziekmelding doorgegeven worden?\": 3 bronnen (S6, S7, S32)",
+          "sourceCodes": [
+            "S6",
+            "S7",
+            "S32"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-2",
+          "name": "assess_trust",
+          "args": {
+            "question": "Binnen welke termijn moet een ziekmelding doorgegeven worden?",
+            "country": "BE",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "summary": "Beoordeelde vertrouwen voor BE / Atlas / 2026-10: Onderbouwd (S6, 100)",
+          "sourceCodes": [
+            "S6",
+            "S7",
+            "S32"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-3",
+          "name": "get_source",
+          "args": {
+            "code": "S6"
+          },
+          "status": "ok",
+          "summary": "Las bron S6: Procedure ziekmelding België (Binnen 24 uur)",
+          "sourceCodes": [
+            "S6"
+          ],
+          "error": null,
+          "durationMs": 0
+        }
+      ],
+      "sources": [
+        {
+          "code": "S6",
+          "verdict": "general",
+          "value": "Binnen 24 uur",
+          "owner": "demo_roy",
+          "approvedBy": "demo_roy"
+        },
+        {
+          "code": "S7",
+          "verdict": "unconfirmed",
+          "value": "Binnen 48 uur",
+          "owner": null,
+          "approvedBy": null
+        },
+        {
+          "code": "S32",
+          "verdict": "other-country",
+          "value": "Registreer ontvangst op dezelfde werkdag",
+          "owner": "demo_roy",
+          "approvedBy": "demo_roy"
+        }
+      ]
+    },
+    {
+      "id": "3-conflict",
+      "user": "demo_wanne",
+      "context": {
+        "country": "BE",
+        "client": "Atlas",
+        "period": "2026-10"
+      },
+      "question": "Tot wanneer mag Atlas loonmutaties voor oktober 2026 aanleveren?",
+      "mode": "fallback",
+      "status": "onderbouwd",
+      "answer": "**22 oktober 2026** [S4]\n\nVoor Atlas geldt een goedgekeurde uitzondering op de algemene aanleverdatum van 20 oktober.\n\nBron: \"Atlas mag loonmutaties aanleveren tot en met 22 oktober 2026.\"\n\n**Onderbouwd**: onderbouwing 100/100 voor België, klant Atlas, oktober 2026. Dit is een geldige klantuitzondering en gaat voor de algemene regel.\n- Bevoegd goedgekeurd: ja (40/40)\n- Eigenaar bekend: ja (20/20)\n- Geldig voor deze periode: ja (20/20)\n- Bron herleidbaar: ja (20/20)\n\n**Andere bronnen over dit onderwerp**\n- [S33] Aanvullend akkoord Atlas (23 oktober 2026): geldige uitzondering, maar minder sterk onderbouwd\n- [S1] Algemene procedure België (20 oktober): algemene regel, de klantuitzondering gaat voor\n- [S9] Mailketen Atlas: verzoek en vastlegging (Verzoek vastgelegd in S4): niet bevestigd\n- [S10] Atlasoverleg: opties en open acties (23 oktober was een voorstel): niet bevestigd\n- [S11] Teams Atlas: herinnering en correctie (Raadpleeg de vastgestelde afspraak): niet bevestigd\n- [S3] Teamsgesprek (25 oktober): niet bevestigd\n- [S2] Oude procedure België (15 oktober): vervangen\n- [S5] Procedure Nederland (18 oktober): ander land",
+      "best": "S4",
+      "citations": [
+        "S4",
+        "S33",
+        "S1",
+        "S9",
+        "S10",
+        "S11",
+        "S3",
+        "S2",
+        "S5"
+      ],
+      "toolCalls": [
+        {
+          "id": "fb-1",
+          "name": "find_knowledge",
+          "args": {
+            "query": "Tot wanneer mag Atlas loonmutaties voor oktober 2026 aanleveren?"
+          },
+          "status": "ok",
+          "summary": "Zocht kennis over \"Tot wanneer mag Atlas loonmutaties voor oktober 2026 aanleveren?\": 9 bronnen (S4, S33, S1, S9, S10, S11, S3, S2, S5)",
+          "sourceCodes": [
+            "S4",
+            "S33",
+            "S1",
+            "S9",
+            "S10",
+            "S11",
+            "S3",
+            "S2",
+            "S5"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-2",
+          "name": "assess_trust",
+          "args": {
+            "question": "Tot wanneer mag Atlas loonmutaties voor oktober 2026 aanleveren?",
+            "country": "BE",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "summary": "Beoordeelde vertrouwen voor BE / Atlas / 2026-10: Onderbouwd (S4, 100)",
+          "sourceCodes": [
+            "S4",
+            "S33",
+            "S1",
+            "S9",
+            "S10",
+            "S11",
+            "S3",
+            "S2",
+            "S5"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-3",
+          "name": "get_source",
+          "args": {
+            "code": "S4"
+          },
+          "status": "ok",
+          "summary": "Las bron S4: Klantafspraak Atlas (22 oktober 2026)",
+          "sourceCodes": [
+            "S4"
+          ],
+          "error": null,
+          "durationMs": 0
+        }
+      ],
+      "sources": [
+        {
+          "code": "S4",
+          "verdict": "exception",
+          "value": "22 oktober 2026",
+          "owner": "demo_roy",
+          "approvedBy": "demo_roy"
+        },
+        {
+          "code": "S33",
+          "verdict": "exception",
+          "value": "23 oktober 2026",
+          "owner": "demo_roy",
+          "approvedBy": "demo_roy"
+        },
+        {
+          "code": "S1",
+          "verdict": "general",
+          "value": "20 oktober",
+          "owner": "demo_sebastien",
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S9",
+          "verdict": "unconfirmed",
+          "value": "Verzoek vastgelegd in S4",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S10",
+          "verdict": "unconfirmed",
+          "value": "23 oktober was een voorstel",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S11",
+          "verdict": "unconfirmed",
+          "value": "Raadpleeg de vastgestelde afspraak",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S3",
+          "verdict": "unconfirmed",
+          "value": "25 oktober",
+          "owner": null,
+          "approvedBy": null
+        },
+        {
+          "code": "S2",
+          "verdict": "superseded",
+          "value": "15 oktober",
+          "owner": null,
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S5",
+          "verdict": "other-country",
+          "value": "18 oktober",
+          "owner": "demo_sebastien",
+          "approvedBy": "demo_sebastien"
+        }
+      ]
+    },
+    {
+      "id": "4-access",
+      "user": "demo_sebastien",
+      "context": {
+        "country": "BE",
+        "client": "Atlas",
+        "period": "2026-10"
+      },
+      "question": "Tot wanneer mag Atlas loonmutaties voor oktober 2026 aanleveren?",
+      "mode": "fallback",
+      "status": "onderbouwd",
+      "answer": "**20 oktober** [S1]\n\nLoonmutaties worden uiterlijk op 20 oktober van de maand aangeleverd.\n\nBron: \"Loonmutaties moeten uiterlijk op de 20e van de maand binnen zijn.\"\n\n**Onderbouwd**: onderbouwing 100/100 voor België, klant Atlas, oktober 2026. Dit is de geldende algemene regel voor deze situatie.\n- Bevoegd goedgekeurd: ja (40/40)\n- Eigenaar bekend: ja (20/20)\n- Geldig voor deze periode: ja (20/20)\n- Bron herleidbaar: ja (20/20)\n\n**Andere bronnen over dit onderwerp**\n- [S2] Oude procedure België (15 oktober): vervangen\n- [S5] Procedure Nederland (18 oktober): ander land",
+      "best": "S1",
+      "citations": [
+        "S1",
+        "S2",
+        "S5"
+      ],
+      "toolCalls": [
+        {
+          "id": "fb-1",
+          "name": "find_knowledge",
+          "args": {
+            "query": "Tot wanneer mag Atlas loonmutaties voor oktober 2026 aanleveren?"
+          },
+          "status": "ok",
+          "summary": "Zocht kennis over \"Tot wanneer mag Atlas loonmutaties voor oktober 2026 aanleveren?\": 3 bronnen (S1, S2, S5)",
+          "sourceCodes": [
+            "S1",
+            "S2",
+            "S5"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-2",
+          "name": "assess_trust",
+          "args": {
+            "question": "Tot wanneer mag Atlas loonmutaties voor oktober 2026 aanleveren?",
+            "country": "BE",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "summary": "Beoordeelde vertrouwen voor BE / Atlas / 2026-10: Onderbouwd (S1, 100)",
+          "sourceCodes": [
+            "S1",
+            "S2",
+            "S5"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-3",
+          "name": "get_source",
+          "args": {
+            "code": "S1"
+          },
+          "status": "ok",
+          "summary": "Las bron S1: Algemene procedure België (20 oktober)",
+          "sourceCodes": [
+            "S1"
+          ],
+          "error": null,
+          "durationMs": 0
+        }
+      ],
+      "sources": [
+        {
+          "code": "S1",
+          "verdict": "general",
+          "value": "20 oktober",
+          "owner": "demo_sebastien",
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S2",
+          "verdict": "superseded",
+          "value": "15 oktober",
+          "owner": null,
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S5",
+          "verdict": "other-country",
+          "value": "18 oktober",
+          "owner": "demo_sebastien",
+          "approvedBy": "demo_sebastien"
+        }
+      ]
+    },
+    {
+      "id": "4-restricted-S8",
+      "user": "demo_sebastien",
+      "context": {
+        "country": "BE",
+        "client": "Atlas",
+        "period": "2026-10"
+      },
+      "question": "Wanneer wordt de eindejaarspremie van Atlas uitbetaald?",
+      "mode": "fallback",
+      "status": "onderbouwd",
+      "answer": "**Binnen 24 uur** [S6]\n\nEen ziekmelding wordt binnen 24 uur doorgegeven aan payroll.\n\nBron: \"Ziekmeldingen worden binnen 24 uur na de eerste ziektedag doorgegeven.\"\n\n**Onderbouwd**: onderbouwing 100/100 voor België, klant Atlas, oktober 2026. Dit is de geldende algemene regel voor deze situatie.\n- Bevoegd goedgekeurd: ja (40/40)\n- Eigenaar bekend: ja (20/20)\n- Geldig voor deze periode: ja (20/20)\n- Bron herleidbaar: ja (20/20)\n\n**Andere bronnen over dit onderwerp**\n- [S32] Ziekmelding Nederland: interne ontvangstregistratie (Registreer ontvangst op dezelfde werkdag): ander land",
+      "best": "S6",
+      "citations": [
+        "S6",
+        "S32"
+      ],
+      "toolCalls": [
+        {
+          "id": "fb-1",
+          "name": "find_knowledge",
+          "args": {
+            "query": "Wanneer wordt de eindejaarspremie van Atlas uitbetaald?"
+          },
+          "status": "ok",
+          "summary": "Zocht kennis over \"Wanneer wordt de eindejaarspremie van Atlas uitbetaald?\": 2 bronnen (S6, S32)",
+          "sourceCodes": [
+            "S6",
+            "S32"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-2",
+          "name": "assess_trust",
+          "args": {
+            "question": "Wanneer wordt de eindejaarspremie van Atlas uitbetaald?",
+            "country": "BE",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "summary": "Beoordeelde vertrouwen voor BE / Atlas / 2026-10: Onderbouwd (S6, 100)",
+          "sourceCodes": [
+            "S6",
+            "S32"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-3",
+          "name": "get_source",
+          "args": {
+            "code": "S6"
+          },
+          "status": "ok",
+          "summary": "Las bron S6: Procedure ziekmelding België (Binnen 24 uur)",
+          "sourceCodes": [
+            "S6"
+          ],
+          "error": null,
+          "durationMs": 0
+        }
+      ],
+      "sources": [
+        {
+          "code": "S6",
+          "verdict": "general",
+          "value": "Binnen 24 uur",
+          "owner": "demo_roy",
+          "approvedBy": "demo_roy"
+        },
+        {
+          "code": "S32",
+          "verdict": "other-country",
+          "value": "Registreer ontvangst op dezelfde werkdag",
+          "owner": "demo_roy",
+          "approvedBy": "demo_roy"
+        }
+      ]
+    },
+    {
+      "id": "4-visible-sources",
+      "user": "demo_sebastien",
+      "codes": [
+        "S30",
+        "S12",
+        "S29",
+        "S16",
+        "S17",
+        "S1",
+        "S2",
+        "S5",
+        "S23",
+        "S24",
+        "S27",
+        "S18",
+        "S20",
+        "S28",
+        "S31",
+        "S21",
+        "S22",
+        "S14",
+        "S15",
+        "S6",
+        "S32",
+        "S25",
+        "S26"
+      ]
+    },
+    {
+      "id": "5-november",
+      "user": "demo_wanne",
+      "context": {
+        "country": "BE",
+        "client": "Atlas",
+        "period": "2026-11"
+      },
+      "question": "Tot wanneer mag Atlas loonmutaties voor november 2026 aanleveren?",
+      "mode": "fallback",
+      "status": "geen",
+      "answer": "Hier is geen onderbouwd antwoord voor **loonmutaties** (België, klant Atlas, november 2026). Er is wel kennis over dit onderwerp, maar geen bron die voor deze situatie geldt:\n- [S3] Teamsgesprek (25 oktober): niet bevestigd\n- [S1] Algemene procedure België (20 oktober): niet geldig in deze periode\n- [S4] Klantafspraak Atlas (22 oktober 2026): niet geldig in deze periode\n- [S9] Mailketen Atlas: verzoek en vastlegging (Verzoek vastgelegd in S4): niet geldig in deze periode\n- [S10] Atlasoverleg: opties en open acties (23 oktober was een voorstel): niet geldig in deze periode\n- [S11] Teams Atlas: herinnering en correctie (Raadpleeg de vastgestelde afspraak): niet geldig in deze periode\n- [S2] Oude procedure België (15 oktober): vervangen\n- [S5] Procedure Nederland (18 oktober): ander land\n\nLaat een bevoegde collega de juiste bron bevestigen, of controleer het land, de klant en de periode.",
+      "best": null,
+      "citations": [
+        "S3",
+        "S1",
+        "S4",
+        "S9",
+        "S10",
+        "S11",
+        "S2",
+        "S5"
+      ],
+      "toolCalls": [
+        {
+          "id": "fb-1",
+          "name": "find_knowledge",
+          "args": {
+            "query": "Tot wanneer mag Atlas loonmutaties voor november 2026 aanleveren?"
+          },
+          "status": "ok",
+          "summary": "Zocht kennis over \"Tot wanneer mag Atlas loonmutaties voor november 2026 aanleveren?\": 8 bronnen (S3, S1, S4, S9, S10, S11, S2, S5)",
+          "sourceCodes": [
+            "S3",
+            "S1",
+            "S4",
+            "S9",
+            "S10",
+            "S11",
+            "S2",
+            "S5"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-2",
+          "name": "assess_trust",
+          "args": {
+            "question": "Tot wanneer mag Atlas loonmutaties voor november 2026 aanleveren?",
+            "country": "BE",
+            "client": "Atlas",
+            "period": "2026-11"
+          },
+          "status": "ok",
+          "summary": "Beoordeelde vertrouwen voor BE / Atlas / 2026-11: Geen onderbouwd antwoord",
+          "sourceCodes": [
+            "S3",
+            "S1",
+            "S4",
+            "S9",
+            "S10",
+            "S11",
+            "S2",
+            "S5"
+          ],
+          "error": null,
+          "durationMs": 0
+        }
+      ],
+      "sources": [
+        {
+          "code": "S3",
+          "verdict": "unconfirmed",
+          "value": "25 oktober",
+          "owner": null,
+          "approvedBy": null
+        },
+        {
+          "code": "S1",
+          "verdict": "expired",
+          "value": "20 oktober",
+          "owner": "demo_sebastien",
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S4",
+          "verdict": "expired",
+          "value": "22 oktober 2026",
+          "owner": "demo_roy",
+          "approvedBy": "demo_roy"
+        },
+        {
+          "code": "S9",
+          "verdict": "expired",
+          "value": "Verzoek vastgelegd in S4",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S10",
+          "verdict": "expired",
+          "value": "23 oktober was een voorstel",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S11",
+          "verdict": "expired",
+          "value": "Raadpleeg de vastgestelde afspraak",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S2",
+          "verdict": "superseded",
+          "value": "15 oktober",
+          "owner": null,
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S5",
+          "verdict": "other-country",
+          "value": "18 oktober",
+          "owner": "demo_sebastien",
+          "approvedBy": "demo_sebastien"
+        }
+      ]
+    },
+    {
+      "id": "5-followup",
+      "user": "demo_wanne",
+      "context": {
+        "country": "BE",
+        "client": "Atlas",
+        "period": "2026-11"
+      },
+      "question": "En voor volgende maand?",
+      "mode": "fallback",
+      "status": "geen",
+      "answer": "Hier is geen onderbouwd antwoord voor **loonmutaties** (België, klant Atlas, november 2026). Er is wel kennis over dit onderwerp, maar geen bron die voor deze situatie geldt:\n- [S3] Teamsgesprek (25 oktober): niet bevestigd\n- [S1] Algemene procedure België (20 oktober): niet geldig in deze periode\n- [S4] Klantafspraak Atlas (22 oktober 2026): niet geldig in deze periode\n- [S9] Mailketen Atlas: verzoek en vastlegging (Verzoek vastgelegd in S4): niet geldig in deze periode\n- [S10] Atlasoverleg: opties en open acties (23 oktober was een voorstel): niet geldig in deze periode\n- [S11] Teams Atlas: herinnering en correctie (Raadpleeg de vastgestelde afspraak): niet geldig in deze periode\n- [S2] Oude procedure België (15 oktober): vervangen\n- [S5] Procedure Nederland (18 oktober): ander land\n\nLaat een bevoegde collega de juiste bron bevestigen, of controleer het land, de klant en de periode.",
+      "best": null,
+      "citations": [
+        "S3",
+        "S1",
+        "S4",
+        "S9",
+        "S10",
+        "S11",
+        "S2",
+        "S5"
+      ],
+      "toolCalls": [
+        {
+          "id": "fb-1",
+          "name": "find_knowledge",
+          "args": {
+            "query": "En voor volgende maand?"
+          },
+          "status": "ok",
+          "summary": "Zocht kennis over \"En voor volgende maand?\": 8 bronnen (S3, S1, S4, S9, S10, S11, S2, S5)",
+          "sourceCodes": [
+            "S3",
+            "S1",
+            "S4",
+            "S9",
+            "S10",
+            "S11",
+            "S2",
+            "S5"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-2",
+          "name": "assess_trust",
+          "args": {
+            "question": "En voor volgende maand?",
+            "country": "BE",
+            "client": "Atlas",
+            "period": "2026-11"
+          },
+          "status": "ok",
+          "summary": "Beoordeelde vertrouwen voor BE / Atlas / 2026-11: Geen onderbouwd antwoord",
+          "sourceCodes": [
+            "S3",
+            "S1",
+            "S4",
+            "S9",
+            "S10",
+            "S11",
+            "S2",
+            "S5"
+          ],
+          "error": null,
+          "durationMs": 0
+        }
+      ],
+      "sources": [
+        {
+          "code": "S3",
+          "verdict": "unconfirmed",
+          "value": "25 oktober",
+          "owner": null,
+          "approvedBy": null
+        },
+        {
+          "code": "S1",
+          "verdict": "expired",
+          "value": "20 oktober",
+          "owner": "demo_sebastien",
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S4",
+          "verdict": "expired",
+          "value": "22 oktober 2026",
+          "owner": "demo_roy",
+          "approvedBy": "demo_roy"
+        },
+        {
+          "code": "S9",
+          "verdict": "expired",
+          "value": "Verzoek vastgelegd in S4",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S10",
+          "verdict": "expired",
+          "value": "23 oktober was een voorstel",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S11",
+          "verdict": "expired",
+          "value": "Raadpleeg de vastgestelde afspraak",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S2",
+          "verdict": "superseded",
+          "value": "15 oktober",
+          "owner": null,
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S5",
+          "verdict": "other-country",
+          "value": "18 oktober",
+          "owner": "demo_sebastien",
+          "approvedBy": "demo_sebastien"
+        }
+      ]
+    },
+    {
+      "id": "5-followup-original-context",
+      "user": "demo_wanne",
+      "context": {
+        "country": "BE",
+        "client": "Atlas",
+        "period": "2026-10"
+      },
+      "question": "En voor volgende maand?",
+      "mode": "fallback",
+      "status": "onderbouwd",
+      "answer": "**22 oktober 2026** [S4]\n\nVoor Atlas geldt een goedgekeurde uitzondering op de algemene aanleverdatum van 20 oktober.\n\nBron: \"Atlas mag loonmutaties aanleveren tot en met 22 oktober 2026.\"\n\n**Onderbouwd**: onderbouwing 100/100 voor België, klant Atlas, oktober 2026. Dit is een geldige klantuitzondering en gaat voor de algemene regel.\n- Bevoegd goedgekeurd: ja (40/40)\n- Eigenaar bekend: ja (20/20)\n- Geldig voor deze periode: ja (20/20)\n- Bron herleidbaar: ja (20/20)\n\n**Andere bronnen over dit onderwerp**\n- [S1] Algemene procedure België (20 oktober): algemene regel, de klantuitzondering gaat voor\n- [S9] Mailketen Atlas: verzoek en vastlegging (Verzoek vastgelegd in S4): niet bevestigd\n- [S10] Atlasoverleg: opties en open acties (23 oktober was een voorstel): niet bevestigd\n- [S11] Teams Atlas: herinnering en correctie (Raadpleeg de vastgestelde afspraak): niet bevestigd\n- [S3] Teamsgesprek (25 oktober): niet bevestigd\n- [S2] Oude procedure België (15 oktober): vervangen\n- [S5] Procedure Nederland (18 oktober): ander land",
+      "best": "S4",
+      "citations": [
+        "S4",
+        "S1",
+        "S9",
+        "S10",
+        "S11",
+        "S3",
+        "S2",
+        "S5"
+      ],
+      "toolCalls": [
+        {
+          "id": "fb-1",
+          "name": "find_knowledge",
+          "args": {
+            "query": "En voor volgende maand?"
+          },
+          "status": "ok",
+          "summary": "Zocht kennis over \"En voor volgende maand?\": 8 bronnen (S4, S1, S9, S10, S11, S3, S2, S5)",
+          "sourceCodes": [
+            "S4",
+            "S1",
+            "S9",
+            "S10",
+            "S11",
+            "S3",
+            "S2",
+            "S5"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-2",
+          "name": "assess_trust",
+          "args": {
+            "question": "En voor volgende maand?",
+            "country": "BE",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "summary": "Beoordeelde vertrouwen voor BE / Atlas / 2026-10: Onderbouwd (S4, 100)",
+          "sourceCodes": [
+            "S4",
+            "S1",
+            "S9",
+            "S10",
+            "S11",
+            "S3",
+            "S2",
+            "S5"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-3",
+          "name": "get_source",
+          "args": {
+            "code": "S4"
+          },
+          "status": "ok",
+          "summary": "Las bron S4: Klantafspraak Atlas (22 oktober 2026)",
+          "sourceCodes": [
+            "S4"
+          ],
+          "error": null,
+          "durationMs": 0
+        }
+      ],
+      "sources": [
+        {
+          "code": "S4",
+          "verdict": "exception",
+          "value": "22 oktober 2026",
+          "owner": "demo_roy",
+          "approvedBy": "demo_roy"
+        },
+        {
+          "code": "S1",
+          "verdict": "general",
+          "value": "20 oktober",
+          "owner": "demo_sebastien",
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S9",
+          "verdict": "unconfirmed",
+          "value": "Verzoek vastgelegd in S4",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S10",
+          "verdict": "unconfirmed",
+          "value": "23 oktober was een voorstel",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S11",
+          "verdict": "unconfirmed",
+          "value": "Raadpleeg de vastgestelde afspraak",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S3",
+          "verdict": "unconfirmed",
+          "value": "25 oktober",
+          "owner": null,
+          "approvedBy": null
+        },
+        {
+          "code": "S2",
+          "verdict": "superseded",
+          "value": "15 oktober",
+          "owner": null,
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S5",
+          "verdict": "other-country",
+          "value": "18 oktober",
+          "owner": "demo_sebastien",
+          "approvedBy": "demo_sebastien"
+        }
+      ]
+    },
+    {
+      "id": "5-ambiguous",
+      "user": "demo_wanne",
+      "context": {
+        "country": "BE",
+        "client": "Atlas",
+        "period": "2026-10"
+      },
+      "question": "Tot wanneer mag Atlas loonmutaties aanleveren?",
+      "mode": "fallback",
+      "status": "onderbouwd",
+      "answer": "**22 oktober 2026** [S4]\n\nVoor Atlas geldt een goedgekeurde uitzondering op de algemene aanleverdatum van 20 oktober.\n\nBron: \"Atlas mag loonmutaties aanleveren tot en met 22 oktober 2026.\"\n\n**Onderbouwd**: onderbouwing 100/100 voor België, klant Atlas, oktober 2026. Dit is een geldige klantuitzondering en gaat voor de algemene regel.\n- Bevoegd goedgekeurd: ja (40/40)\n- Eigenaar bekend: ja (20/20)\n- Geldig voor deze periode: ja (20/20)\n- Bron herleidbaar: ja (20/20)\n\n**Andere bronnen over dit onderwerp**\n- [S1] Algemene procedure België (20 oktober): algemene regel, de klantuitzondering gaat voor\n- [S9] Mailketen Atlas: verzoek en vastlegging (Verzoek vastgelegd in S4): niet bevestigd\n- [S10] Atlasoverleg: opties en open acties (23 oktober was een voorstel): niet bevestigd\n- [S11] Teams Atlas: herinnering en correctie (Raadpleeg de vastgestelde afspraak): niet bevestigd\n- [S3] Teamsgesprek (25 oktober): niet bevestigd\n- [S2] Oude procedure België (15 oktober): vervangen\n- [S5] Procedure Nederland (18 oktober): ander land",
+      "best": "S4",
+      "citations": [
+        "S4",
+        "S1",
+        "S9",
+        "S10",
+        "S11",
+        "S3",
+        "S2",
+        "S5"
+      ],
+      "toolCalls": [
+        {
+          "id": "fb-1",
+          "name": "find_knowledge",
+          "args": {
+            "query": "Tot wanneer mag Atlas loonmutaties aanleveren?"
+          },
+          "status": "ok",
+          "summary": "Zocht kennis over \"Tot wanneer mag Atlas loonmutaties aanleveren?\": 8 bronnen (S4, S1, S9, S10, S11, S3, S2, S5)",
+          "sourceCodes": [
+            "S4",
+            "S1",
+            "S9",
+            "S10",
+            "S11",
+            "S3",
+            "S2",
+            "S5"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-2",
+          "name": "assess_trust",
+          "args": {
+            "question": "Tot wanneer mag Atlas loonmutaties aanleveren?",
+            "country": "BE",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "summary": "Beoordeelde vertrouwen voor BE / Atlas / 2026-10: Onderbouwd (S4, 100)",
+          "sourceCodes": [
+            "S4",
+            "S1",
+            "S9",
+            "S10",
+            "S11",
+            "S3",
+            "S2",
+            "S5"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-3",
+          "name": "get_source",
+          "args": {
+            "code": "S4"
+          },
+          "status": "ok",
+          "summary": "Las bron S4: Klantafspraak Atlas (22 oktober 2026)",
+          "sourceCodes": [
+            "S4"
+          ],
+          "error": null,
+          "durationMs": 0
+        }
+      ],
+      "sources": [
+        {
+          "code": "S4",
+          "verdict": "exception",
+          "value": "22 oktober 2026",
+          "owner": "demo_roy",
+          "approvedBy": "demo_roy"
+        },
+        {
+          "code": "S1",
+          "verdict": "general",
+          "value": "20 oktober",
+          "owner": "demo_sebastien",
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S9",
+          "verdict": "unconfirmed",
+          "value": "Verzoek vastgelegd in S4",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S10",
+          "verdict": "unconfirmed",
+          "value": "23 oktober was een voorstel",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S11",
+          "verdict": "unconfirmed",
+          "value": "Raadpleeg de vastgestelde afspraak",
+          "owner": "demo_roy",
+          "approvedBy": null
+        },
+        {
+          "code": "S3",
+          "verdict": "unconfirmed",
+          "value": "25 oktober",
+          "owner": null,
+          "approvedBy": null
+        },
+        {
+          "code": "S2",
+          "verdict": "superseded",
+          "value": "15 oktober",
+          "owner": null,
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S5",
+          "verdict": "other-country",
+          "value": "18 oktober",
+          "owner": "demo_sebastien",
+          "approvedBy": "demo_sebastien"
+        }
+      ]
+    },
+    {
+      "id": "corpus-leave",
+      "user": "demo_wanne",
+      "context": {
+        "country": "BE",
+        "client": null,
+        "period": "2026-10"
+      },
+      "question": "Hoe moet ik verlof aanvragen?",
+      "mode": "fallback",
+      "status": "onderbouwd",
+      "answer": "**Leidinggevende bevestigt vóór verwerking** [S14]\n\nVerlof wordt verwerkt nadat de leidinggevende de aanvraag en het saldo heeft bevestigd.\n\nBron: \"Fictieve interne procesafspraak, vrijgegeven door Sebastien op 30 september. De medewerker registreert de dagen in het verlofportaal. De leidinggevende controleert bezetting en saldo en bevestigt de aanvraag; payroll verwerkt daarna de juiste afwezigheidscode. Een mondeling akkoord of kalenderblok alleen volstaat niet als verwerkingsopdracht. Bij een verschil tussen portaal en planning vraagt payroll herstel aan de leidinggevende en bewaart de bestaande registratie tot het antwoord er is. Deze werkwijze bepaalt geen wettelijk verlofrecht.\"\n\n**Onderbouwd**: onderbouwing 100/100 voor België, oktober 2026. Dit is de geldende algemene regel voor deze situatie.\n- Bevoegd goedgekeurd: ja (40/40)\n- Eigenaar bekend: ja (20/20)\n- Geldig voor deze periode: ja (20/20)\n- Bron herleidbaar: ja (20/20)\n\n**Andere bronnen over dit onderwerp**\n- [S15] Teams: verlof via een kalenderblok (Kalenderblok zou voldoende zijn): niet bevestigd",
+      "best": "S14",
+      "citations": [
+        "S14",
+        "S15"
+      ],
+      "toolCalls": [
+        {
+          "id": "fb-1",
+          "name": "find_knowledge",
+          "args": {
+            "query": "Hoe moet ik verlof aanvragen?"
+          },
+          "status": "ok",
+          "summary": "Zocht kennis over \"Hoe moet ik verlof aanvragen?\": 2 bronnen (S14, S15)",
+          "sourceCodes": [
+            "S14",
+            "S15"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-2",
+          "name": "assess_trust",
+          "args": {
+            "question": "Hoe moet ik verlof aanvragen?",
+            "country": "BE",
+            "client": null,
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "summary": "Beoordeelde vertrouwen voor BE / 2026-10: Onderbouwd (S14, 100)",
+          "sourceCodes": [
+            "S14",
+            "S15"
+          ],
+          "error": null,
+          "durationMs": 1
+        },
+        {
+          "id": "fb-3",
+          "name": "get_source",
+          "args": {
+            "code": "S14"
+          },
+          "status": "ok",
+          "summary": "Las bron S14: Werkproces verlofregistratie België (Leidinggevende bevestigt vóór verwerking)",
+          "sourceCodes": [
+            "S14"
+          ],
+          "error": null,
+          "durationMs": 0
+        }
+      ],
+      "sources": [
+        {
+          "code": "S14",
+          "verdict": "general",
+          "value": "Leidinggevende bevestigt vóór verwerking",
+          "owner": "demo_sebastien",
+          "approvedBy": "demo_sebastien"
+        },
+        {
+          "code": "S15",
+          "verdict": "unconfirmed",
+          "value": "Kalenderblok zou voldoende zijn",
+          "owner": null,
+          "approvedBy": null
+        }
+      ]
+    },
+    {
+      "id": "corpus-gap",
+      "user": "demo_wanne",
+      "context": {
+        "country": "BE",
+        "client": null,
+        "period": "2026-10"
+      },
+      "question": "Welk bedrag geldt voor de telewerkvergoeding?",
+      "mode": "fallback",
+      "status": "geen",
+      "answer": "Hier is geen onderbouwd antwoord voor **telewerkvergoeding** (België, oktober 2026). Er is wel kennis over dit onderwerp, maar geen bron die voor deze situatie geldt:\n- [S28] Telewerkvergoeding: losse overdrachtsnotitie (Bedrag nog te bevestigen): niet bevestigd\n\nLaat een bevoegde collega de juiste bron bevestigen, of controleer het land, de klant en de periode.",
+      "best": null,
+      "citations": [
+        "S28"
+      ],
+      "toolCalls": [
+        {
+          "id": "fb-1",
+          "name": "find_knowledge",
+          "args": {
+            "query": "Welk bedrag geldt voor de telewerkvergoeding?"
+          },
+          "status": "ok",
+          "summary": "Zocht kennis over \"Welk bedrag geldt voor de telewerkvergoeding?\": 1 bron (S28)",
+          "sourceCodes": [
+            "S28"
+          ],
+          "error": null,
+          "durationMs": 0
+        },
+        {
+          "id": "fb-2",
+          "name": "assess_trust",
+          "args": {
+            "question": "Welk bedrag geldt voor de telewerkvergoeding?",
+            "country": "BE",
+            "client": null,
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "summary": "Beoordeelde vertrouwen voor BE / 2026-10: Geen onderbouwd antwoord",
+          "sourceCodes": [
+            "S28"
+          ],
+          "error": null,
+          "durationMs": 0
+        }
+      ],
+      "sources": [
+        {
+          "code": "S28",
+          "verdict": "unconfirmed",
+          "value": "Bedrag nog te bevestigen",
+          "owner": null,
+          "approvedBy": null
+        }
+      ]
+    },
+    {
+      "id": "corpus-inventory",
+      "count": 32,
+      "topics": [
+        "bankrekening",
+        "dossierbeheer",
+        "eindejaarspremie",
+        "indiensttreding",
+        "loonindexering",
+        "loonmutaties",
+        "maaltijdcheques",
+        "onkosten",
+        "overuren",
+        "telewerkvergoeding",
+        "uitdiensttreding",
+        "vakantiegeld",
+        "verlof",
+        "ziekmelding",
+        "ziekteloon",
+        "portefeuilleoverdracht"
+      ],
+      "codes": [
+        "S30",
+        "S12",
+        "S8",
+        "S29",
+        "S16",
+        "S17",
+        "S1",
+        "S2",
+        "S5",
+        "S23",
+        "S24",
+        "S27",
+        "S18",
+        "S20",
+        "S28",
+        "S31",
+        "S21",
+        "S22",
+        "S14",
+        "S15",
+        "S6",
+        "S32",
+        "S25",
+        "S26",
+        "S4",
+        "S3",
+        "S9",
+        "S10",
+        "S11",
+        "S19",
+        "S13",
+        "S7"
+      ],
+      "timestamps": [
+        {
+          "code": "S30",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S12",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S8",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-01-01",
+          "validTo": null
+        },
+        {
+          "code": "S29",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S16",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S17",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S1",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S2",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2024-01-01",
+          "validTo": "2025-12-31"
+        },
+        {
+          "code": "S5",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-01-01",
+          "validTo": null
+        },
+        {
+          "code": "S23",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S24",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S27",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S18",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S20",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S28",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S31",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S21",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S22",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2025-01-01",
+          "validTo": "2026-09-30"
+        },
+        {
+          "code": "S14",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S15",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S6",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-01-01",
+          "validTo": null
+        },
+        {
+          "code": "S32",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S25",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S26",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S4",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S3",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-05",
+          "validTo": null
+        },
+        {
+          "code": "S9",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S10",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S11",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S19",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-10-01",
+          "validTo": "2026-10-31"
+        },
+        {
+          "code": "S13",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-09-25",
+          "validTo": "2026-09-25"
+        },
+        {
+          "code": "S7",
+          "createdAt": "2026-09-30T18:34:41.824Z",
+          "validFrom": "2026-09-01",
+          "validTo": null
+        }
+      ]
+    }
+  ],
+  "baselineCommit": "fc846e9db75d7c7afb20c598a8c78d175ac5a020",
+  "seedSha256NormalizedLF": "cd756b7cbf0f54046795a54680287da63ae56716a9ee9d5d2faf26214d7fd9e8",
+  "runtime": {
+    "bun": "1.4.2",
+    "platform": "win32",
+    "profile": "corpus",
+    "apiWithoutWatch": true,
+    "llmConfigured": false
+  },
+  "scope": "Seedadaptatie via HTTP; geen onafhankelijke uitvoering op de originele documenten en geen LLMbewijs.",
+  "browser": [
+    "Wanne, BE, Atlas, oktober: 22 oktober, S4 en nieuwe S9/S10/S11 zichtbaar.",
+    "Wanne, BE, Atlas, november: Geen onderbouwd antwoord zichtbaar.",
+    "Wanne, NL, Atlas, oktober: 18 oktober, S5 zichtbaar.",
+    "Sebastien: alleen Payroll België, klantkeuze alleen Alle klanten, 20 oktober met S1/S2/S5. S8 ontbreekt in weerkaart.",
+    "Lumi opent als voorproefje, tekst: nog niet aangesloten op een agent."
+  ],
+  "checks": {
+    "check": "passed: six workspace typechecks and web build",
+    "test": "11 passed, 4 existing Windows failures",
+    "e2e": "script and suite absent",
+    "baselineSources": "first 8 records deep equal to baseline",
+    "schemaChanges": false
+  }
+}
