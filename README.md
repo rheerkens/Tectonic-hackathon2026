@@ -58,7 +58,7 @@ Everything below exists in the code on `main` and was checked against it. The ap
 1. **Ask.** The question is a speech bubble next to Finn, the mascot. He reads along while you type: he marks the topic, country, client and period he recognises (a named country, client or month moves the matching chip), and asks one plain question for the first thing still open. While a question is processed he shows an honest "Antwoord in opbouw" state; the old answer is never shown as the answer to a new question. Three context chips: *Land* (België / Nederland), *Klant* (only clients in sources the user may see) and *Periode* (September to November 2026). The page opens with the first example question, *Atlas* and October 2026 already answered.
 2. **Answer card.** A status badge (*Onderbouwd*, *Deels onderbouwd*, *Onvoldoende onderbouwd* or *Geen onderbouwd antwoord*), the answer in large type (for example *22 oktober 2026*), one sentence, validity, who confirmed it, and a **quote from the source**. The answer is a stored claim, never generated text.
 3. **"Waarom deze bron?"** A table of every source on the topic with a verdict instead of a number: *Geldige uitzondering*, *Algemene regel*, *Niet bevestigd*, *Niet geldig in deze periode*, *Vervangen*, *Andere klant*, *Ander land*. A client-specific exception beats the general rule. Footnote: "Een geldig document is niet automatisch van toepassing."
-4. **Source panel** (right). The selected source with its onderbouwing score and the four checks, the responsible person, validity dates, the team that has access, and a **Tijdreis** slider that re-scores the source for any month of 2026-2027 in the browser only.
+4. **Source panel** (right). The selected source with its onderbouwing score and the four checks, the responsible person, validity dates, the team that has access.
 5. **Vergelijk.** A toggle that shows a plain "Gewone AI" answer next to the SD Trust answer. The plain answer is a keyword match over all visible sources that ignores country, client, period and status, and shows no score. It is **not an LLM**; it stands in for a naive assistant.
 6. **Kennis-weerkaart.** A topic × country grid coloured by the best onderbouwing score. Empty cells say *Gat* (gap); a cell with a single owner says *Enige kenner: name*. Clicking a cell selects its source.
 7. **Controleer een bericht.** Paste a Teams message or e-mail. It is split into sentences and each one is matched to a topic. The panel shows how well that topic is backed and lists the sources on it that do not apply or are not confirmed. *Voorbeeld* fills in a sample.
@@ -159,7 +159,7 @@ Target: under 3 minutes, two browser windows, the dev stack running with a fresh
 
 1. **The answer with its reasons (window 1).** The page opens on *Tot wanneer mag Atlas loonmutaties aanleveren?* for België, Atlas, Oktober 2026: **22 oktober 2026**, *Onderbouwd*, with the quote. In *Waarom deze bron?* show that S1 (20 oktober) is a valid general rule, S3 is a *Niet bevestigd* Teams chat, S2 is *Vervangen* and S5 is *Ander land*. Click *Bekijk bron*: the four checks in the right panel, and the note that the score measures onderbouwing, not truth.
 2. **Plain AI next to SD Trust.** Switch on *Vergelijk*. Then change *Land* to Nederland: SD Trust answers **18 oktober**, the plain assistant keeps giving the same Atlas sentence because it ignores country, client and period.
-3. **Time travel.** Back to België. In the source panel of S4 drag *Tijdreis* to november: the validity check drops and the score falls to 80. Set *Periode* to November: the answer becomes *Geen onderbouwd antwoord*, because no source is valid for that period.
+3. **Period.** Back to België. Set *Periode* to November: the answer becomes *Geen onderbouwd antwoord*, because no source is valid for that period.
 4. **Check a message.** In *Controleer een bericht* paste a sentence such as "Atlas mag loonmutaties tot 25 oktober aanleveren." and press *Controleer*: it lists the sources on that topic that do not apply or are not confirmed. (The panel matches topics, not the date in the message; say so.)
 5. **Live, second window.** In window 2 (Roy) open S3 and press *Bevestig deze bron* (or *Betwist deze bron* on S4). Window 1 shows the toast *Kennisbank bijgewerkt*, recomputes the answer and shows the *Betwist* banner. Roy is visible in the presence strip.
 6. **Gaps and the sole expert.** Scroll to the *Kennis-weerkaart*: topic × country, *Gat* where nothing is recorded, *Enige kenner* where one person holds the knowledge.
@@ -190,7 +190,7 @@ The team plan is in [`docs/TASKS.md`](docs/TASKS.md); open work is tracked in th
 **Known limits and bugs**
 - `/api/check` matches a sentence to a topic but reports a contradiction when the value in the sentence differs from a source ("25 oktober" against S1's 20 oktober gives a contradiction with S1, status *Geen onderbouwd antwoord*). The match is still keyword and topic based, so a paraphrase may be missed. It also checks with no client, so Atlas-only sources show as *Andere klant*. The period is the current month.
 - A dispute is displayed and realtime-synced but does not lower the score or change the answer.
-- Only two markets (BE, NL), two topics, three demo users. The time-travel slider and the period chip re-score in the browser and through `/api/ask`, but `GET /api/sources` (the map) always uses the current month.
+- Only two markets (BE, NL), two topics, three demo users. The period chip re-scores through `/api/ask`, but `GET /api/sources` (the map) always uses the current month.
 - Two `tools/dev` worktree-launcher tests fail on macOS (`/private` path); they fail without our changes too.
 
 ## 12. Design prototype
@@ -222,7 +222,7 @@ The target look and flow of the product. It is a prototype (Dutch UI, branded "K
 | Answer card, verdict table, four-check panel, context chips, exception beats general rule, versions, validity, "Vraag verduidelijking" | Built as in the mock |
 | Access shown and checked per source | Checked per team only; the panel shows the team name |
 | Exception handling when it has expired | Fixed in #63: a period outside the agreement returns *Geen onderbouwd antwoord* instead of a stale date |
-| Extras in the build, not in the mock | *Vergelijk*, *Tijdreis*, *Kennis-weerkaart*, *Controleer een bericht*, *Betwist*, presence and live toasts |
+| Extras in the build, not in the mock | *Vergelijk*, *Kennis-weerkaart*, *Controleer een bericht*, *Betwist*, presence and live toasts |
 
 ---
 

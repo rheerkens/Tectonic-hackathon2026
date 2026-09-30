@@ -1,4 +1,4 @@
-import { AskInputSchema, COUNTRIES, COUNTRY_LABELS, scoreSource, type AskInput, type AssessedSource, type Country } from '@tectonic/shared';
+import { AskInputSchema, COUNTRIES, COUNTRY_LABELS, type AskInput, type AssessedSource, type Country } from '@tectonic/shared';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSession } from '../auth/context.ts';
 import { Avatar } from '../components/Avatar.tsx';
@@ -111,28 +111,7 @@ function Sidebar({ teams }: { teams: Array<{ id: string; name: string }> }) {
   );
 }
 
-// Tijdreis: herbereken de onderbouwing voor een andere periode, puur in de browser.
-const TRAVEL = Array.from({ length: 24 }, (_, i) => `${2026 + Math.floor(i / 12)}-${String((i % 12) + 1).padStart(2, '0')}`);
-
-function TimeTravel({ source, country, client }: { source: AssessedSource; country: Country; client: string | null }) {
-  const [i, setI] = useState(TRAVEL.indexOf('2026-10'));
-  const period = TRAVEL[i]!;
-  const { score, checks } = scoreSource(source, { country, client, period });
-  const shown = useCountUp(score, 350);
-  const valid = checks.find((c) => c.key === 'valid')!;
-  return (
-    <>
-      <h3 className="kn-h3">Tijdreis</h3>
-      <input type="range" min={0} max={TRAVEL.length - 1} value={i} onChange={(e) => setI(Number(e.target.value))} aria-label="Periode" style={{ width: '100%' }} />
-      <p className="kn-line">
-        <Icon name="calendar" /> {monthLabel(period)}: <b>{shown}</b> / 100 · {valid.label} {valid.points}/{valid.max}
-      </p>
-      <hr />
-    </>
-  );
-}
-
-function Panel({ source, all, users, canApprove, canDispute, canResolve, country, client }: { source: AssessedSource; all: AssessedSource[]; users: Map<string, { name: string; email: string | null }>; canApprove: boolean; canDispute: boolean; canResolve: boolean; country: Country; client: string | null }) {
+function Panel({ source, all, users, canApprove, canResolve }: { source: AssessedSource; all: AssessedSource[]; users: Map<string, { name: string; email: string | null }>; canApprove: boolean; canResolve: boolean }) {
   const approve = useApproveSource();
   const score = useCountUp(source.onderbouwing.score);
   const toasts = useToasts();
@@ -182,7 +161,6 @@ function Panel({ source, all, users, canApprove, canDispute, canResolve, country
       </p>
       <hr />
       <VersionChain source={source} all={all} canEdit={canResolve} />
-      <TimeTravel key={source.id} source={source} country={country} client={client} />
       <h3 className="kn-h3">Toegang</h3>
       <p className="kn-line">
         <Icon name="lock" /> Wie mag dit zien
@@ -198,12 +176,7 @@ function Panel({ source, all, users, canApprove, canDispute, canResolve, country
           Bevestig deze bron
         </button>
       )}
-      <DisputeControls source={source} canDispute={canDispute} canResolve={canResolve} disputerName={source.disputedById ? users.get(source.disputedById)?.name : undefined} />
-      {owner?.email && (
-        <a className="kn-btn kn-btn--outline" href={`mailto:${owner.email}?subject=${encodeURIComponent(`Verduidelijking: ${source.title}`)}`}>
-          Vraag verduidelijking
-        </a>
-      )}
+      <DisputeControls source={source} canResolve={canResolve} disputerName={source.disputedById ? users.get(source.disputedById)?.name : undefined} />
     </div>
   );
 }
@@ -279,7 +252,6 @@ export function KennisPage() {
   const canApprove = !!selected && selected.status === 'unconfirmed' && roleOf(selected.projectId) !== 'viewer' && (selected.ownerId === session.user.id || (selected.ownerId === null && roleOf(selected.projectId) === 'owner'));
 
   const isOwner = !!selected && roleOf(selected.projectId) !== 'viewer' && (selected.ownerId === session.user.id || (selected.ownerId === null && roleOf(selected.projectId) === 'owner'));
-  const canDispute = !!selected && roleOf(selected.projectId) !== 'viewer';
 
   const openSource = (id: string) => {
     setSelectedId(id);
@@ -530,7 +502,7 @@ export function KennisPage() {
         <form method="dialog" className="kn-source-close">
           <button type="submit" className="kn-btn" aria-label="Bron sluiten"><Icon name="close" /></button>
         </form>
-        {selected && <Panel source={selected} all={sources.data ?? result?.sources ?? []} users={userMap} canApprove={canApprove} canDispute={canDispute} canResolve={isOwner} country={country} client={client} />}
+        {selected && <Panel source={selected} all={sources.data ?? result?.sources ?? []} users={userMap} canApprove={canApprove} canResolve={isOwner} />}
       </dialog>
     </div>
   );

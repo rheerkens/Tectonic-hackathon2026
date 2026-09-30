@@ -1,7 +1,7 @@
 # Taakverdeling: SD Trust (SD Worx challenge)
 
 **Doel:** van "ik vond iets" naar "ik begrijp waarom ik erop kan vertrouwen" (SD Worx-brief, pagina 5).
-**Demo (3 min):** (1) gewone AI vs. SD Trust zij aan zij, (2) plak een Teams-bericht en zie de tegenspraak, (3) kennis-weerkaart + tijdreis, (4) expert bevestigt live in een tweede browser.
+**Demo (3 min):** (1) gewone AI vs. SD Trust zij aan zij, (2) plak een Teams-bericht en zie de tegenspraak, (3) kennis-weerkaart, (4) expert bevestigt live in een tweede browser.
 **Jurycriteria:** creativiteit, technische kwaliteit (werkt het?), fit met de challenge, security.
 
 Basis die er al staat: score met vier factoren (`packages/shared/src/trust.ts`), vragen stellen, Knowledge health, verifiëren/flaggen met realtime, seed "Vandeputte Logistics".
@@ -40,7 +40,6 @@ Branch `lane-b-ux`. Bestanden: `apps/web/src/components/*` (TrustLens opsplitsen
 - [ ] **B2** **Zij aan zij:** links "gewone AI", rechts SD Trust op dezelfde vraag (gebruikt A4, mock tot die er is).
 - [ ] **B3** **Trust-check:** plak een bericht, toon per bewering wat ermee botst (gebruikt A1).
 - [ ] **B4** **Kennis-weerkaart:** raster onderwerp × land, gekleurd op vertrouwen, gaten en "enige kenner" duidelijk. Data komt uit `listSources`.
-- [ ] **B5** **Tijdreis-slider:** scoort met een verschoven `now`. Kan puur in de browser met `scoreSource` uit shared, geen backend nodig.
 - [ ] **B6** Design-polish, animaties (score telt op, live-badge), responsive, toegankelijkheid (contrast, toetsenbord, `aria`).
 - [ ] **B7** Tweede-browser-flow voor de demo: duidelijke presence en live-melding ("Grace heeft bevestigd").
 

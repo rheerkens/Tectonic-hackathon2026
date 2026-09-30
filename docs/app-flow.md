@@ -40,7 +40,7 @@ flowchart TD
     G --> J[Antwoordkaart + Waarom deze bron?]
     H --> J
     I --> J
-    J --> K[Bron openen: 4 checks, Tijdreis]
+    J --> K[Bron openen: 4 checks]
     J --> L[Vergelijk met Gewone AI]
     J --> M[Controleer een bericht]
     J --> N[Bevestig / Betwist bron]
@@ -66,7 +66,6 @@ flowchart TD
 | 5c | *Onvoldoende* of *Geen onderbouwd antwoord* (bv. november) | Geen antwoord; kandidaten getoond | `uncertain`, hold | "Geen bron is geldig voor november. Vraag verduidelijking aan de eigenaar." |
 | 5d | Request faalt | - | `retry`, hold | "Dat lukte niet." + knop *Opnieuw proberen* |
 | 6 | Opent "Waarom deze bron?" en klikt *Bekijk bron* | Rechterpaneel: score, 4 checks, eigenaar, geldigheid, toegang | blijft `idle` | Score meet onderbouwing, niet waarheid |
-| 7 | Sleept **Tijdreis** naar november | Browser herberekent score; geen API-call | `uncertain` als score onder 80 valt, anders ongewijzigd | "In november verloopt deze bron." |
 | 8 | Zet **Vergelijk** aan, wisselt Land naar Nederland | `POST /api/naive-answer` (zelfde body als `/api/ask`: vraag, land, klant, periode) naast `/api/ask` | `answer` | "Gewone AI negeert land, klant en periode." SD Trust: 18 oktober |
 | 9 | Plakt een Teams-bericht in **Controleer een bericht** | `POST /api/check { text, country }` | `thinking` → `uncertain` bij `contradictions` (ook als `claims[].status` = `geen`), `verified` alleen als de zin gedekt is zonder tegenspraak | "Deze zin spreekt S1 tegen (20 oktober)." |
 | 10 | Klikt *Vraag verduidelijking* | Mail vooringevuld naar de bronhouder | `answer`, kort | "Mail aan Roy staat klaar." |
