@@ -361,6 +361,7 @@ export function KennisPage() {
           clients={clients}
           touched={touched}
           busy={ask.isFetching}
+          settled={!!result && !dirty && !ask.isFetching}
           mood={finn.mood}
           run={runs}
           line={finn.line}

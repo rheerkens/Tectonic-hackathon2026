@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Avatar } from '../components/Avatar.tsx';
 import { Finn, type FinnMood } from '../components/Finn.tsx';
 import { COUNTRY_LABELS } from '@tectonic/shared';
@@ -36,6 +36,8 @@ export interface FinnStageProps {
   clients: string[];
   touched: Touched;
   busy: boolean;
+  /** The shown answer belongs to this question. The stage then shrinks to make room for it. */
+  settled: boolean;
   mood: FinnMood;
   run: number;
   /** Finn's line: a question while the user still has to add something, a short result line afterwards. */
@@ -55,16 +57,24 @@ function contextPills(p: FinnStageProps) {
 
 export function FinnStage(p: FinnStageProps) {
   const pills = contextPills(p);
+  const [focused, setFocused] = useState(false);
+  const compact = p.settled && !focused;
+  const submit = () => {
+    (document.activeElement as HTMLElement | null)?.blur();
+    p.onSubmit();
+  };
   return (
-    <div className="fs-stage" data-mood={p.mood}>
+    <div className="fs-stage" data-mood={p.mood} data-compact={compact}>
       <form
         className="fs-composer"
         role="search"
         data-loading={p.busy}
         aria-busy={p.busy}
+        onFocus={() => setFocused(true)}
+        onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setFocused(false); }}
         onSubmit={(e) => {
           e.preventDefault();
-          p.onSubmit();
+          submit();
         }}
       >
         <div className="fs-head">
@@ -89,7 +99,7 @@ export function FinnStage(p: FinnStageProps) {
               // Enter sends, like the search field it replaces; the question is one line, so there is nothing to break.
               if (e.key === 'Enter') {
                 e.preventDefault();
-                if (!e.nativeEvent.isComposing && !p.busy) p.onSubmit();
+                if (!e.nativeEvent.isComposing && !p.busy) submit();
               }
             }}
           />
