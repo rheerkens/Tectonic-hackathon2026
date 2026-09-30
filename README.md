@@ -1,32 +1,167 @@
-# Trust Lens: from "I found something" to "I understand why I can rely on it"
+# Trust Lens
 
-Tectonic Hackathon 2026, **SD Worx challenge** ("Find it. Understand it. Trust it.").
+**From "I found something" to "I understand why I can rely on it."**
 
-**One role, one moment of doubt.** A payroll consultant inherits a client portfolio. They find an answer, but is it reliable, current and right for *this* client and country? Trust Lens answers the question and makes the trust visible and explainable, with no black box.
+Tectonic Hackathon 2026 · SD Worx challenge *"Unlock the Knowledge Within: Find it. Understand it. Trust it."*
 
-- **Trust:** every answer carries a 0-100 confidence made of four visible factors (up to date, accountable owner, source type, fits this market) with fixed weights. See `packages/shared/src/trust.ts`; the answer is the claim of the best source, never generated text.
-- **Detect:** contradicting, outdated and ownerless sources are surfaced per question and for the whole portfolio ("Knowledge health").
-- **Connect:** when confidence is low, it shows who owns the topic and opens a pre-filled email to them.
-- **Capture:** "Add what you know" turns an answer into an owned source. Owners can confirm a source is still correct; anyone can flag it as outdated.
-- **Live:** changes propagate over the websocket. Flag a source in one browser and the confidence moves in the other, with a ▲/▼ badge.
+> All data in this repository is **synthetic demo data** about a fictional client. Nothing here is legal or payroll advice.
 
-Security choices (Aikido themes): every knowledge route goes through `requireProjectAccess`; source ids are always scoped by project (a foreign id is a 404, tested); only a source's owner (or the portfolio owner, for ownerless sources) can verify it; inputs are validated with the shared Zod schemas.
+## Contents
+1. [The problem](#1-the-problem)
+2. [The idea](#2-the-idea)
+3. [What it does today](#3-what-it-does-today)
+4. [How trust is computed](#4-how-trust-is-computed)
+5. [How an answer is built](#5-how-an-answer-is-built)
+6. [Architecture and data model](#6-architecture-and-data-model)
+7. [API](#7-api)
+8. [Security](#8-security)
+9. [Run it, try it, test it](#9-run-it-try-it-test-it)
+10. [Demo script](#10-demo-script)
+11. [Roadmap and what is unfinished](#11-roadmap-and-what-is-unfinished)
 
-## Run it
+## 1. The problem
+Large organisations hold a huge amount of knowledge, but people only act on it with confidence if they can tell whether it is *reliable, current and relevant to this customer or situation*. In practice the same question returns:
 
-```sh
-bun install
-bun run dev        # prints the URLs; open the web URL with ?as=ada
-bun run dev --reset-db   # after pulling schema/seed changes
+- a policy that was updated recently, owned and verified;
+- a wiki page nobody owns, from years ago;
+- a Teams message that contradicts both;
+- a document written for another country.
+
+A search, or an AI assistant that summarises them, returns *an* answer. The hard question is whether to trust it. This is a **trust problem**, not a search problem.
+
+## 2. The idea
+We focus on **one role, one workflow, one trust signal**, as the brief asks:
+
+- **Role:** a payroll consultant who inherits a client portfolio. The previous owner left, and the knowledge is spread across documents, chats and colleagues.
+- **Moment of doubt:** they found an answer ("the 13th month is paid in December") and need to know if they can rely on it for *this client in this country*.
+- **Trust signal:** every answer carries a **confidence score built from four visible factors**, together with the reasons, the sources that disagree, and the people who can help. There is no black box: each number traces to a line of code.
+
+The four "inspiration areas" of the brief map onto the product:
+
+| Brief | In Trust Lens |
+|---|---|
+| **Trust**: is information relevant and reliable? | Confidence score with a factor-by-factor explanation |
+| **Detect**: conflicting, duplicated, missing or outdated knowledge | Contradictions, outdated and ownerless sources, knowledge gaps, per question and portfolio-wide |
+| **Connect**: find the right expertise | Owners of a topic, with a pre-filled e-mail to ask them |
+| **Capture**: valuable knowledge beyond documents and silos | "Add what you know" creates an owned, dated source; owners confirm, anyone can flag |
+
+## 3. What it does today
+Open a client portfolio and ask a question, choosing the market (BE or NL).
+
+1. **Answer.** One sentence, taken from the most trustworthy source that applies to the chosen market, with the source named. It is never generated text.
+2. **Confidence ring (0-100) and verdict**: *You can rely on this* / *Check before you rely on this* / *Do not rely on this yet*.
+3. **Why this level.** Green/orange/red lines such as "Last reviewed 30 days ago", "Has an owner and was verified by an expert", "Written for BE", "2 other sources give a different answer".
+4. **Factor bars** for the answer source, each with its weight ("counts for 30%").
+5. **Sources disagree.** The best source next to the conflicting ones, with their trust.
+6. **Who can help.** Owners and verifiers of the topic, with "Ask Grace", which opens a pre-filled e-mail. If nobody owns the topic, the people owning the most sources in that market are suggested.
+7. **Sources behind this answer**, with owner, verifier, score and actions: *Confirm still correct* (owner only) and *Flag as outdated* (any editor).
+8. **Knowledge health** (side panel): contradictions, outdated and ownerless sources for the whole portfolio, and who holds the knowledge.
+9. **Add what you know.** Saves an *expert note* you own, in the market you asked about.
+10. **Live.** Changes are pushed over the websocket. When a colleague flags or confirms a source, your answer recomputes, a toast appears and the score shows a ▲/▼ badge.
+
+Questions the seeded portfolio answers differently on purpose:
+
+| Question (market) | Result | Why |
+|---|---|---|
+| When is the 13th month paid? (BE) | **Medium**, 69 | Solid policy, but an outdated wiki page and a Teams chat disagree |
+| When is the 13th month paid? (NL) | **High** | NL policy applies; the BE documents are ignored as "written for another market" |
+| What are the meal voucher rules? (BE) | **Low** | One ownerless chat message: a knowledge gap |
+| How does sick pay work? (NL) | **High** | Owned, verified, recent, written for NL |
+| What do I need to take over a portfolio? | **High** | Two sources agree, both owned |
+
+## 4. How trust is computed
+Implemented in [`packages/shared/src/trust.ts`](packages/shared/src/trust.ts), shared by the API and the UI, and covered by unit tests (`trust.test.ts`).
+
+`score = round(100 × Σ factor × weight)` with four factors between 0 and 1:
+
+| Factor | Weight | Value |
+|---|---|---|
+| **Up to date** | 30% | `0.5 ^ (age / half-life)` since last review, where the half-life depends on the source type; `0` if flagged as outdated |
+| **Accountable owner** | 20% | `1` owner and verified · `0.7` owner, not verified · `0` no owner |
+| **Source type** | 20% | policy `1.0` · manual `0.9` · expert note `0.8` · wiki `0.6` · e-mail `0.4` · Teams chat `0.3` |
+| **Fits this situation** | 30% | `1` written for the chosen market · `0.8` generic ("ALL") · `0.1` written for another market |
+
+Half-lives (days): policy 365, manual 540, wiki 180, expert note 180, e-mail 90, Teams chat 60.
+
+Levels: **high** ≥ 75, **medium** ≥ 50, **low** below. The weights and tables are constants at the top of the file, so the team can tune them and argue about them openly. That is the point.
+
+## 5. How an answer is built
+`assess(question, sources, { country, now })`:
+
+1. **Match the topic.** Keyword overlap between the question and each source (title, topic, claim, content). The topic with the best overlap wins. Too little overlap means a **knowledge gap**: no answer, and experts are suggested.
+2. **Split by applicability.** Sources with a "fits this situation" value below 0.5 are listed as *ignored* and never answer.
+3. **Pick the best** applicable source by trust score. Its `claim` is the answer.
+4. **Compare the others.** An applicable source with score ≥ 30 and a *different* claim is a **conflict**; one with the same claim **corroborates**.
+5. **Confidence** = best score − conflict penalty (25% of the conflicting scores, at most 40) − 8 if there is only one source + corroboration bonus (5 per agreeing source, at most 10).
+6. **Reasons** are generated from the factor notes plus the conflict, corroboration, single-source and ignored-source facts.
+
+`findIssues(sources, now)` runs the same ideas portfolio-wide: *outdated* (freshness below 0.3), *ownerless*, and *conflict* (a topic with different claims for the same market).
+
+## 6. Architecture and data model
+A Bun monorepo: React + Vite (`apps/web`), Hono API with native websockets (`apps/api`), Postgres via Drizzle (`packages/db`) and Zod contracts shared by both sides (`packages/shared`). A **project is a client portfolio**, so membership, roles and realtime come from the starter.
+
+```
+packages/shared  contracts, Zod schemas, trust.ts (pure scoring and assessment)
+packages/db      schema.ts (knowledge_sources), migrations, seed "Vandeputte Logistics"
+apps/api         routes/knowledge.ts (sources, ask, verify, flag), realtime publish
+apps/web         components/TrustLens.tsx, queries and realtime handling
 ```
 
-Try, as Ada: "When is the 13th month paid?" (BE, medium: two sources disagree), "What are the meal voucher rules?" (low: a knowledge gap), "How does sick pay work?" (NL, high). Open `?as=grace` in a second window and flag or confirm a source. Tests: `bun run check` and `bun run test:e2e`.
+`knowledge_sources`: `id`, `project_id`, `title`, `kind` (policy / manual / expert_note / wiki / email / teams_chat), `topic` (slug), `country` (BE / NL / ALL), `claim` (the one-sentence answer), `content`, `owner_id`, `verified_by_id`, `flagged_outdated`, `reviewed_at`, timestamps.
 
-## Not finished / honest limits
+Sources on one topic that give a different `claim` are in conflict, which is why the claim is a separate field. The API writes to the database first and only then publishes `sources.changed` to the project's subscribers (project-scoped, as in the starter).
 
-- All data is **synthetic demo data** for a fictional client, not legal advice.
-- Question matching is keyword overlap (no embeddings or LLM), and only BE and NL exist as markets. Both are one-file swaps (`overlap` in `trust.ts`, `COUNTRIES` in `schemas.ts`).
-- Sources are seeded, there is no importer for real documents, Teams or e-mail.
+## 7. API
+Contracts live in [`packages/shared/src/contracts.ts`](packages/shared/src/contracts.ts); paths below are relative to `/api/projects/:projectId`.
+
+| Method and path | Role | Purpose |
+|---|---|---|
+| `GET /sources` | viewer | All sources with trust, plus portfolio-wide issues |
+| `POST /ask` | viewer | `{ question, country }` returns the answer, confidence, reasons, conflicts, experts and sources |
+| `POST /sources` | editor | Capture knowledge; the caller becomes the owner |
+| `POST /sources/:sourceId/verify` | owner of the source | Confirm still correct; refreshes the review date |
+| `POST /sources/:sourceId/flag` | editor | `{ flagged }` marks or clears "outdated" |
+
+## 8. Security
+Aikido checks business logic, IDOR, authentication and authorization. What we did about each:
+
+- **Authorization:** every knowledge route calls `requireProjectAccess` with the minimum role (viewer to read and ask, editor to change).
+- **IDOR:** source ids are always queried *together with* the project id. A source id from another portfolio returns 404, never data.
+- **Business logic:** only the owner of a source can verify it (the portfolio owner can adopt an *ownerless* source). Verifying clears the outdated flag, and only that path does so.
+- **Validation:** all inputs go through the shared Zod schemas (length limits, country enum, topic slug pattern).
+- **Auth:** unchanged from the starter; the dev bypass is refused in production/Railway.
+- **Tests:** `apps/api/test/knowledge.test.ts` covers non-members, IDOR, owner-only verification, adoption rules, validation and viewer restrictions.
+- No secrets are committed; `.env*` and `.local/` are git-ignored.
+
+## 9. Run it, try it, test it
+```sh
+bun install
+bun run dev              # prints the URLs; open the web URL with ?as=ada
+bun run dev --reset-db   # needed once after pulling schema or seed changes
+bun run check            # typecheck + tests + build
+bun run test:e2e         # Playwright, two browser sessions
+```
+Demo identities (`?as=`): **ada** (inherits the portfolio), **grace** (BE payroll expert), **margaret** (NL), **alan** (compliance). Start with the **Vandeputte Logistics** portfolio, which opens on the Trust Lens; the **Board** tab is the starter's task board.
+
+## 10. Demo script
+1. As Ada, ask *"When is the 13th month paid?"* (BE). Confidence is medium. Show why: two sources disagree, one is outdated and ownerless.
+2. Switch to NL: high, because the BE documents are ignored as written for another market.
+3. Ask about meal vouchers: a low-confidence knowledge gap, and nobody owns it. Use *Add what you know*.
+4. Open `?as=grace` in a second window. Flag the BE policy as outdated: Ada's score drops live with a ▼ badge. Clear the flag: it rises again.
+5. Show *Knowledge health* and who holds the knowledge.
+
+## 11. Roadmap and what is unfinished
+The team plan is in [`docs/TASKS.md`](docs/TASKS.md). Not built yet:
+
+- Side-by-side comparison with a plain AI assistant.
+- "Trust-check this message": paste a Teams message or e-mail and see what it contradicts.
+- LLM claim extraction from raw documents and semantic conflict detection (today `claim` is entered by hand and compared as text).
+- Knowledge map (topics × markets) and a time-travel slider showing how trust decays.
+- A "disputed" status, and a larger seeded corpus.
+
+Known limits:
+- Question matching is keyword overlap, with no embeddings or LLM.
+- Only two markets (BE, NL); sources come from the seed, with no importer for real documents, Teams or e-mail.
 - Two `tools/dev` worktree-launcher tests fail on macOS (`/private` path); they fail without our changes too.
 
 ---
