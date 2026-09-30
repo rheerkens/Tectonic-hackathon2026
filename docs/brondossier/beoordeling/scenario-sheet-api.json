@@ -1,0 +1,1280 @@
+{
+  "capturedAt": "2026-09-30T20:32:42.036884+00:00",
+  "revision": "6dd2b3388080ab237753196c3d08f3e01ecdfe54",
+  "runtime": "Bun 1.4.2",
+  "seed": "Fresh standard seed: 33 sources. A1–A13 without mutations; A14 adds S33 temporarily and removes it afterwards.",
+  "results": [
+    {
+      "id": "A1",
+      "user": "demo_wanne",
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Tot wanneer mag Atlas loonmutaties aanleveren?"
+          }
+        ],
+        "context": {
+          "country": "BE",
+          "client": "Atlas",
+          "period": "2026-10"
+        }
+      },
+      "mode": "fallback",
+      "status": "onderbouwd",
+      "answer": "**22 oktober 2026** [S4]\n\nVoor Atlas geldt een goedgekeurde uitzondering op de algemene aanleverdatum van 20 oktober.\n\nBron: \"Atlas mag loonmutaties aanleveren tot en met 22 oktober 2026.\"\n\n**Onderbouwd**: onderbouwing 100/100 voor België, klant Atlas, oktober 2026. Dit is een geldige klantuitzondering en gaat voor de algemene regel.\nAlle vier de controles gehaald: bevoegd goedgekeurd, eigenaar bekend, geldig voor deze periode, bron herleidbaar.\n\n**Andere bronnen over dit onderwerp**\n- [S1] Algemene procedure België (20 oktober): algemene regel, de klantuitzondering gaat voor\n- [S9] Mailketen Atlas: verzoek en vastlegging (Verzoek vastgelegd in S4): niet bevestigd\n- [S10] Atlasoverleg: opties en open acties (23 oktober was een voorstel): niet bevestigd\n- [S11] Teams Atlas: herinnering en correctie (Raadpleeg de vastgestelde afspraak): niet bevestigd\n- [S3] Teamsgesprek (25 oktober): niet bevestigd\n- [S2] Oude procedure België (15 oktober): vervangen door S1\n- [S5] Procedure Nederland (18 oktober): ander land",
+      "topic": "loonmutaties",
+      "best": "S4",
+      "sources": [
+        {
+          "code": "S4",
+          "value": "22 oktober 2026",
+          "verdict": {
+            "kind": "exception",
+            "label": "Geldige uitzondering"
+          },
+          "score": 100
+        },
+        {
+          "code": "S1",
+          "value": "20 oktober",
+          "verdict": {
+            "kind": "general",
+            "label": "Algemene regel: 20 oktober"
+          },
+          "score": 100
+        },
+        {
+          "code": "S9",
+          "value": "Verzoek vastgelegd in S4",
+          "verdict": {
+            "kind": "unconfirmed",
+            "label": "Niet bevestigd"
+          },
+          "score": 60
+        },
+        {
+          "code": "S10",
+          "value": "23 oktober was een voorstel",
+          "verdict": {
+            "kind": "unconfirmed",
+            "label": "Niet bevestigd"
+          },
+          "score": 60
+        },
+        {
+          "code": "S11",
+          "value": "Raadpleeg de vastgestelde afspraak",
+          "verdict": {
+            "kind": "unconfirmed",
+            "label": "Niet bevestigd"
+          },
+          "score": 60
+        },
+        {
+          "code": "S3",
+          "value": "25 oktober",
+          "verdict": {
+            "kind": "unconfirmed",
+            "label": "Niet bevestigd"
+          },
+          "score": 40
+        },
+        {
+          "code": "S2",
+          "value": "15 oktober",
+          "verdict": {
+            "kind": "superseded",
+            "label": "Vervangen door S1"
+          },
+          "score": 20
+        },
+        {
+          "code": "S5",
+          "value": "18 oktober",
+          "verdict": {
+            "kind": "other-country",
+            "label": "Ander land"
+          },
+          "score": 100
+        }
+      ],
+      "tools": [
+        {
+          "name": "find_knowledge",
+          "args": {
+            "query": "Tot wanneer mag Atlas loonmutaties aanleveren?"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S4",
+            "S1",
+            "S9",
+            "S10",
+            "S11",
+            "S3",
+            "S2",
+            "S5"
+          ]
+        },
+        {
+          "name": "assess_trust",
+          "args": {
+            "question": "Tot wanneer mag Atlas loonmutaties aanleveren?",
+            "country": "BE",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S4",
+            "S1",
+            "S9",
+            "S10",
+            "S11",
+            "S3",
+            "S2",
+            "S5"
+          ]
+        },
+        {
+          "name": "get_source",
+          "args": {
+            "code": "S4"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A2",
+      "user": "demo_wanne",
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Binnen welke termijn moet een ziekmelding doorgegeven worden?"
+          }
+        ],
+        "context": {
+          "country": "BE",
+          "client": "Atlas",
+          "period": "2026-10"
+        }
+      },
+      "mode": "fallback",
+      "status": "onderbouwd",
+      "answer": "**Binnen 24 uur** [S6]\n\nEen ziekmelding wordt binnen 24 uur doorgegeven aan payroll.\n\nBron: \"Ziekmeldingen worden binnen 24 uur na de eerste ziektedag doorgegeven.\"\n\n**Onderbouwd**: onderbouwing 100/100 voor België, klant Atlas, oktober 2026. Dit is de geldende algemene regel voor deze situatie.\nAlle vier de controles gehaald: bevoegd goedgekeurd, eigenaar bekend, geldig voor deze periode, bron herleidbaar.\n\nLet op: voor klant Atlas vond ik geen bevestigde afspraak. [S7] is niet bevestigd en telt niet mee. Laat dit bevestigen bij de klantverantwoordelijke voordat je de algemene regel als klantantwoord gebruikt.\n\n**Andere bronnen over dit onderwerp**\n- [S7] Teamsgesprek ziekmelding (Binnen 48 uur): niet bevestigd\n- [S34] Procedure ziekmelding België (oud) (Binnen 72 uur): niet geldig in deze periode\n- [S32] Ziekmelding Nederland: interne ontvangstregistratie (Registreer ontvangst op dezelfde werkdag): ander land",
+      "topic": "ziekmelding",
+      "best": "S6",
+      "sources": [
+        {
+          "code": "S6",
+          "value": "Binnen 24 uur",
+          "verdict": {
+            "kind": "general",
+            "label": "Algemene regel: Binnen 24 uur"
+          },
+          "score": 100
+        },
+        {
+          "code": "S7",
+          "value": "Binnen 48 uur",
+          "verdict": {
+            "kind": "unconfirmed",
+            "label": "Niet bevestigd"
+          },
+          "score": 40
+        },
+        {
+          "code": "S34",
+          "value": "Binnen 72 uur",
+          "verdict": {
+            "kind": "expired",
+            "label": "Niet geldig in deze periode"
+          },
+          "score": 80
+        },
+        {
+          "code": "S32",
+          "value": "Registreer ontvangst op dezelfde werkdag",
+          "verdict": {
+            "kind": "other-country",
+            "label": "Ander land"
+          },
+          "score": 100
+        }
+      ],
+      "tools": [
+        {
+          "name": "find_knowledge",
+          "args": {
+            "query": "Binnen welke termijn moet een ziekmelding doorgegeven worden?"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S6",
+            "S7",
+            "S34",
+            "S32"
+          ]
+        },
+        {
+          "name": "assess_trust",
+          "args": {
+            "question": "Binnen welke termijn moet een ziekmelding doorgegeven worden?",
+            "country": "BE",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S6",
+            "S7",
+            "S34",
+            "S32"
+          ]
+        },
+        {
+          "name": "get_source",
+          "args": {
+            "code": "S6"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S6"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A3",
+      "user": "demo_wanne",
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Tot wanneer mag Atlas loonmutaties aanleveren?"
+          }
+        ],
+        "context": {
+          "country": "NL",
+          "client": "Atlas",
+          "period": "2026-10"
+        }
+      },
+      "mode": "fallback",
+      "status": "onderbouwd",
+      "answer": "**18 oktober** [S5]\n\nIn Nederland worden loonmutaties uiterlijk op 18 oktober aangeleverd.\n\nBron: \"Nederlandse klanten leveren loonmutaties aan tot de 18e.\"\n\n**Onderbouwd**: onderbouwing 100/100 voor Nederland, klant Atlas, oktober 2026. Dit is de geldende algemene regel voor deze situatie.\nAlle vier de controles gehaald: bevoegd goedgekeurd, eigenaar bekend, geldig voor deze periode, bron herleidbaar.\n\nLet op: ik vond geen specifieke afspraak voor klant Atlas in Nederland, in de teams waar je toegang toe hebt. Dat betekent niet dat er geen bestaat: bevestig dit bij de klantverantwoordelijke voordat je de algemene regel als klantantwoord gebruikt.\n\n**Andere bronnen over dit onderwerp**\n- [S2] Oude procedure België (15 oktober): vervangen door S1\n- [S1] Algemene procedure België (20 oktober): ander land\n- [S4] Klantafspraak Atlas (22 oktober 2026): ander land\n- [S9] Mailketen Atlas: verzoek en vastlegging (Verzoek vastgelegd in S4): ander land\n- [S10] Atlasoverleg: opties en open acties (23 oktober was een voorstel): ander land\n- [S11] Teams Atlas: herinnering en correctie (Raadpleeg de vastgestelde afspraak): ander land\n- [S3] Teamsgesprek (25 oktober): ander land",
+      "topic": "loonmutaties",
+      "best": "S5",
+      "sources": [
+        {
+          "code": "S5",
+          "value": "18 oktober",
+          "verdict": {
+            "kind": "general",
+            "label": "Algemene regel: 18 oktober"
+          },
+          "score": 100
+        },
+        {
+          "code": "S2",
+          "value": "15 oktober",
+          "verdict": {
+            "kind": "superseded",
+            "label": "Vervangen door S1"
+          },
+          "score": 20
+        },
+        {
+          "code": "S1",
+          "value": "20 oktober",
+          "verdict": {
+            "kind": "other-country",
+            "label": "Ander land"
+          },
+          "score": 100
+        },
+        {
+          "code": "S4",
+          "value": "22 oktober 2026",
+          "verdict": {
+            "kind": "other-country",
+            "label": "Ander land"
+          },
+          "score": 100
+        },
+        {
+          "code": "S9",
+          "value": "Verzoek vastgelegd in S4",
+          "verdict": {
+            "kind": "other-country",
+            "label": "Ander land"
+          },
+          "score": 60
+        },
+        {
+          "code": "S10",
+          "value": "23 oktober was een voorstel",
+          "verdict": {
+            "kind": "other-country",
+            "label": "Ander land"
+          },
+          "score": 60
+        },
+        {
+          "code": "S11",
+          "value": "Raadpleeg de vastgestelde afspraak",
+          "verdict": {
+            "kind": "other-country",
+            "label": "Ander land"
+          },
+          "score": 60
+        },
+        {
+          "code": "S3",
+          "value": "25 oktober",
+          "verdict": {
+            "kind": "other-country",
+            "label": "Ander land"
+          },
+          "score": 40
+        }
+      ],
+      "tools": [
+        {
+          "name": "find_knowledge",
+          "args": {
+            "query": "Tot wanneer mag Atlas loonmutaties aanleveren?"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S5",
+            "S2",
+            "S1",
+            "S4",
+            "S9",
+            "S10",
+            "S11",
+            "S3"
+          ]
+        },
+        {
+          "name": "assess_trust",
+          "args": {
+            "question": "Tot wanneer mag Atlas loonmutaties aanleveren?",
+            "country": "NL",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S5",
+            "S2",
+            "S1",
+            "S4",
+            "S9",
+            "S10",
+            "S11",
+            "S3"
+          ]
+        },
+        {
+          "name": "get_source",
+          "args": {
+            "code": "S5"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A4",
+      "user": "demo_wanne",
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Hoe wordt een verlofaanvraag verwerkt?"
+          }
+        ],
+        "context": {
+          "country": "NL",
+          "client": "Atlas",
+          "period": "2026-10"
+        }
+      },
+      "mode": "fallback",
+      "status": "geen",
+      "answer": "Hier is geen onderbouwd antwoord voor **verlof** (Nederland, klant Atlas, oktober 2026). Er is wel kennis over dit onderwerp, maar geen bron die voor deze situatie geldt:\n- [S14] Werkproces verlofregistratie België (Leidinggevende bevestigt vóór verwerking): ander land\n- [S15] Teams: verlof via een kalenderblok (Kalenderblok zou voldoende zijn): ander land\n\nBronnen voor een ander land ([S14], [S15]) gelden niet voor Nederland.\nLaat een bevoegde collega de juiste bron bevestigen, of controleer het land, de klant en de periode.",
+      "topic": "verlof",
+      "best": null,
+      "sources": [
+        {
+          "code": "S14",
+          "value": "Leidinggevende bevestigt vóór verwerking",
+          "verdict": {
+            "kind": "other-country",
+            "label": "Ander land"
+          },
+          "score": 100
+        },
+        {
+          "code": "S15",
+          "value": "Kalenderblok zou voldoende zijn",
+          "verdict": {
+            "kind": "other-country",
+            "label": "Ander land"
+          },
+          "score": 40
+        }
+      ],
+      "tools": [
+        {
+          "name": "find_knowledge",
+          "args": {
+            "query": "Hoe wordt een verlofaanvraag verwerkt?"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S14",
+            "S15"
+          ]
+        },
+        {
+          "name": "assess_trust",
+          "args": {
+            "question": "Hoe wordt een verlofaanvraag verwerkt?",
+            "country": "NL",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S14",
+            "S15"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A5",
+      "user": "demo_wanne",
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Wat is de regel voor de dertiende maand?"
+          }
+        ],
+        "context": {
+          "country": "BE",
+          "client": "Atlas",
+          "period": "2026-10"
+        }
+      },
+      "mode": "fallback",
+      "status": "geen",
+      "answer": "Hier is geen onderbouwd antwoord voor deze vraag. Ik vond geen bron over dit onderwerp in de teams waar je toegang toe hebt.\n\nDit is een gat in de kennis: vraag het een collega en laat het antwoord daarna door een bevoegde eigenaar vastleggen.",
+      "topic": null,
+      "best": null,
+      "sources": [],
+      "tools": [
+        {
+          "name": "find_knowledge",
+          "args": {
+            "query": "Wat is de regel voor de dertiende maand?"
+          },
+          "status": "ok",
+          "sourceCodes": []
+        },
+        {
+          "name": "assess_trust",
+          "args": {
+            "question": "Wat is de regel voor de dertiende maand?",
+            "country": "BE",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "sourceCodes": []
+        }
+      ]
+    },
+    {
+      "id": "A6",
+      "user": "demo_wanne",
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Wat is de regel voor de dertiende maand?"
+          }
+        ],
+        "context": {
+          "country": "NL",
+          "client": "Atlas",
+          "period": "2026-10"
+        }
+      },
+      "mode": "fallback",
+      "status": "geen",
+      "answer": "Hier is geen onderbouwd antwoord voor deze vraag. Ik vond geen bron over dit onderwerp in de teams waar je toegang toe hebt.\n\nDit is een gat in de kennis: vraag het een collega en laat het antwoord daarna door een bevoegde eigenaar vastleggen.",
+      "topic": null,
+      "best": null,
+      "sources": [],
+      "tools": [
+        {
+          "name": "find_knowledge",
+          "args": {
+            "query": "Wat is de regel voor de dertiende maand?"
+          },
+          "status": "ok",
+          "sourceCodes": []
+        },
+        {
+          "name": "assess_trust",
+          "args": {
+            "question": "Wat is de regel voor de dertiende maand?",
+            "country": "NL",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "sourceCodes": []
+        }
+      ]
+    },
+    {
+      "id": "A7",
+      "user": "demo_wanne",
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Mag ik maaltijdcheques uitbetalen?"
+          }
+        ],
+        "context": {
+          "country": "BE",
+          "client": "Atlas",
+          "period": "2026-10"
+        }
+      },
+      "mode": "fallback",
+      "status": "onderbouwd",
+      "answer": "**Controleer prestaties tegen de klantregeling** [S23]\n\nDe telling voor maaltijdcheques wordt afgestemd op bevestigde prestaties en de klantregeling.\n\nBron: \"Fictieve verwerkingsinstructie. Gebruik de door de klant bevestigde prestaties en controleer de geregistreerde regeling voor maaltijdcheques. Vergelijk uitzonderingsdagen met de overeengekomen codering. Laat verschillen tussen de telling en de prestatiestaat oplossen voordat de bestelling wordt vrijgegeven. De verantwoordelijke bewaart het akkoord op de definitieve telling. Deze algemene procesbron geeft geen bedrag en verleent geen recht voor een individuele werknemer.\"\n\n**Onderbouwd**: onderbouwing 100/100 voor België, klant Atlas, oktober 2026. Dit is de geldende algemene regel voor deze situatie.\nAlle vier de controles gehaald: bevoegd goedgekeurd, eigenaar bekend, geldig voor deze periode, bron herleidbaar.\n\nLet op: ik vond geen specifieke afspraak voor klant Atlas in België, in de teams waar je toegang toe hebt. Dat betekent niet dat er geen bestaat: bevestig dit bij de klantverantwoordelijke voordat je de algemene regel als klantantwoord gebruikt.\n\n**Andere bronnen over dit onderwerp**\n- [S24] Teams: maaltijdcheques op alle kalenderdagen (Alle kalenderdagen, niet bevestigd): niet bevestigd",
+      "topic": "maaltijdcheques",
+      "best": "S23",
+      "sources": [
+        {
+          "code": "S23",
+          "value": "Controleer prestaties tegen de klantregeling",
+          "verdict": {
+            "kind": "general",
+            "label": "Algemene regel: Controleer prestaties tegen de klantregeling"
+          },
+          "score": 100
+        },
+        {
+          "code": "S24",
+          "value": "Alle kalenderdagen, niet bevestigd",
+          "verdict": {
+            "kind": "unconfirmed",
+            "label": "Niet bevestigd"
+          },
+          "score": 40
+        }
+      ],
+      "tools": [
+        {
+          "name": "find_knowledge",
+          "args": {
+            "query": "Mag ik maaltijdcheques uitbetalen?"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S23",
+            "S24"
+          ]
+        },
+        {
+          "name": "assess_trust",
+          "args": {
+            "question": "Mag ik maaltijdcheques uitbetalen?",
+            "country": "BE",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S23",
+            "S24"
+          ]
+        },
+        {
+          "name": "get_source",
+          "args": {
+            "code": "S23"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S23"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A8",
+      "user": "demo_wanne",
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Hoeveel ziekteloon betaal ik bij ziekte?"
+          }
+        ],
+        "context": {
+          "country": "NL",
+          "client": "Atlas",
+          "period": "2026-10"
+        }
+      },
+      "mode": "fallback",
+      "status": "onderbouwd",
+      "answer": "**Verifieer contract, ziekteduur en gevalideerde regeling** [S25]\n\nZiekteloon vraagt controle van de toepasselijke regeling en de geregistreerde ziekteperiode.\n\nBron: \"Fictieve Nederlandse controleprocedure. De consultant controleert de geregistreerde eerste ziektedag, contractgegevens en de gevalideerde regeling in het klantdossier. Eerdere betalingen worden vergeleken met de bedoelde periode. Een generiek percentage uit een gesprek is geen basis om de looncomponent te wijzigen. Bij ontbrekende contractinformatie vraagt payroll aanvulling bij de verantwoordelijke. Deze bron beschrijft het proces en bevat geen zelfstandig uitbetalingspercentage.\"\n\n**Onderbouwd**: onderbouwing 100/100 voor Nederland, klant Atlas, oktober 2026. Dit is de geldende algemene regel voor deze situatie.\nAlle vier de controles gehaald: bevoegd goedgekeurd, eigenaar bekend, geldig voor deze periode, bron herleidbaar.\n\nLet op: ik vond geen specifieke afspraak voor klant Atlas in Nederland, in de teams waar je toegang toe hebt. Dat betekent niet dat er geen bestaat: bevestig dit bij de klantverantwoordelijke voordat je de algemene regel als klantantwoord gebruikt.\n\n**Andere bronnen over dit onderwerp**\n- [S26] Teams Nederland: ziekteloon zonder contractgegevens (100 procent, onbevestigd): niet bevestigd",
+      "topic": "ziekteloon",
+      "best": "S25",
+      "sources": [
+        {
+          "code": "S25",
+          "value": "Verifieer contract, ziekteduur en gevalideerde regeling",
+          "verdict": {
+            "kind": "general",
+            "label": "Algemene regel: Verifieer contract, ziekteduur en gevalideerde regeling"
+          },
+          "score": 100
+        },
+        {
+          "code": "S26",
+          "value": "100 procent, onbevestigd",
+          "verdict": {
+            "kind": "unconfirmed",
+            "label": "Niet bevestigd"
+          },
+          "score": 40
+        }
+      ],
+      "tools": [
+        {
+          "name": "find_knowledge",
+          "args": {
+            "query": "Hoeveel ziekteloon betaal ik bij ziekte?"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S25",
+            "S26"
+          ]
+        },
+        {
+          "name": "assess_trust",
+          "args": {
+            "question": "Hoeveel ziekteloon betaal ik bij ziekte?",
+            "country": "NL",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S25",
+            "S26"
+          ]
+        },
+        {
+          "name": "get_source",
+          "args": {
+            "code": "S25"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S25"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A9",
+      "user": "demo_wanne",
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Hoe draag ik de portefeuille van Atlas over?"
+          }
+        ],
+        "context": {
+          "country": "BE",
+          "client": "Atlas",
+          "period": "2026-10"
+        }
+      },
+      "mode": "fallback",
+      "status": "geen",
+      "answer": "Hier is geen onderbouwd antwoord voor **portefeuilleoverdracht** (België, klant Atlas, oktober 2026). Er is wel kennis over dit onderwerp, maar geen bron die voor deze situatie geldt:\n- [S13] Portefeuilleoverdracht Atlas: stand vóór klantoverleg (Dossierstand op 25 september om 09.00 uur): niet geldig in deze periode\n\nBronnen die voor een andere periode gelden ([S13]) neem ik niet over voor oktober 2026.\nLaat een bevoegde collega de juiste bron bevestigen, of controleer het land, de klant en de periode.",
+      "topic": "portefeuilleoverdracht",
+      "best": null,
+      "sources": [
+        {
+          "code": "S13",
+          "value": "Dossierstand op 25 september om 09.00 uur",
+          "verdict": {
+            "kind": "expired",
+            "label": "Niet geldig in deze periode"
+          },
+          "score": 80
+        }
+      ],
+      "tools": [
+        {
+          "name": "find_knowledge",
+          "args": {
+            "query": "Hoe draag ik de portefeuille van Atlas over?"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S13"
+          ]
+        },
+        {
+          "name": "assess_trust",
+          "args": {
+            "question": "Hoe draag ik de portefeuille van Atlas over?",
+            "country": "BE",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S13"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A10",
+      "user": "demo_wanne",
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Hoe draag ik de portefeuille van Atlas over?"
+          }
+        ],
+        "context": {
+          "country": "BE",
+          "client": "Atlas",
+          "period": "2026-09"
+        }
+      },
+      "mode": "fallback",
+      "status": "onderbouwd",
+      "answer": "**Dossierstand op 25 september om 09.00 uur** [S13]\n\nDe overdracht beschrijft de algemene regeling vóór het latere klantverzoek.\n\nBron: \"Bewerking van dossier S10. Roy draagt op 25 september om 09.00 uur het Belgische Atlasdossier over aan Wanne. Het register bevat op dat moment alleen de algemene procedure en de gearchiveerde voorganger; er is geen vastgestelde klantuitzondering geregistreerd. De Nederlandse procedure is beschikbaar als referentie voor het andere land. Het overleg met Atlas vindt later die dag plaats. Deze momentopname is geen verklaring over de volledigheid van het dossier na dat overleg. Wanne moet nieuwe besluiten na de overdracht afzonderlijk controleren.\"\n\n**Onderbouwd**: onderbouwing 100/100 voor België, klant Atlas, september 2026. Dit is een geldige klantuitzondering en gaat voor de algemene regel.\nAlle vier de controles gehaald: bevoegd goedgekeurd, eigenaar bekend, geldig voor deze periode, bron herleidbaar.",
+      "topic": "portefeuilleoverdracht",
+      "best": "S13",
+      "sources": [
+        {
+          "code": "S13",
+          "value": "Dossierstand op 25 september om 09.00 uur",
+          "verdict": {
+            "kind": "exception",
+            "label": "Geldige uitzondering"
+          },
+          "score": 100
+        }
+      ],
+      "tools": [
+        {
+          "name": "find_knowledge",
+          "args": {
+            "query": "Hoe draag ik de portefeuille van Atlas over?"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S13"
+          ]
+        },
+        {
+          "name": "assess_trust",
+          "args": {
+            "question": "Hoe draag ik de portefeuille van Atlas over?",
+            "country": "BE",
+            "client": "Atlas",
+            "period": "2026-09"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S13"
+          ]
+        },
+        {
+          "name": "get_source",
+          "args": {
+            "code": "S13"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S13"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A11",
+      "user": "demo_sebastien",
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Tot wanneer mag Atlas loonmutaties aanleveren?"
+          }
+        ],
+        "context": {
+          "country": "BE",
+          "client": "Atlas",
+          "period": "2026-10"
+        }
+      },
+      "mode": "fallback",
+      "status": "onderbouwd",
+      "answer": "**20 oktober** [S1]\n\nLoonmutaties worden uiterlijk op 20 oktober van de maand aangeleverd.\n\nBron: \"Loonmutaties moeten uiterlijk op de 20e van de maand binnen zijn.\"\n\n**Onderbouwd**: onderbouwing 100/100 voor België, klant Atlas, oktober 2026. Dit is de geldende algemene regel voor deze situatie.\nAlle vier de controles gehaald: bevoegd goedgekeurd, eigenaar bekend, geldig voor deze periode, bron herleidbaar.\n\nLet op: ik vond geen specifieke afspraak voor klant Atlas in België, in de teams waar je toegang toe hebt. Dat betekent niet dat er geen bestaat: bevestig dit bij de klantverantwoordelijke voordat je de algemene regel als klantantwoord gebruikt.\n\n**Andere bronnen over dit onderwerp**\n- [S2] Oude procedure België (15 oktober): vervangen door S1\n- [S5] Procedure Nederland (18 oktober): ander land",
+      "topic": "loonmutaties",
+      "best": "S1",
+      "sources": [
+        {
+          "code": "S1",
+          "value": "20 oktober",
+          "verdict": {
+            "kind": "general",
+            "label": "Algemene regel: 20 oktober"
+          },
+          "score": 100
+        },
+        {
+          "code": "S2",
+          "value": "15 oktober",
+          "verdict": {
+            "kind": "superseded",
+            "label": "Vervangen door S1"
+          },
+          "score": 20
+        },
+        {
+          "code": "S5",
+          "value": "18 oktober",
+          "verdict": {
+            "kind": "other-country",
+            "label": "Ander land"
+          },
+          "score": 100
+        }
+      ],
+      "tools": [
+        {
+          "name": "find_knowledge",
+          "args": {
+            "query": "Tot wanneer mag Atlas loonmutaties aanleveren?"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S1",
+            "S2",
+            "S5"
+          ]
+        },
+        {
+          "name": "assess_trust",
+          "args": {
+            "question": "Tot wanneer mag Atlas loonmutaties aanleveren?",
+            "country": "BE",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S1",
+            "S2",
+            "S5"
+          ]
+        },
+        {
+          "name": "get_source",
+          "args": {
+            "code": "S1"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A12",
+      "user": "demo_wanne",
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Tot wanneer mag Atlas loonmutaties aanleveren?"
+          }
+        ],
+        "context": {
+          "country": "BE",
+          "client": "Atlas",
+          "period": "2026-11"
+        }
+      },
+      "mode": "fallback",
+      "status": "geen",
+      "answer": "Hier is geen onderbouwd antwoord voor **loonmutaties** (België, klant Atlas, november 2026). Er is wel kennis over dit onderwerp, maar geen bron die voor deze situatie geldt:\n- [S3] Teamsgesprek (25 oktober): niet bevestigd\n- [S1] Algemene procedure België (20 oktober): niet geldig in deze periode\n- [S4] Klantafspraak Atlas (22 oktober 2026): niet geldig in deze periode\n- [S9] Mailketen Atlas: verzoek en vastlegging (Verzoek vastgelegd in S4): niet geldig in deze periode\n- [S10] Atlasoverleg: opties en open acties (23 oktober was een voorstel): niet geldig in deze periode\n- [S11] Teams Atlas: herinnering en correctie (Raadpleeg de vastgestelde afspraak): niet geldig in deze periode\n- [S2] Oude procedure België (15 oktober): vervangen door S1\n- [S5] Procedure Nederland (18 oktober): ander land\n\nBronnen die voor een andere periode gelden ([S1], [S4], [S9], [S10], [S11]) neem ik niet over voor november 2026.\nBronnen voor een ander land ([S5]) gelden niet voor België.\nLaat een bevoegde collega de juiste bron bevestigen, of controleer het land, de klant en de periode.",
+      "topic": "loonmutaties",
+      "best": null,
+      "sources": [
+        {
+          "code": "S3",
+          "value": "25 oktober",
+          "verdict": {
+            "kind": "unconfirmed",
+            "label": "Niet bevestigd"
+          },
+          "score": 40
+        },
+        {
+          "code": "S1",
+          "value": "20 oktober",
+          "verdict": {
+            "kind": "expired",
+            "label": "Niet geldig in deze periode"
+          },
+          "score": 80
+        },
+        {
+          "code": "S4",
+          "value": "22 oktober 2026",
+          "verdict": {
+            "kind": "expired",
+            "label": "Niet geldig in deze periode"
+          },
+          "score": 80
+        },
+        {
+          "code": "S9",
+          "value": "Verzoek vastgelegd in S4",
+          "verdict": {
+            "kind": "expired",
+            "label": "Niet geldig in deze periode"
+          },
+          "score": 40
+        },
+        {
+          "code": "S10",
+          "value": "23 oktober was een voorstel",
+          "verdict": {
+            "kind": "expired",
+            "label": "Niet geldig in deze periode"
+          },
+          "score": 40
+        },
+        {
+          "code": "S11",
+          "value": "Raadpleeg de vastgestelde afspraak",
+          "verdict": {
+            "kind": "expired",
+            "label": "Niet geldig in deze periode"
+          },
+          "score": 40
+        },
+        {
+          "code": "S2",
+          "value": "15 oktober",
+          "verdict": {
+            "kind": "superseded",
+            "label": "Vervangen door S1"
+          },
+          "score": 20
+        },
+        {
+          "code": "S5",
+          "value": "18 oktober",
+          "verdict": {
+            "kind": "other-country",
+            "label": "Ander land"
+          },
+          "score": 80
+        }
+      ],
+      "tools": [
+        {
+          "name": "find_knowledge",
+          "args": {
+            "query": "Tot wanneer mag Atlas loonmutaties aanleveren?"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S3",
+            "S1",
+            "S4",
+            "S9",
+            "S10",
+            "S11",
+            "S2",
+            "S5"
+          ]
+        },
+        {
+          "name": "assess_trust",
+          "args": {
+            "question": "Tot wanneer mag Atlas loonmutaties aanleveren?",
+            "country": "BE",
+            "client": "Atlas",
+            "period": "2026-11"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S3",
+            "S1",
+            "S4",
+            "S9",
+            "S10",
+            "S11",
+            "S2",
+            "S5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A13",
+      "user": "demo_wanne",
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Wat is de telewerkvergoeding?"
+          }
+        ],
+        "context": {
+          "country": "BE",
+          "client": "Atlas",
+          "period": "2026-10"
+        }
+      },
+      "mode": "fallback",
+      "status": "geen",
+      "answer": "Hier is geen onderbouwd antwoord voor **telewerkvergoeding** (België, klant Atlas, oktober 2026). Er is wel kennis over dit onderwerp, maar geen bron die voor deze situatie geldt:\n- [S28] Telewerkvergoeding: losse overdrachtsnotitie (Bedrag nog te bevestigen): niet bevestigd\n\nLaat een bevoegde collega de juiste bron bevestigen, of controleer het land, de klant en de periode.",
+      "topic": "telewerkvergoeding",
+      "best": null,
+      "sources": [
+        {
+          "code": "S28",
+          "value": "Bedrag nog te bevestigen",
+          "verdict": {
+            "kind": "unconfirmed",
+            "label": "Niet bevestigd"
+          },
+          "score": 20
+        }
+      ],
+      "tools": [
+        {
+          "name": "find_knowledge",
+          "args": {
+            "query": "Wat is de telewerkvergoeding?"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S28"
+          ]
+        },
+        {
+          "name": "assess_trust",
+          "args": {
+            "question": "Wat is de telewerkvergoeding?",
+            "country": "BE",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S28"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A14",
+      "setup": "Standard seed plus isolated S33 clone of S4 with value 23 oktober 2026; removed after capture.",
+      "user": "demo_wanne",
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Tot wanneer mag Atlas loonmutaties aanleveren?"
+          }
+        ],
+        "context": {
+          "country": "BE",
+          "client": "Atlas",
+          "period": "2026-10"
+        }
+      },
+      "mode": "fallback",
+      "status": "onderbouwd",
+      "answer": "**Tegenstrijdige bronnen**: [S4] 22 oktober 2026 tegenover [S33] 23 oktober 2026\n\nElke bron afzonderlijk is onderbouwd (100/100 voor België, klant Atlas, oktober 2026), maar ze gelden allebei voor deze situatie en spreken elkaar tegen. Ik kies geen definitieve waarde: laat de verantwoordelijke bevestigen welke geldt voordat je de klant antwoordt.\n- [S4] \"Atlas mag loonmutaties aanleveren tot en met 22 oktober 2026.\"\n- [S33] \"Scenarioadaptatie: Roy bevestigt 23 oktober 2026 voor Atlas België; S4 wordt niet vervangen.\"\n\n**Andere bronnen over dit onderwerp**\n- [S1] Algemene procedure België (20 oktober): algemene regel, de klantuitzondering gaat voor\n- [S9] Mailketen Atlas: verzoek en vastlegging (Verzoek vastgelegd in S4): niet bevestigd\n- [S10] Atlasoverleg: opties en open acties (23 oktober was een voorstel): niet bevestigd\n- [S11] Teams Atlas: herinnering en correctie (Raadpleeg de vastgestelde afspraak): niet bevestigd\n- [S3] Teamsgesprek (25 oktober): niet bevestigd\n- [S2] Oude procedure België (15 oktober): vervangen door S1\n- [S5] Procedure Nederland (18 oktober): ander land",
+      "topic": "loonmutaties",
+      "best": "S4",
+      "sources": [
+        {
+          "code": "S4",
+          "value": "22 oktober 2026",
+          "verdict": {
+            "kind": "exception",
+            "label": "Geldige uitzondering"
+          },
+          "score": 100
+        },
+        {
+          "code": "S33",
+          "value": "23 oktober 2026",
+          "verdict": {
+            "kind": "exception",
+            "label": "Geldige uitzondering"
+          },
+          "score": 100
+        },
+        {
+          "code": "S1",
+          "value": "20 oktober",
+          "verdict": {
+            "kind": "general",
+            "label": "Algemene regel: 20 oktober"
+          },
+          "score": 100
+        },
+        {
+          "code": "S9",
+          "value": "Verzoek vastgelegd in S4",
+          "verdict": {
+            "kind": "unconfirmed",
+            "label": "Niet bevestigd"
+          },
+          "score": 60
+        },
+        {
+          "code": "S10",
+          "value": "23 oktober was een voorstel",
+          "verdict": {
+            "kind": "unconfirmed",
+            "label": "Niet bevestigd"
+          },
+          "score": 60
+        },
+        {
+          "code": "S11",
+          "value": "Raadpleeg de vastgestelde afspraak",
+          "verdict": {
+            "kind": "unconfirmed",
+            "label": "Niet bevestigd"
+          },
+          "score": 60
+        },
+        {
+          "code": "S3",
+          "value": "25 oktober",
+          "verdict": {
+            "kind": "unconfirmed",
+            "label": "Niet bevestigd"
+          },
+          "score": 40
+        },
+        {
+          "code": "S2",
+          "value": "15 oktober",
+          "verdict": {
+            "kind": "superseded",
+            "label": "Vervangen door S1"
+          },
+          "score": 20
+        },
+        {
+          "code": "S5",
+          "value": "18 oktober",
+          "verdict": {
+            "kind": "other-country",
+            "label": "Ander land"
+          },
+          "score": 100
+        }
+      ],
+      "tools": [
+        {
+          "name": "find_knowledge",
+          "args": {
+            "query": "Tot wanneer mag Atlas loonmutaties aanleveren?"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S4",
+            "S33",
+            "S1",
+            "S9",
+            "S10",
+            "S11",
+            "S3",
+            "S2",
+            "S5"
+          ]
+        },
+        {
+          "name": "assess_trust",
+          "args": {
+            "question": "Tot wanneer mag Atlas loonmutaties aanleveren?",
+            "country": "BE",
+            "client": "Atlas",
+            "period": "2026-10"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S4",
+            "S33",
+            "S1",
+            "S9",
+            "S10",
+            "S11",
+            "S3",
+            "S2",
+            "S5"
+          ]
+        },
+        {
+          "name": "get_source",
+          "args": {
+            "code": "S4"
+          },
+          "status": "ok",
+          "sourceCodes": [
+            "S4"
+          ]
+        }
+      ]
+    }
+  ]
+}
